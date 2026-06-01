@@ -39,6 +39,8 @@ export default function FuenteDetallePerfiles({ sourceId }) {
   });
   const [hydrated, setHydrated] = useState(false);
   const [error,    setError]    = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [reupload,    setReupload]    = useState(false);
 
   // Hidratar desde IndexedDB al montar
   useEffect(() => {
@@ -143,11 +145,44 @@ export default function FuenteDetallePerfiles({ sourceId }) {
     await idbDelItem(DATA_KEY(sourceId));
   }
 
+  // "Volver a consultar": limpia y vuelve a traer del backend.
+  async function handleReconsultar() {
+    setShowConfirm(false);
+    await handleReset();
+    await handleCargar();
+  }
+
   const cols = src.cols;
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      {/* Topbar */}
+      {/* Modal de recarga (solo fuentes de carga manual) */}
+      {showConfirm && uploadCfg && (
+        <div className="modal-overlay" onClick={() => setShowConfirm(false)}>
+          <div className="modal modal-reload" onClick={e => e.stopPropagation()} style={{ maxWidth: 380 }}>
+            <div className="modal-title">Actualizar información</div>
+            <div className="reload-options">
+              <button className="reload-option" onClick={handleReconsultar}>
+                <span className="reload-option-icon">↺</span>
+                <span className="reload-option-text">
+                  <strong>Volver a consultar</strong>
+                  <small>Trae lo más reciente sin cambiar el archivo</small>
+                </span>
+              </button>
+              <button className="reload-option"
+                onClick={() => { setShowConfirm(false); setReupload(true); }}>
+                <span className="reload-option-icon">📤</span>
+                <span className="reload-option-text">
+                  <strong>Subir archivo nuevo</strong>
+                  <small>Reemplaza con un Excel y su fecha de corte</small>
+                </span>
+              </button>
+            </div>
+            <button className="modal-link-cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
       <div className="topbar" style={{ borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
         <div className="topbar-left">
           <div className="breadcrumb">
@@ -173,7 +208,8 @@ export default function FuenteDetallePerfiles({ sourceId }) {
           {status === "ok" && (
             <>
               {!isCertificador && (
-                <button className="btn-export" onClick={handleReset}>↺ Recargar</button>
+                <button className="btn-export"
+                  onClick={() => uploadCfg ? setShowConfirm(true) : handleReset()}>↺ Recargar</button>
               )}
               <button className="btn-export" onClick={handleExportar} disabled={!rows || rows.length === 0}>
                 ↓ Exportar vista
@@ -239,8 +275,20 @@ export default function FuenteDetallePerfiles({ sourceId }) {
 
       {/* Error */}
       {/* Panel de upload para fuentes mapeadas cuando falta info */}
-      {error && uploadCfg && !isCertificador && (
+      {error && uploadCfg && !isCertificador && !reupload && (
         <FuenteUploadPanel config={uploadCfg} onUploaded={handleCargar} />
+      )}
+
+      {/* Re-subida manual (desde "Subir archivo nuevo" del modal) */}
+      {reupload && uploadCfg && !isCertificador && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px 20px 0" }}>
+            <button className="btn-export-small" onClick={() => setReupload(false)}>
+              ✕ Cancelar y volver a la tabla
+            </button>
+          </div>
+          <FuenteUploadPanel config={uploadCfg} onUploaded={() => { setReupload(false); handleReconsultar(); }} />
+        </div>
       )}
 
       {error && !uploadCfg && (
@@ -281,7 +329,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
       )}
 
       {/* Tabla */}
-      {status === "ok" && hydrated && rows && rows.length > 0 && (
+      {status === "ok" && hydrated && rows && rows.length > 0 && !reupload && (
         <>
           <div style={{
             padding: "8px 20px", background: "var(--ok-bg)",

@@ -256,6 +256,7 @@ export default function FuenteDetalle({
   });
   const [hydrated,     setHydrated]     = useState(false);
   const [showConfirm,  setShowConfirm]  = useState(false);
+  const [reupload,     setReupload]     = useState(false);
   const [search,       setSearch]       = useState("");
   const [page,         setPage]         = useState(1);
   const [columnWidths, setColumnWidths] = useState(() => src ? buildDefaultWidths(src.cols) : {});
@@ -550,12 +551,39 @@ export default function FuenteDetalle({
 
       {/* Modal confirmación recarga */}
       {showConfirm && (
-        <ConfirmModal
-          title="¿Recargar datos?"
-          message={`Si recargas perderás la información actual de ${src.label}. Esta acción no se puede deshacer.`}
-          onConfirm={handleReset}
-          onCancel={() => setShowConfirm(false)}
-        />
+        uploadCfg ? (
+          <div className="modal-overlay" onClick={() => setShowConfirm(false)}>
+            <div className="modal modal-reload" onClick={e => e.stopPropagation()} style={{ maxWidth: 380 }}>
+              <div className="modal-title">Actualizar información</div>
+              <div className="reload-options">
+                <button className="reload-option"
+                  onClick={() => { setShowConfirm(false); handleReset(); }}>
+                  <span className="reload-option-icon">↺</span>
+                  <span className="reload-option-text">
+                    <strong>Volver a consultar</strong>
+                    <small>Trae lo más reciente sin cambiar el archivo</small>
+                  </span>
+                </button>
+                <button className="reload-option"
+                  onClick={() => { setShowConfirm(false); setReupload(true); }}>
+                  <span className="reload-option-icon">📤</span>
+                  <span className="reload-option-text">
+                    <strong>Subir archivo nuevo</strong>
+                    <small>Reemplaza con un Excel y su fecha de corte</small>
+                  </span>
+                </button>
+              </div>
+              <button className="modal-link-cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
+            </div>
+          </div>
+        ) : (
+          <ConfirmModal
+            title="¿Recargar datos?"
+            message={`Si recargas perderás la información actual de ${src.label}. Esta acción no se puede deshacer.`}
+            onConfirm={handleReset}
+            onCancel={() => setShowConfirm(false)}
+          />
+        )
       )}
 
       {/* Topbar */}
@@ -650,9 +678,21 @@ export default function FuenteDetalle({
       {status === "loading" && <div className="loading-bar"><div className="loading-bar-fill" /></div>}
 
       {/* Error de backend: en fuentes de upload mostramos el panel de carga */}
-      {errorBackend && uploadCfg && !isCertificador && (
+      {errorBackend && uploadCfg && !isCertificador && !reupload && (
         <div style={{ padding: "0 4px" }}>
           <FuenteUploadPanel config={uploadCfg} onUploaded={handleCargar} />
+        </div>
+      )}
+
+      {/* Re-subida manual (desde "Subir archivo nuevo" del modal) */}
+      {reupload && uploadCfg && !isCertificador && (
+        <div style={{ padding: "0 4px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px 20px 0" }}>
+            <button className="btn-export-small" onClick={() => setReupload(false)}>
+              ✕ Cancelar y volver a la tabla
+            </button>
+          </div>
+          <FuenteUploadPanel config={uploadCfg} onUploaded={() => { setReupload(false); handleReset(); }} />
         </div>
       )}
 
@@ -723,7 +763,7 @@ export default function FuenteDetalle({
       )}
 
       {/* Tabla */}
-      {status === "ok" && hydrated && hasData && (
+      {status === "ok" && hydrated && hasData && !reupload && (
         <>
           {/* Banner estadísticas */}
           <StatsBanner rows={rows} src={src} />
