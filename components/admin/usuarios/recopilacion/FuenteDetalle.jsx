@@ -90,7 +90,11 @@ function fmtDate(val) {
 // ── Sub-componentes ───────────────────────────────────────────────────────────
 
 function ActiveBadge({ val }) {
-  const on = val === true || val === 1 || val === "1" || val === "True" || val === "Sí" || val === "si";
+  const s = String(val).trim().toLowerCase();
+  const on = val === true || val === 1
+    || s === "1" || s === "true" || s === "t"
+    || s === "sí" || s === "si" || s === "yes" || s === "y"
+    || s === "activo";
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 4,
