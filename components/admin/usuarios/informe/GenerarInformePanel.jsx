@@ -1064,18 +1064,6 @@ export default function GenerarInformePanel() {
           </div>
         </Section>
 
-        <Section title="Cumplimiento" hint="(mockeado a 99.8% — fórmula real pendiente)">
-          <div style={{
-            padding: '10px 12px', background: 'var(--bg3)',
-            border: '1px dashed var(--border)', borderRadius: 'var(--radius)',
-            fontSize: 11, color: 'var(--text3)', fontFamily: 'var(--mono)',
-          }}>
-            Todos los porcentajes de cumplimiento (AD, Apps, BD, Entra) se inyectan
-            como <strong>99.8%</strong> en el .docx. Cuando se defina la fórmula
-            real, se actualizará en <code>lib/utils/informeCalculo.js</code>.
-          </div>
-        </Section>
-
         <Section title="Conclusiones">
           <Field
             label="Conclusiones"
