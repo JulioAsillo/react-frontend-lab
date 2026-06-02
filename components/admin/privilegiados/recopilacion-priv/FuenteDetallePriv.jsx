@@ -27,6 +27,17 @@ const API_BASE  = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const DATA_KEY  = (id) => `priv-data-${id}`;
 const PAGE_SIZE = 100;
 
+// Formatea ISO "YYYY-MM-DDTHH:MM:SS" → "DD/MM/YYYY HH:MM:SS" (o solo fecha si no hay hora)
+function fmtFechaHora(val) {
+  if (!val) return "";
+  const s = String(val).trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (!m) return s;
+  const [, yyyy, mm, dd, hh, mi, ss] = m;
+  if (hh !== undefined) return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss ?? "00"}`;
+  return `${dd}/${mm}/${yyyy}`;
+}
+
 function buildDefaultWidths(cols) {
   return Object.fromEntries(cols.map(col => [col, col.length > 20 ? 220 : 150]));
 }
@@ -553,7 +564,7 @@ export default function FuenteDetallePriv({ sourceId }) {
             <h2 className="page-title" style={{ margin: 0 }}>{src.icon} {src.label}</h2>
             {fechaCorte && (
               <span className="cutoff-pill-static">
-                📅 Corte: <strong>{fechaCorte.split("T")[0]}</strong>
+                📅 Corte: <strong>{fmtFechaHora(fechaCorte)}</strong>
               </span>
             )}
           </div>

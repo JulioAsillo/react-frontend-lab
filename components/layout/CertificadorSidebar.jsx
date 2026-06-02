@@ -64,7 +64,7 @@ function HallazgoNavItem({ item, pathname, router }) {
       <span className="nav-icon" style={{ fontSize: 12 }}>{item.icon}</span>
       <span className="nav-label" style={{ flex: 1 }}>{item.label}</span>
       {isLoading && (
-        <span className="spinner" style={{ width: 11, height: 11, flexShrink: 0, marginLeft: 4 }} title="Cargando…" />
+      < span className="spinner nav-spinner" title="Cargando…" />
       )}
     </button>
   );

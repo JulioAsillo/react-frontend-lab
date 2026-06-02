@@ -540,7 +540,18 @@ export default function FuenteDetalle({
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const pageRows   = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const formattedFechaCorte = fechaCorte ? fmtDate(fechaCorte) : null;
+  const formattedFechaCorte = useMemo(() => {
+    if (!fechaCorte) return null;
+    const d = new Date(fechaCorte);
+    if (!isNaN(d.getTime()) && String(fechaCorte).includes("T")) {
+      return d.toLocaleString("es-PE", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: false
+      }).replace(",", "");
+    }
+    return fmtDate(fechaCorte);
+  }, [fechaCorte]);
   const hasData = rows && (Array.isArray(rows) ? rows.length > 0 : Object.keys(rows).length > 0);
   const uploadCfg = isUploadSource(sourceId) ? getUploadConfig(sourceId) : null;
   const isMultiTab = rows && !Array.isArray(rows) && typeof rows === "object";

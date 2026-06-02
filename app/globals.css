@@ -1190,6 +1190,8 @@ th:hover .th-chevron { color: var(--accent); }
 .nav-spinner {
   width: 11px; height: 11px;
   flex-shrink: 0; margin-left: 4px;
+  border-color: var(--border); /* Borde gris base (se adapta claro/oscuro) */
+  border-top-color: var(--text3); /* Borde primario animado que contrastará correctamente */
 }
 
 /* Punto verde "fuente cargada" (estático, sin animación, en items de BD) */
