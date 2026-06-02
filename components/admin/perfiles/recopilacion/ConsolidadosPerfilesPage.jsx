@@ -36,14 +36,7 @@ const PAGE_SIZE = 20;
 let _XLSX = null;
 async function getXLSX() {
   if (_XLSX) return _XLSX;
-  if (typeof window !== "undefined" && window.XLSX) { _XLSX = window.XLSX; return _XLSX; }
-  await new Promise((res, rej) => {
-    const s = document.createElement("script");
-    s.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
-    s.onload = res; s.onerror = rej;
-    document.head.appendChild(s);
-  });
-  _XLSX = window.XLSX;
+  _XLSX = await import('xlsx');
   return _XLSX;
 }
 async function downloadTemplateXLSX(cols, filename) {
