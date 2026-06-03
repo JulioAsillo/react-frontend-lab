@@ -14,7 +14,7 @@ const HOJA_CFG = {
       "Usr SDP", "Usr SDP Ultimo Login", "PostCese SDP App",
       "DB SDP", "DB SDP Ultimo Login", "PostCese DB SDP",
       "DB SIT", "DB SIT Ultimo Login", "PostCese DB SIT",
-      "Usr NPAC", "Usr SIT",
+      "Usr SIT", "Usr NPAC",
       "Validación Cesado Activo", "Validación Post Cese", "Validación Final",
     ],
   },

@@ -104,10 +104,6 @@ function LoginForm() {
             ← Cambiar perfil
           </button>
         </div>
-
-        <div className="auth-hint">
-          <strong>Demo:</strong>&nbsp; admin/admin123 &nbsp;·&nbsp; certificador/cert123 &nbsp;·&nbsp; usuario/usu123
-        </div>
       </form>
     </div>
   );
