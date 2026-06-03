@@ -58,12 +58,27 @@ async function exportViewXLSX(rows, cols, filename) {
   XLSX.utils.book_append_sheet(wb, ws, "Vista");
   XLSX.writeFile(wb, `${filename}.xlsx`);
 }
+// Normaliza una cabecera de Excel a la clave canónica que espera el código:
+// minúsculas, sin acentos, espacios → "_". Así "Sustento", "Descripción",
+// "DB Role" o "Matrícula" mapean a sustento / descripcion / db_role / matricula.
+function normHeader(k) {
+  return String(k)
+    .trim()
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_");
+}
 async function parseXLSX(file) {
   const XLSX  = await getXLSX();
   const buf   = await file.arrayBuffer();
   const wb    = XLSX.read(buf, { type: "array" });
   const ws    = wb.Sheets[wb.SheetNames[0]];
-  return XLSX.utils.sheet_to_json(ws, { defval: "" });
+  const raw   = XLSX.utils.sheet_to_json(ws, { defval: "" });
+  return raw.map(row => {
+    const out = {};
+    for (const k of Object.keys(row)) out[normHeader(k)] = row[k];
+    return out;
+  });
 }
 
 // ── UI helpers ────────────────────────────────────────────────────────────────

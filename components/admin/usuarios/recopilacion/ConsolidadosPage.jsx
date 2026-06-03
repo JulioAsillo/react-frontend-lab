@@ -469,35 +469,31 @@ function PostCesesTab() {
 
   function showToast(msg) { setToast(msg); setTimeout(()=>setToast(''),2500); }
 
-  // Import fila por fila; el comentario se envía en el PUT posterior al POST
+  // Import fila por fila; el comentario viaja en el mismo POST (el backend lo acepta)
   async function handleImport(e) {
     const file = e.target.files?.[0]; if (!file) return; e.target.value='';
     const parsed = await importFile(file);
-    let ok = 0;
+    let ok = 0, fail = 0, conComentario = 0;
     for (const row of parsed) {
       const usuario = String(row.usuario??'').trim();
       if (!usuario) continue;
       const fechaNorm = normalizarFecha(row.fecha_login);
+      const comentario = row.comentario != null ? String(row.comentario).trim() : '';
       try {
         const res = await fetch(API_POSTCESES, {
           method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ usuario, app_or_db:row.app_or_db||'DB_SDP', fecha_login:fechaNorm }),
+          body: JSON.stringify({ usuario, app_or_db:row.app_or_db||'DB_SDP', fecha_login:fechaNorm, comentario }),
         });
-        if (!res.ok) continue;
-        // Si el Excel tiene comentario, enviarlo via PUT usando el id recién creado
-        const created = await res.json().catch(()=>null);
-        const newId = created?.__rowid ?? created?.id;
-        if (newId && row.comentario) {
-          await fetch(`${API_POSTCESES}/${newId}`, {
-            method:'PUT', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ usuario, app_or_db:row.app_or_db||'DB_SDP', fecha_login:fechaNorm, comentario:String(row.comentario) }),
-          }).catch(()=>{});
-        }
+        if (!res.ok) { fail++; continue; }
         ok++;
-      } catch {}
+        if (comentario) conComentario++;
+      } catch { fail++; }
     }
     await load();
-    showToast(`${ok} registro${ok!==1?'s':''} importados`);
+    const partes = [`${ok} registro${ok!==1?'s':''} importado${ok!==1?'s':''}`];
+    if (conComentario) partes.push(`${conComentario} con comentario`);
+    if (fail) partes.push(`${fail} con error`);
+    showToast(partes.join(' · '));
   }
 
   const filtered = rows.filter(r => {

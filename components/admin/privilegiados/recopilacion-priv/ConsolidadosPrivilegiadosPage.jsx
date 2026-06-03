@@ -34,12 +34,27 @@ async function downloadTemplateXLSX(cols, filename) {
   XLSX.utils.book_append_sheet(wb, ws, "Template");
   XLSX.writeFile(wb, `template_${filename}.xlsx`);
 }
+// Normaliza una cabecera de Excel a la clave canónica (minúsculas, sin acentos,
+// espacios → "_") para que "Server Name", "Sistema Operativo" o "Aplicaciones"
+// mapeen a server_name / sistema_operativo / aplicaciones al importar.
+function normHeader(k) {
+  return String(k)
+    .trim()
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_");
+}
 async function parseXLSX(file) {
   const XLSX = await getXLSX();
   const buf  = await file.arrayBuffer();
   const wb   = XLSX.read(buf, { type: "array" });
   const ws   = wb.Sheets[wb.SheetNames[0]];
-  return XLSX.utils.sheet_to_json(ws, { defval: "" });
+  const raw  = XLSX.utils.sheet_to_json(ws, { defval: "" });
+  return raw.map(row => {
+    const out = {};
+    for (const k of Object.keys(row)) out[normHeader(k)] = row[k];
+    return out;
+  });
 }
 async function exportXLSX(rows, cols, filename) {
   if (!rows.length) return;
@@ -69,34 +84,61 @@ function ConfirmModal({ title, message, onConfirm, onCancel }) {
   );
 }
 
-function EditableCell({ value, type = "text", onCommit, style = {} }) {
+// type: "text" | "textarea" | "select" | "tags"
+//  - "select": valor cerrado, requiere `options`. Commit inmediato al elegir.
+//  - "tags":   array de strings editado como texto separado por comas.
+function EditableCell({ value, type = "text", options = [], onCommit, style = {} }) {
+  const isTags = type === "tags";
+  const toDraft = (v) => isTags ? (Array.isArray(v) ? v.join(", ") : (v ?? "")) : (v ?? "");
   const [editing, setEditing] = useState(false);
-  const [draft,   setDraft]   = useState(value ?? "");
+  const [draft,   setDraft]   = useState(toDraft(value));
   const ref = useRef(null);
-  useEffect(() => { if (!editing) setDraft(value ?? ""); }, [value, editing]);
+  useEffect(() => { if (!editing) setDraft(toDraft(value)); }, [value, editing]);
   useEffect(() => { if (editing && ref.current) ref.current.focus(); }, [editing]);
-  function commit() {
+
+  function commitValue(next) {
     setEditing(false);
-    const v = typeof draft === "string" ? draft.trim() : draft;
+    if (isTags) {
+      const arr = String(next).split(",").map(s => s.trim()).filter(Boolean);
+      const cur = Array.isArray(value) ? value : (value ? [String(value)] : []);
+      if (arr.join("|") !== cur.join("|")) onCommit(arr);
+      return;
+    }
+    const v = typeof next === "string" ? next.trim() : next;
     if (v !== (value ?? "")) onCommit(v);
   }
+  function commit() { commitValue(draft); }
   function onKey(e) {
     if (e.key === "Enter" && type !== "textarea") { e.preventDefault(); commit(); }
-    if (e.key === "Escape") { setDraft(value ?? ""); setEditing(false); }
+    if (e.key === "Escape") { setDraft(toDraft(value)); setEditing(false); }
   }
   const base = {
     background: "var(--bg)", border: "1px solid var(--accent2)", color: "var(--text)",
     borderRadius: 5, padding: "3px 7px", fontSize: 12.5, fontFamily: "var(--sans)",
     outline: "none", width: "100%", boxSizing: "border-box", ...style,
   };
+
+  const displayText = isTags
+    ? (Array.isArray(value) && value.length ? value.join(", ") : "")
+    : (value ?? "");
+
   if (!editing) return (
-    <div onDoubleClick={() => { setDraft(value ?? ""); setEditing(true); }}
+    <div onDoubleClick={() => { setDraft(toDraft(value)); setEditing(true); }}
       title="Doble clic para editar"
       style={{ cursor: "default", minHeight: 24, display: "flex", alignItems: "center",
         gap: 6, userSelect: "none" }}>
-      <span style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--text2)" }}>{value || "—"}</span>
+      <span style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--text2)" }}>{displayText || "—"}</span>
       <span style={{ fontSize: 9, color: "var(--text4)", opacity: 0.6 }}>✏</span>
     </div>
+  );
+  if (type === "select") return (
+    <select ref={ref} value={draft}
+      onChange={e => commitValue(e.target.value)}
+      onBlur={() => setEditing(false)}
+      onKeyDown={e => { if (e.key === "Escape") { setDraft(toDraft(value)); setEditing(false); } }}
+      style={{ ...base, height: 30 }}>
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
   );
   if (type === "textarea") return (
     <textarea ref={ref} value={draft} onChange={e => setDraft(e.target.value)}
@@ -107,6 +149,7 @@ function EditableCell({ value, type = "text", onCommit, style = {} }) {
     <input ref={ref} type="text" value={draft}
       onChange={e => setDraft(e.target.value)}
       onBlur={commit} onKeyDown={onKey}
+      placeholder={isTags ? "Valores separados por comas" : undefined}
       style={{ ...base, height: 30 }} />
   );
 }
@@ -120,6 +163,40 @@ function CrudTab({ config }) {
     editMethod,  // "post" | "put"
     templateCols, exportFilename,
   } = config;
+
+  // Metadata opcional por columna. Si una col no aparece aquí → texto plano
+  // (comportamiento original; comentario/comentarios siguen siendo textarea).
+  const colMeta = config.colMeta || {};
+  function metaType(col) {
+    if (colMeta[col]?.type) return colMeta[col].type;          // "select" | "tags" | "text" | "textarea"
+    if (col === "comentario" || col === "comentarios") return "textarea";
+    return "text";
+  }
+  function metaOptions(col) { return colMeta[col]?.options || []; }
+
+  // Convierte un valor de UI al formato que espera el backend para esa columna.
+  function coerceForBody(col, val) {
+    const t = metaType(col);
+    if (t === "tags") {
+      if (Array.isArray(val)) return val.map(s => String(s).trim()).filter(Boolean);
+      return String(val ?? "").split(",").map(s => s.trim()).filter(Boolean);
+    }
+    if (t === "select") return String(val ?? "").trim().toLowerCase();
+    return String(val ?? "").trim();
+  }
+  function buildBody(src) {
+    return Object.fromEntries(cols.map(c => [c, coerceForBody(c, src[c])]));
+  }
+  // Representación string de una celda (para búsqueda, orden, filtros y export).
+  function cellStr(src, col) {
+    const v = src[col];
+    return Array.isArray(v) ? v.join(", ") : String(v ?? "");
+  }
+  function rowForExport(src) {
+    const o = {};
+    for (const c of cols) o[c] = cellStr(src, c);
+    return o;
+  }
 
   const [rows,      setRows]      = useState([]);
   const [loading,   setLoading]   = useState(true);
@@ -172,7 +249,7 @@ function CrudTab({ config }) {
     }
     setAdding(true); setAddError("");
     try {
-      const body = Object.fromEntries(cols.map(c => [c, String(newVals[c] ?? "").trim()]));
+      const body = buildBody(newVals);
       const res = await fetch(apiUrl, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -192,7 +269,7 @@ function CrudTab({ config }) {
     await idbSetItem(idbKey, updated);
     try {
       const row  = updated.find(r => r.id === id);
-      const body = Object.fromEntries(cols.map(c => [c, row[c] ?? ""]));
+      const body = buildBody(row);
       const url  = editMethod === "put" ? `${apiUrl}/${id}` : apiUrl;
       const method = editMethod === "put" ? "PUT" : "POST";
       const res = await fetch(url, {
@@ -226,8 +303,11 @@ function CrudTab({ config }) {
     try { parsed = await parseXLSX(file); } catch { showToast("❌ Error al leer el archivo"); return; }
     let ok = 0;
     for (const row of parsed) {
-      const body = Object.fromEntries(cols.map(c => [c, String(row[c] ?? "").trim()]));
-      const valid = requiredCols.every(c => body[c]);
+      const body  = buildBody(row);
+      const valid = requiredCols.every(c => {
+        const v = body[c];
+        return Array.isArray(v) ? v.length > 0 : String(v ?? "").length > 0;
+      });
       if (!valid) continue;
       try {
         const res = await fetch(apiUrl, {
@@ -244,16 +324,16 @@ function CrudTab({ config }) {
   const filtered = rows.filter(r => {
     if (search.trim()) {
       const q = search.toLowerCase();
-      if (!cols.some(c => String(r[c] ?? "").toLowerCase().includes(q))) return false;
+      if (!cols.some(c => cellStr(r, c).toLowerCase().includes(q))) return false;
     }
     for (const [col, active] of Object.entries(colFilters)) {
-      if (active.size > 0 && !active.has(String(r[col] ?? "—"))) return false;
+      if (active.size > 0 && !active.has(cellStr(r, col) || "—")) return false;
     }
     return true;
   });
   const sorted = [...filtered].sort((a, b) => {
     if (!sortCol) return 0;
-    const cmp = String(a[sortCol] ?? "").localeCompare(String(b[sortCol] ?? ""), "es", { numeric: true });
+    const cmp = cellStr(a, sortCol).localeCompare(cellStr(b, sortCol), "es", { numeric: true });
     return sortDir === "asc" ? cmp : -cmp;
   });
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
@@ -275,18 +355,29 @@ function CrudTab({ config }) {
         <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase",
           letterSpacing: "0.07em", fontFamily: "var(--mono)", marginBottom: 10 }}>Nuevo Registro</div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
-          {cols.map(col => (
-            <div key={col} style={{ display: "flex", flexDirection: "column", gap: 4, flex: col === "comentario" || col === "comentarios" ? 3 : 1, minWidth: 130 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text2)" }}>
-                {getLabel(col)} {requiredCols.includes(col) ? <span style={{ color: "var(--inc)" }}>*</span> : ""}
-              </label>
-              <input className="search-input" placeholder={col} style={{ width: "100%" }}
-                value={newVals[col] ?? ""}
-                onChange={e => setNewVals(v => ({ ...v, [col]: e.target.value }))}
-                onKeyDown={e => e.key === "Enter" && crear()}
-                placeholder={getLabel(col)} />
-            </div>
-          ))}
+          {cols.map(col => {
+            const t = metaType(col);
+            return (
+              <div key={col} style={{ display: "flex", flexDirection: "column", gap: 4, flex: col === "comentario" || col === "comentarios" || t === "tags" ? 3 : 1, minWidth: 130 }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "var(--text2)" }}>
+                  {getLabel(col)} {requiredCols.includes(col) ? <span style={{ color: "var(--inc)" }}>*</span> : ""}
+                </label>
+                {t === "select" ? (
+                  <select className="search-input" style={{ width: "100%" }}
+                    value={newVals[col] ?? ""}
+                    onChange={e => setNewVals(v => ({ ...v, [col]: e.target.value }))}>
+                    {metaOptions(col).map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                ) : (
+                  <input className="search-input" style={{ width: "100%" }}
+                    value={newVals[col] ?? ""}
+                    onChange={e => setNewVals(v => ({ ...v, [col]: e.target.value }))}
+                    onKeyDown={e => e.key === "Enter" && crear()}
+                    placeholder={t === "tags" ? "Separar por comas: Nginx, Docker…" : getLabel(col)} />
+                )}
+              </div>
+            );
+          })}
           <button className="btn-generate" onClick={crear} disabled={adding} style={{ minWidth: 110 }}>
             {adding
               ? <><span className="spinner" style={{ borderColor: "rgba(255,255,255,0.3)", borderTopColor: "#fff" }} /> Guardando</>
@@ -317,7 +408,7 @@ function CrudTab({ config }) {
             onClick={() => downloadTemplateXLSX(templateCols, exportFilename)}>↓ Template .xlsx</button>
           <button className="btn-export-small" onClick={() => fileRef.current?.click()}>↑ Importar</button>
           <button className="btn-export" disabled={!filtered.length}
-            onClick={() => exportXLSX(filtered, dataCols, exportFilename)}>Exportar</button>
+            onClick={() => exportXLSX(filtered.map(rowForExport), dataCols, exportFilename)}>Exportar</button>
         </div>
       </div>
 
@@ -351,7 +442,8 @@ function CrudTab({ config }) {
                     {dataCols.map((col, i) => (
                       <td key={col} style={{ textAlign: "left" }}>
                         <EditableCell value={row[col] ?? ""}
-                          type={col === "comentario" || col === "comentarios" ? "textarea" : "text"}
+                          type={metaType(col)}
+                          options={metaOptions(col)}
                           onCommit={v => patchCell(row.id, col, v)} />
                       </td>
                     ))}
@@ -425,6 +517,21 @@ const TAB_CONFIGS = {
     templateCols: ["servidor","aplicacion","cuenta","comentarios"],
     exportFilename: "consolidado-windows",
   },
+  servers: {
+    apiUrl: `${API_BASE}/privilegiados/servers`,
+    idbKey: "consolidado-priv-servers",
+    cols:         ["server_name","sistema_operativo","aplicaciones"],
+    displayCols:  ["server_name","sistema_operativo","aplicaciones"],
+    requiredCols: ["server_name","sistema_operativo"],
+    newDefaults:  { server_name: "", sistema_operativo: "linux", aplicaciones: "" },
+    editMethod:   "put",   // GET/PUT /privilegiados/servers/{server_id}
+    templateCols: ["server_name","sistema_operativo","aplicaciones"],
+    exportFilename: "consolidado-servers",
+    colMeta: {
+      sistema_operativo: { type: "select", options: ["linux","windows"] },
+      aplicaciones:      { type: "tags" },   // array ["Nginx","Docker",...]
+    },
+  },
 };
 
 const TABS = [
@@ -432,6 +539,7 @@ const TABS = [
   { key: "dba",           label: "DBA",                     icon: "🗄" },
   { key: "linux",         label: "Linux",                   icon: "🐧" },
   { key: "windows",       label: "Windows",                 icon: "🪟" },
+  { key: "servers",       label: "Servidores",              icon: "🖥" },
 ];
 
 const NOTAS = {
@@ -439,6 +547,7 @@ const NOTAS = {
   dba:     "Consolidado de roles DBA por base de datos. El backend detecta duplicados por (name_db, grantee, grantee_role) — editar re-envía como POST.",
   linux:   "Consolidado de cuentas con acceso a servidores Linux. Doble clic en cualquier celda para editar.",
   windows: "Consolidado de cuentas con acceso a servidores Windows. Doble clic en cualquier celda para editar.",
+  servers: "Inventario de servidores con su sistema operativo (Linux/Windows) y aplicaciones instaladas. Las aplicaciones se editan separadas por comas. Doble clic en cualquier celda para editar.",
 };
 
 function ConsolidadosPrivilegiadosInner() {
@@ -506,6 +615,7 @@ function ConsolidadosPrivilegiadosInner() {
         {activeTab === "dba"           && <CrudTab config={TAB_CONFIGS.dba} />}
         {activeTab === "linux"         && <CrudTab config={TAB_CONFIGS.linux} />}
         {activeTab === "windows"       && <CrudTab config={TAB_CONFIGS.windows} />}
+        {activeTab === "servers"       && <CrudTab config={TAB_CONFIGS.servers} />}
       </div>
     </div>
   );
