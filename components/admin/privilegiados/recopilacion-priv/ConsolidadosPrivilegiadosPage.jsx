@@ -66,6 +66,24 @@ async function exportXLSX(rows, cols, filename) {
 }
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
+// Convierte cualquier valor (string, array o array de objetos) a texto legible.
+// Si el backend devuelve aplicaciones como [{name:"Nginx"},...] o similar, lo
+// resuelve probando claves comunes; si no, cae a String().
+function valToText(v) {
+  if (v == null) return "";
+  if (Array.isArray(v)) return v.map(valToText).filter(Boolean).join(", ");
+  if (typeof v === "object")
+    return v.name ?? v.nombre ?? v.app ?? v.aplicacion ?? v.label ?? v.value
+        ?? Object.values(v).map(valToText).filter(Boolean).join(" ");
+  return String(v);
+}
+
+// Parte un valor de columna "tags" en sus elementos individuales (para filtro "contiene").
+function splitTags(v) {
+  if (Array.isArray(v)) return v.map(valToText).filter(Boolean);
+  return valToText(v).split(",").map(s => s.trim()).filter(Boolean);
+}
+
 function Toast({ msg }) { return <div className="save-toast">{msg}</div>; }
 
 function ConfirmModal({ title, message, onConfirm, onCancel }) {
@@ -87,9 +105,9 @@ function ConfirmModal({ title, message, onConfirm, onCancel }) {
 // type: "text" | "textarea" | "select" | "tags"
 //  - "select": valor cerrado, requiere `options`. Commit inmediato al elegir.
 //  - "tags":   array de strings editado como texto separado por comas.
-function EditableCell({ value, type = "text", options = [], onCommit, style = {} }) {
+function EditableCell({ value, type = "text", options = [], badgeMap = null, onCommit, style = {} }) {
   const isTags = type === "tags";
-  const toDraft = (v) => isTags ? (Array.isArray(v) ? v.join(", ") : (v ?? "")) : (v ?? "");
+  const toDraft = (v) => valToText(v);
   const [editing, setEditing] = useState(false);
   const [draft,   setDraft]   = useState(toDraft(value));
   const ref = useRef(null);
@@ -100,7 +118,7 @@ function EditableCell({ value, type = "text", options = [], onCommit, style = {}
     setEditing(false);
     if (isTags) {
       const arr = String(next).split(",").map(s => s.trim()).filter(Boolean);
-      const cur = Array.isArray(value) ? value : (value ? [String(value)] : []);
+      const cur = Array.isArray(value) ? value.map(valToText) : (value ? [valToText(value)] : []);
       if (arr.join("|") !== cur.join("|")) onCommit(arr);
       return;
     }
@@ -118,19 +136,28 @@ function EditableCell({ value, type = "text", options = [], onCommit, style = {}
     outline: "none", width: "100%", boxSizing: "border-box", ...style,
   };
 
-  const displayText = isTags
-    ? (Array.isArray(value) && value.length ? value.join(", ") : "")
-    : (value ?? "");
+  const displayText = valToText(value);
 
-  if (!editing) return (
-    <div onDoubleClick={() => { setDraft(toDraft(value)); setEditing(true); }}
-      title="Doble clic para editar"
-      style={{ cursor: "default", minHeight: 24, display: "flex", alignItems: "center",
-        gap: 6, userSelect: "none" }}>
-      <span style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--text2)" }}>{displayText || "—"}</span>
-      <span style={{ fontSize: 9, color: "var(--text4)", opacity: 0.6 }}>✏</span>
-    </div>
-  );
+  if (!editing) {
+    const badge = badgeMap && badgeMap[String(value).trim().toLowerCase()];
+    return (
+      <div onDoubleClick={() => { setDraft(toDraft(value)); setEditing(true); }}
+        title="Doble clic para editar"
+        style={{ cursor: "default", minHeight: 24, display: "flex", alignItems: "center",
+          gap: 6, userSelect: "none" }}>
+        {badge ? (
+          <span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+            fontFamily: "var(--sans)", background: badge.bg, color: badge.color,
+            border: `1px solid ${badge.border}` }}>
+            {badge.icon ? badge.icon + " " : ""}{displayText || "—"}
+          </span>
+        ) : (
+          <span style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--text2)" }}>{displayText || "—"}</span>
+        )}
+        <span style={{ fontSize: 9, color: "var(--text4)", opacity: 0.6 }}>✏</span>
+      </div>
+    );
+  }
   if (type === "select") return (
     <select ref={ref} value={draft}
       onChange={e => commitValue(e.target.value)}
@@ -189,8 +216,7 @@ function CrudTab({ config }) {
   }
   // Representación string de una celda (para búsqueda, orden, filtros y export).
   function cellStr(src, col) {
-    const v = src[col];
-    return Array.isArray(v) ? v.join(", ") : String(v ?? "");
+    return valToText(src[col]);
   }
   function rowForExport(src) {
     const o = {};
@@ -327,7 +353,14 @@ function CrudTab({ config }) {
       if (!cols.some(c => cellStr(r, c).toLowerCase().includes(q))) return false;
     }
     for (const [col, active] of Object.entries(colFilters)) {
-      if (active.size > 0 && !active.has(cellStr(r, col) || "—")) return false;
+      if (active.size === 0) continue;
+      if (metaType(col) === "tags") {
+        // Filtro "contiene": la fila pasa si incluye alguno de los valores activos.
+        const vals = splitTags(r[col]);
+        if (!vals.some(x => active.has(x))) return false;
+      } else if (!active.has(cellStr(r, col) || "—")) {
+        return false;
+      }
     }
     return true;
   });
@@ -430,6 +463,8 @@ function CrudTab({ config }) {
                       width={i === dataCols.length - 1 ? "40%" : "20%"}
                       openPanel={openPanel} setOpenPanel={setOpenPanel}
                       sortCol={sortCol} sortDir={sortDir} rows={rows}
+                      valueFormatter={valToText}
+                      splitValues={metaType(col) === "tags" ? splitTags : undefined}
                       getColFilterSet={getColFilterSet} setColFilterSet={setColFilterSet}
                       handleSort={handleSort} onResizeStart={e => e.preventDefault()} />
                   ))}
@@ -444,6 +479,7 @@ function CrudTab({ config }) {
                         <EditableCell value={row[col] ?? ""}
                           type={metaType(col)}
                           options={metaOptions(col)}
+                          badgeMap={colMeta[col]?.badges}
                           onCommit={v => patchCell(row.id, col, v)} />
                       </td>
                     ))}
@@ -528,7 +564,14 @@ const TAB_CONFIGS = {
     templateCols: ["server_name","sistema_operativo","aplicaciones"],
     exportFilename: "consolidado-servers",
     colMeta: {
-      sistema_operativo: { type: "select", options: ["linux","windows"] },
+      sistema_operativo: {
+        type: "select",
+        options: ["linux","windows"],
+        badges: {
+          linux:   { bg: "var(--ok-bg)",     color: "var(--ok-text)", border: "var(--ok-border)", icon: "🐧" },
+          windows: { bg: "var(--accent-bg)", color: "var(--accent)",  border: "var(--accent2)",   icon: "🪟" },
+        },
+      },
       aplicaciones:      { type: "tags" },   // array ["Nginx","Docker",...]
     },
   },

@@ -18,13 +18,18 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 
 // ── ColPanel — fixed position, NO cierra al seleccionar checkbox ───────────
-export function ColPanel({ col, rows, activeVals, sortCol, sortDir, onSort, onChange, onClose, anchorRef }) {
+export function ColPanel({ col, rows, activeVals, sortCol, sortDir, onSort, onChange, onClose, anchorRef, valueFormatter, splitValues }) {
   const [search, setSearch] = useState("");
   const panelRef = useRef(null);
   const [pos, setPos] = useState(null); // null hasta calcular
 
-  // Normaliza valores booleanos a "Activo"/"Inactivo" para mostrar en el filtro
+  // Normaliza valores booleanos a "Activo"/"Inactivo" para mostrar en el filtro.
+  // Si se pasa valueFormatter (ej. columnas con arrays/objetos), tiene prioridad.
   function normalizeVal(v) {
+    if (valueFormatter) {
+      const out = valueFormatter(v);
+      return out === "" || out == null ? "—" : out;
+    }
     if (v === true  || v === 1 || v === "1" || v === "True"  || v === "true"
         || v === "Si" || v === "si" || v === "Sí" || v === "sí"
         || v === "YES" || v === "yes" || v === "Y" || v === "y") return "Activo";
@@ -34,7 +39,14 @@ export function ColPanel({ col, rows, activeVals, sortCol, sortDir, onSort, onCh
     return String(v ?? "—");
   }
 
+  // splitValues (opcional): expande cada celda en sus valores individuales para
+  // un filtro tipo "contiene" (ej. una fila con [Exactus, SDP] aparece bajo ambas).
   const uniqueVals = useMemo(() => {
+    if (splitValues) {
+      const s = new Set();
+      rows.forEach(r => { for (const x of splitValues(r[col])) if (x) s.add(x); });
+      return [...s].sort((a, b) => String(a).localeCompare(String(b), "es"));
+    }
     const s = new Set(rows.map(r => normalizeVal(r[col])));
     return [...s].sort();
   }, [rows, col]);
@@ -141,7 +153,7 @@ export function ColPanel({ col, rows, activeVals, sortCol, sortDir, onSort, onCh
 // ── ThCell — header con sort + filtro + resize ─────────────────────────────
 export function ThCell({ col, isSpecial, hasFilter, width, openPanel, setOpenPanel,
   sortCol, sortDir, rows, getColFilterSet, setColFilterSet, handleSort, onResizeStart,
-  label }) {
+  label, valueFormatter, splitValues }) {
   const thRef = useRef(null);
   return (
     <th ref={thRef}
@@ -175,7 +187,8 @@ export function ThCell({ col, isSpecial, hasFilter, width, openPanel, setOpenPan
               activeVals={getColFilterSet(col)} sortCol={sortCol} sortDir={sortDir}
               onSort={dir => handleSort(col, dir)}
               onChange={set => setColFilterSet(col, set)}
-              onClose={() => setOpenPanel(null)} anchorRef={thRef} />
+              onClose={() => setOpenPanel(null)} anchorRef={thRef}
+              valueFormatter={valueFormatter} splitValues={splitValues} />
           )}
         </div>
       )}
