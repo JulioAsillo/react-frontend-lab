@@ -28,6 +28,13 @@ function roleLabel(by) {
     : by === 'usuario' ? 'Usuario' : '—';
 }
 // Normaliza el valor guardado. Compat con el formato viejo ({ id: ISOstring }).
+function fmtFechaCorte(fc) {
+  if (!fc) return null;
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(fc) ? new Date(fc + "T00:00:00") : new Date(fc);
+  if (isNaN(d.getTime())) return fc;
+  return d.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 function savedInfo(v) {
   if (!v) return null;
   if (typeof v === 'string') return { at: v, by: null };
@@ -113,6 +120,7 @@ function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
   const status    = useBDStatus(src.id);
   const rowCount  = useBDCount(src.id);
   const errorMsg  = useBDError(src.id);
+  const fechaCorte = useUIStore(s => s.bdFechaCorte[src.id]);
   const isLoading = status === 'loading';
   const isOk      = status === 'ok';
   const isUpload  = isUploadSource(src.id);
@@ -146,6 +154,14 @@ function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
         </div>
       </div>
 
+      {fechaCorte && (
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, alignSelf: "flex-start",
+          margin: "2px 0 4px", padding: "3px 10px", borderRadius: 999,
+          background: "var(--accent-bg)", border: "1px solid var(--accent2)",
+          color: "var(--accent)", fontSize: 11.5, fontWeight: 600 }}>
+          📅 Fecha de corte: {fmtFechaCorte(fechaCorte)}
+        </div>
+      )}
       {needsUpload && (
         <div className="bd-card-upload-hint">
           📋 Aún no hay información cargada. Entra para subir {src.id === 'gdh' ? 'los archivos (Activos y Cesados)' : 'el archivo'} .xlsx/.xls e indicar la fecha de corte.

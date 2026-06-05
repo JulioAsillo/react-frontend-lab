@@ -237,6 +237,13 @@ export default function FuenteDetalle({
 }) {
   const router   = useRouter();
   const src      = sources.find(s => s.id === sourceId);
+  // Este FuenteDetalle lo comparten Usuarios y Perfiles; el módulo se infiere de
+  // la ruta para resolver el endpoint de extracción correcto por sourceId.
+  const moduloExtrac = routeBase.includes("/perfiles/")
+    ? "perfiles"
+    : routeBase.includes("/privilegiados/")
+      ? "privilegiados"
+      : "usuarios";
   const resizeRef = useRef(null);
   const { user } = useAuthStore();
   const isCertificador = user?.role === "certificador";
@@ -621,7 +628,7 @@ export default function FuenteDetalle({
           </div>
         </div>
         <div className="topbar-right" style={{ gap: 8 }}>
-          <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("usuarios", sourceId)} reloadFn={handleCargar} />
+          <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint(moduloExtrac, sourceId)} reloadFn={handleCargar} />
           {status === "ok" && (
             <>
               {/*
