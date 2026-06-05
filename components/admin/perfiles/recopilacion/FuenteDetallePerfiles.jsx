@@ -18,6 +18,8 @@ import { idbGetItem, idbSetItem, idbDelItem } from "@/lib/storage";
 import { exportSheetPlano } from "@/lib/utils/excel";
 import { makeRows } from "@/lib/mock/mockData";
 import { useAuthStore } from "@/lib/store/authStore";
+import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
+import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
 import FuenteUploadPanel from "@/components/admin/shared/FuenteUploadPanel";
 import { isUploadSource, getUploadConfig } from "@/lib/constants/uploadSources";
 
@@ -205,6 +207,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
           </h2>
         </div>
         <div className="topbar-right" style={{ gap: 8 }}>
+          <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("perfiles", sourceId)} reloadFn={handleCargar} />
           {status === "ok" && (
             <>
               {!isCertificador && (

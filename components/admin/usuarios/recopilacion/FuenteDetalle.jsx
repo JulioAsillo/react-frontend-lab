@@ -26,6 +26,8 @@ import { BD_SOURCES } from "@/lib/mock/bdSources";
 import { PERFILES_BD_SOURCES } from "@/lib/mock/perfilesBDSources";
 import { useBDStatus, useBDError, useUIStore, useBDFechasCorte } from "@/lib/store/uiStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
+import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
 import { idbGetItem, idbSetItem, idbDelItem } from "@/lib/storage";
 import { exportSheetPlano } from "@/lib/utils/excel";
 import { ThCell } from "@/components/shared/DataTableHeader";
@@ -619,6 +621,7 @@ export default function FuenteDetalle({
           </div>
         </div>
         <div className="topbar-right" style={{ gap: 8 }}>
+          <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("usuarios", sourceId)} reloadFn={handleCargar} />
           {status === "ok" && (
             <>
               {/*

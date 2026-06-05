@@ -382,8 +382,6 @@ export default function GenerarInformePrivilegiadosPanel() {
     });
   }, [bdFechas]);
 
-  if (user && user.role === 'certificador') return <AccesoRestringido />;
-
   function handleChange(e) {
     const { name, value } = e.target;
     if (CAMPOS_AUTO_PRIVILEGIADOS.has(name)) return; // ignorar cambios a campos auto

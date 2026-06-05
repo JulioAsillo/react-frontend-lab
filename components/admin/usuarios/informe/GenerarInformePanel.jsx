@@ -702,7 +702,6 @@ export default function GenerarInformePanel() {
   // Esto hace que las fechas de corte aparezcan en el formulario en tiempo real
   // sin que el usuario tenga que hacer nada.
   useEffect(() => {
-    if (user?.role === 'certificador') return;
     recalcularRef.current?.();
   }, [bdFechas]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -712,8 +711,6 @@ export default function GenerarInformePanel() {
   // El retry de 800 ms cubre el caso donde IDB aún no está escrito cuando
   // el panel monta (las BDs estaban cargando en paralelo en background).
   useEffect(() => {
-    if (user?.role === 'certificador') return;
-
     recalcularRef.current?.();
 
     // Retry corto: cubre la race condition con bd-cargadas previo al mount
@@ -730,10 +727,6 @@ export default function GenerarInformePanel() {
       window.removeEventListener('bd-cargadas', onBDCargadas);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (user && user.role === 'certificador') {
-    return <AccesoRestringido />;
-  }
 
   // ── form = manual + auto (lo que se envía a la API) ───────────────────
   const form = { ...manual, ...auto };

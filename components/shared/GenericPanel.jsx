@@ -150,8 +150,6 @@ export default function GenericPanel({
   // localLoading: se activa en el mismo tick del clic para feedback visual inmediato
   // (isMutating de SWR puede tardar un frame en actualizarse)
   const [localLoading, setLocalLoading] = useState(false);
-  // Botón "Guardar validaciones" para el Certificador
-  const [savedCert, setSavedCert] = useState(false);
 
   const { user } = useAuthStore();
   const isCertificador = user?.role === "certificador";
@@ -293,13 +291,6 @@ export default function GenericPanel({
                     : "Generar reporte"}
                 </button>
               )}
-              <button
-                className="btn-generate"
-                onClick={() => { setSavedCert(true); setTimeout(() => setSavedCert(false), 2200); }}
-                style={savedCert ? { background: 'var(--ok)', borderColor: 'var(--ok)' } : {}}
-              >
-                {savedCert ? '✓ Validaciones guardadas' : '💾 Guardar validaciones'}
-              </button>
             </>
           ) : (
             <button className="btn-generate" onClick={handleGenerarClick} disabled={isMutating || localLoading}>

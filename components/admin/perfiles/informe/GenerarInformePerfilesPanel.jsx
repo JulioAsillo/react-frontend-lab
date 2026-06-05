@@ -298,15 +298,12 @@ export default function GenerarInformePerfilesPanel() {
 
   // Recalcular campos automáticos cuando bdFechas cambia (una BD terminó de cargar)
   useEffect(() => {
-    if (user?.role === 'certificador') return;
     calcularCamposAutomaticosPerfiles(bdFechas).then(campos => {
       setAuto(campos);
       // Mostrar el informe ya previsualizado al entrar a la vista.
       setPreviewPayload(prev => prev ?? { ...manualRef.current, ...campos });
     });
   }, [bdFechas, user]);
-
-  if (user && user.role === 'certificador') return <AccesoRestringido />;
 
   // form = manual sobreescrito con fechas auto
   const form = { ...manual, ...auto };

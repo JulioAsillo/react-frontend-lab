@@ -1,10 +1,12 @@
 'use client';
 
 /**
- * BDDashboardPerfiles — v23.1
- * Vista de resumen de las 10 fuentes BD del módulo Perfiles.
- * Espeja BDDashboard de Usuarios, usando PERFILES_BD_SOURCES y
- * dataKeyPrefix="prf-bd-data".
+ * BDDashboardPerfiles — Perfiles.
+ *
+ * Paridad admin/certificador: AMBOS roles tienen los mismos botones. El botón
+ * "Guardar" marca la conformidad de la fuente y la persiste EN MEMORIA
+ * (localStorage), registrando QUIÉN la marcó (admin o certificador) y la fecha.
+ * Espeja BDDashboard de Usuarios con PERFILES_BD_SOURCES y prefijo "prf-bd-data".
  */
 
 import { useEffect, useState } from 'react';
@@ -18,10 +20,20 @@ import { lsGet, lsSet } from '@/lib/storage';
 const SAVEDKEY = 'itsecops-prf-bd-saved';
 const DATA_KEY_PREFIX = 'prf-bd-data';
 
+function roleLabel(by) {
+  return by === 'admin' ? 'Administrador'
+    : by === 'certificador' ? 'Certificador'
+    : by === 'usuario' ? 'Usuario' : '—';
+}
+function savedInfo(v) {
+  if (!v) return null;
+  if (typeof v === 'string') return { at: v, by: null };
+  return v;
+}
+
 export default function BDDashboardPerfiles() {
   const router   = useRouter();
   const { user } = useAuthStore();
-  const isCertificador = user?.role === 'certificador';
 
   const hydrate      = useUIStore(s => s.hydrateBDStatus);
   const cargarTodas  = useUIStore(s => s.cargarTodas);
@@ -45,15 +57,15 @@ export default function BDDashboardPerfiles() {
   }
 
   function handleGuardar(id) {
-    const next = { ...saved, [id]: new Date().toISOString() };
+    const next = {
+      ...saved,
+      [id]: { at: new Date().toISOString(), by: user?.role ?? null, name: user?.name ?? null },
+    };
     setSaved(next);
     lsSet(SAVEDKEY, next);
   }
 
   const savedCount = hydrated ? Object.keys(saved).length : null;
-  const okCount    = useUIStore(s =>
-    PERFILES_BD_SOURCES.filter(src => s.bdStatus[src.id] === 'ok').length
-  );
 
   return (
     <div className="panel">
@@ -63,29 +75,13 @@ export default function BDDashboardPerfiles() {
           <h2 className="page-title">Recopilación de Base de Datos — Perfiles</h2>
         </div>
         <div className="topbar-right">
-          {isCertificador ? (
-            <span className="row-count">
-              <span className="row-count-num">{okCount}</span>
-              {' '}de {PERFILES_BD_SOURCES.length} disponibles
-            </span>
-          ) : (
-            <>
-              <span className="row-count" style={{ marginRight: 8 }}>
-                <span className="row-count-num">{savedCount ?? '—'}</span>
-                {' '}de {PERFILES_BD_SOURCES.length} guardadas
-              </span>
-              <button
-                className="btn-generate"
-                onClick={handleCargarTodos}
-                disabled={anyLoading}
-              >
-                {anyLoading
-                  ? <><span className="spinner" />Cargando…</>
-                  : 'Cargar a Todos'
-                }
-              </button>
-            </>
-          )}
+          <span className="row-count" style={{ marginRight: 8 }}>
+            <span className="row-count-num">{savedCount ?? '—'}</span>
+            {' '}de {PERFILES_BD_SOURCES.length} conformes
+          </span>
+          <button className="btn-generate" onClick={handleCargarTodos} disabled={anyLoading}>
+            {anyLoading ? <><span className="spinner" />Cargando…</> : 'Cargar a Todos'}
+          </button>
         </div>
       </div>
 
@@ -97,8 +93,7 @@ export default function BDDashboardPerfiles() {
             <BDSourceCard
               key={src.id}
               src={src}
-              savedAt={saved[src.id]}
-              isCertificador={isCertificador}
+              saved={savedInfo(saved[src.id])}
               onValidar={() => router.push(`/admin/perfiles/recopilacion/base-datos/${src.id}`)}
               onCargar={() => cargarFuente(src, DATA_KEY_PREFIX)}
               onGuardar={() => handleGuardar(src.id)}
@@ -110,14 +105,14 @@ export default function BDDashboardPerfiles() {
   );
 }
 
-function BDSourceCard({ src, savedAt, onCargar, onValidar, onGuardar, isCertificador }) {
-  const status   = useBDStatus(src.id);
-  const rowCount = useBDCount(src.id);
-  const errorMsg = useBDError(src.id);
+function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
+  const status    = useBDStatus(src.id);
+  const rowCount  = useBDCount(src.id);
+  const errorMsg  = useBDError(src.id);
   const isLoading = status === 'loading';
   const isOk      = status === 'ok';
   const isUpload  = isUploadSource(src.id);
-  const needsUpload = isUpload && !isCertificador && !!errorMsg && !isOk;
+  const needsUpload = isUpload && !!errorMsg && !isOk;
 
   return (
     <div className={`bd-card${isOk ? ' bd-card-ok' : ''}${needsUpload ? ' bd-card-needs-upload' : ''}`}>
@@ -153,7 +148,7 @@ function BDSourceCard({ src, savedAt, onCargar, onValidar, onGuardar, isCertific
         </div>
       )}
 
-      {errorMsg && !needsUpload && !isCertificador && (
+      {errorMsg && !needsUpload && (
         <div style={{
           margin: '6px 0 2px', padding: '6px 10px', fontSize: 11,
           background: 'var(--inc-bg)', border: '1px solid var(--inc-border)',
@@ -163,23 +158,15 @@ function BDSourceCard({ src, savedAt, onCargar, onValidar, onGuardar, isCertific
         </div>
       )}
 
-      {savedAt && !isCertificador && (
+      {saved && (
         <div className="bd-card-saved">
-          Guardado {new Date(savedAt).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' })}
+          ✓ Conforme{saved.by ? ` por ${roleLabel(saved.by)}` : ''}
+          {saved.at ? ` · ${new Date(saved.at).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' })}` : ''}
         </div>
       )}
 
       <div className="bd-card-actions">
-        {isCertificador ? (
-          <button
-            className="btn-export-small"
-            onClick={onValidar}
-            disabled={!isOk}
-            style={{ flex: 1 }}
-          >
-            ✓ Validar
-          </button>
-        ) : needsUpload ? (
+        {needsUpload ? (
           <>
             <button className="btn-export-small" onClick={onCargar} disabled={isLoading}>
               Reintentar
@@ -200,9 +187,9 @@ function BDSourceCard({ src, savedAt, onCargar, onValidar, onGuardar, isCertific
               className="btn-export-small"
               onClick={onGuardar}
               disabled={!isOk}
-              style={savedAt ? { background: 'var(--ok-bg)', color: 'var(--ok-text)', borderColor: 'var(--ok-border)' } : {}}
+              style={saved ? { background: 'var(--ok-bg)', color: 'var(--ok-text)', borderColor: 'var(--ok-border)' } : {}}
             >
-              {savedAt ? 'Guardado ✓' : 'Guardar'}
+              {saved ? 'Conforme ✓' : 'Guardar'}
             </button>
           </>
         )}

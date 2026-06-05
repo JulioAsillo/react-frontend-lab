@@ -142,6 +142,8 @@ function AdminSidebarInner() {
   const isLanding = pathname === '/admin';
   const activeTab = searchParams.get('tab') ?? 'clasificacion';
   const inGestion = pathname.startsWith('/admin/gestion-usuarios');
+  // El certificador comparte TODA la navegación del admin salvo "Gestión de Usuarios".
+  const isCertificador = user?.role === 'certificador';
 
   // Módulo activo: el primero cuya base coincida con la ruta actual.
   const activeModule = ADMIN_MODULES.find((m) => pathname.startsWith(m.base));
@@ -152,7 +154,7 @@ function AdminSidebarInner() {
         <div className="brand-logo" onClick={() => router.push('/admin')} style={{ cursor: 'pointer' }}>ISO</div>
         <div className="brand-title" onClick={() => router.push('/admin')} style={{ cursor: 'pointer' }}>
           <div className="brand-name">ITSECOPS</div>
-          <div className="brand-subtitle">Admin</div>
+          <div className="brand-subtitle">{isCertificador ? 'Certificador' : 'Admin'}</div>
         </div>
         <button className="sidebar-toggle" onClick={toggleSidebar} title="Ocultar menú" aria-label="Ocultar menú">‹</button>
       </div>
@@ -176,15 +178,19 @@ function AdminSidebarInner() {
             );
           })}
 
-          {/* Administración */}
-          <div className="sidebar-section-label sidebar-section-gap">Administración</div>
-          <button
-            className={`nav-item ${inGestion ? 'nav-active' : ''}`}
-            onClick={() => router.push('/admin/gestion-usuarios')}
-          >
-            <span className="nav-icon">⚙️</span>
-            <span className="nav-label">Gestión de Usuarios</span>
-          </button>
+          {/* Administración — solo admin (el certificador no ve Gestión de Usuarios) */}
+          {!isCertificador && (
+            <>
+              <div className="sidebar-section-label sidebar-section-gap">Administración</div>
+              <button
+                className={`nav-item ${inGestion ? 'nav-active' : ''}`}
+                onClick={() => router.push('/admin/gestion-usuarios')}
+              >
+                <span className="nav-icon">⚙️</span>
+                <span className="nav-label">Gestión de Usuarios</span>
+              </button>
+            </>
+          )}
 
           {/* Sub-nav del módulo activo (un solo render data-driven) */}
           {activeModule && (

@@ -22,6 +22,8 @@ import { exportSheetPlano } from "@/lib/utils/excel";
 import { ThCell } from "@/components/shared/DataTableHeader";
 import { getLabel } from "@/lib/utils/fieldLabels";
 import { useAuthStore } from "@/lib/store/authStore";
+import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
+import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
 
 const API_BASE  = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const DATA_KEY  = (id) => `priv-data-${id}`;
@@ -570,6 +572,7 @@ export default function FuenteDetallePriv({ sourceId }) {
           </div>
         </div>
         <div className="topbar-right">
+          <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("privilegiados", sourceId)} reloadFn={handleRecargar} />
           {!hasData && !isLoading && (
             <button className="btn-generate" onClick={handleCargar}>
               {isCertificador ? "Cargar para validar" : "Cargar información"}
