@@ -11,18 +11,24 @@ import ConfirmModal from "@/components/shared/ConfirmModal";
  *   - Solo rol ADMIN (el certificador y otros roles nunca lo ven).
  *   - Solo en fuentes NO manuales (esManual = false).
  *
- * Acción (al confirmar el modal):
- *   PASO 1 → POST al endpoint de extracción (botEndpoint) y esperar respuesta.
- *   PASO 2 → solo si la respuesta trae status === "SUCCESS", vuelve a consultar
- *            la fuente (reloadFn = la misma recarga que el botón "Recargar").
+ * Acción (al confirmar el modal), con FASES REALES mostradas en el botón:
+ *   1) "Ejecutando bot…"     → POST al endpoint de extracción y espera respuesta.
+ *   2) "Trayendo datos…"     → respuesta SUCCESS; se vuelve a consultar la fuente.
+ *   3) "Actualizando vista…" → se aplican los datos recargados.
  *   Si no es SUCCESS o falla, NO recarga y avisa con un toast.
  *
  * Si la fuente no tiene endpoint asignado (extracción PENDIENTE), el botón se
  * muestra deshabilitado con un tooltip explicativo.
  */
+const FASE_LABEL = {
+  bot:   "Ejecutando bot…",
+  datos: "Trayendo datos…",
+  vista: "Actualizando vista…",
+};
+
 export default function ExtraerInfoButton({ botEndpoint, reloadFn, esManual = false, disabled = false, style = {} }) {
   const { user } = useAuthStore();
-  const [busy, setBusy] = useState(false);
+  const [fase, setFase]   = useState(null); // null | 'bot' | 'datos' | 'vista'
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState(null); // { tipo: 'ok' | 'error', msg }
 
@@ -30,18 +36,19 @@ export default function ExtraerInfoButton({ botEndpoint, reloadFn, esManual = fa
   if (esManual) return null;
 
   const pendiente = !botEndpoint;
+  const busy = fase !== null;
 
   function flash(tipo, msg) {
     setToast({ tipo, msg });
     setTimeout(() => setToast(null), 3800);
   }
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   async function handleExtraer() {
     setShowConfirm(false);
-    setBusy(true);
+    setFase("bot"); // Fase 1 — el bot ejecuta el script/consulta
     try {
       const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      // PASO 1 — activar el bot (POST) y esperar la respuesta
       const res  = await fetch(`${base}${botEndpoint}`, { method: "POST" });
       const data = await res.json().catch(() => null);
 
@@ -50,11 +57,17 @@ export default function ExtraerInfoButton({ botEndpoint, reloadFn, esManual = fa
         return;
       }
 
-      // PASO 2 — SUCCESS: volver a consultar la fuente (igual que "Recargar")
+      // Fase 2 — SUCCESS: volver a consultar la fuente (igual que "Recargar")
+      setFase("datos");
       const totReg = Array.isArray(data.ejecutados)
         ? data.ejecutados.reduce((a, e) => a + (Number(e.registros) || 0), 0)
         : null;
       await reloadFn?.();
+
+      // Fase 3 — aplicar/actualizar la vista (breve, para que se alcance a leer)
+      setFase("vista");
+      await sleep(350);
+
       flash("ok", totReg != null
         ? `Extracción completada: ${totReg.toLocaleString("es-PE")} registros.`
         : "Extracción completada.");
@@ -62,7 +75,7 @@ export default function ExtraerInfoButton({ botEndpoint, reloadFn, esManual = fa
       console.error("[Extraer Información] error:", e);
       flash("error", "Error de conexión al ejecutar la extracción.");
     } finally {
-      setBusy(false);
+      setFase(null);
     }
   }
 
@@ -75,10 +88,13 @@ export default function ExtraerInfoButton({ botEndpoint, reloadFn, esManual = fa
         title={pendiente
           ? "Extracción aún no habilitada para esta fuente"
           : "Activar el bot y extraer la información actualizada"}
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, ...style }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, minWidth: busy ? 188 : undefined, ...style }}
       >
-        <span style={{ fontSize: 15, lineHeight: 1 }} aria-hidden>🤖</span>
-        {busy ? "Extrayendo…" : "Extraer Información"}
+        {busy ? (
+          <><span className="spinner" />{FASE_LABEL[fase]}</>
+        ) : (
+          <><span style={{ fontSize: 15, lineHeight: 1 }} aria-hidden>🤖</span>Extraer Información</>
+        )}
       </button>
 
       {showConfirm && (

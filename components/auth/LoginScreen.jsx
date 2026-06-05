@@ -26,7 +26,7 @@ function LoginForm() {
   const roleLabel  = isAdmin ? "Administrador" : isUsuario ? "Usuario Visualizador" : "Usuario Certificador";
   const roleIcon   = isAdmin ? "🔑" : isUsuario ? "📊" : "👤";
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       setError("Por favor completa todos los campos.");
@@ -34,13 +34,16 @@ function LoginForm() {
     }
     setLoading(true);
     setError(null);
-    setTimeout(() => {
-      const ok = login(username.trim(), password);
+    try {
+      const ok = await login(username.trim(), password);
       if (!ok) {
         setError("Usuario o contraseña incorrectos.");
         setLoading(false);
       }
-    }, 350);
+    } catch {
+      setError("Ocurrió un error al iniciar sesión.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -103,6 +106,10 @@ function LoginForm() {
             }}>
             ← Cambiar perfil
           </button>
+        </div>
+
+        <div className="auth-hint">
+          <strong>Demo:</strong>&nbsp; admin/admin123 &nbsp;·&nbsp; certificador/cert123 &nbsp;·&nbsp; usuario/usu123
         </div>
       </form>
     </div>
