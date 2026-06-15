@@ -933,10 +933,6 @@ export default function GenerarInformePanel() {
                 onChange={handleChange}
                 placeholder="ABR26" />
             )}
-            <Field label="Asunto escalamiento Riesgos" name="asunto_escalamiento"
-              value={form.asunto_escalamiento} onChange={handleChange}
-              placeholder="FEB26 [RIESGOS] PRIMA - ..."
-              tip="Texto que irá como asunto en el correo de escalamiento a Riesgos. Ejemplo: 'ABR26 [RIESGOS] PRIMA - Hallazgos de Certificación'" />
           </div>
         </Section>
 
@@ -1055,6 +1051,13 @@ export default function GenerarInformePanel() {
             <Field label="Sin uso +90d" name="entra_com_sin_uso_90"   value={form.entra_com_sin_uso_90}   onChange={handleChange} textarea tip="Usuarios de Entra ID sin inicio de sesión en 90 días. Indicar si se solicita deshabilitar o justificar." />
             <Field label="Sin sustento" name="entra_com_sin_sustento" value={form.entra_com_sin_sustento} onChange={handleChange} textarea tip="Usuarios de Entra ID sin justificación de negocio en el sistema. Indicar el sustento esperado o acción." />
           </div>
+        </Section>
+        
+        <Section title="Asunto de Escalamiento a Riesgos">
+          <Field label="Asunto escalamiento Riesgos" name="asunto_escalamiento"
+              value={form.asunto_escalamiento} onChange={handleChange}
+              placeholder="FEB26 [RIESGOS] PRIMA - ..."
+              tip="Texto que irá como asunto en el correo de escalamiento a Riesgos. Ejemplo: 'ABR26 [RIESGOS] PRIMA - Hallazgos de Certificación'" />
         </Section>
 
         <Section title="Conclusiones">
