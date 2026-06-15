@@ -428,7 +428,8 @@ const INITIAL_MANUAL = {
   entra_com_cesados: '', entra_com_sin_sustento: '',
   entra_com_sin_uso_90: '', entra_com_poscese: '',
   // Conclusiones (campo único con saltos de línea)
-  conclusiones: 'Las unidades operativas son responsables de la remediación, deben ejecutar acciones asegurando la operativa del negocio.\nLa unidad de Riesgos es responsable de la identificación de algún riesgo o posibles fraudes asociados a los accesos observados.',
+  conclusiones: '',
+  areas_trabajo: '',
 };
 
 // ── Generador docx ────────────────────────────────────────────────────────
@@ -1053,6 +1054,19 @@ export default function GenerarInformePanel() {
           </div>
         </Section>
         
+        <Section title="Unidad de Negocio">
+          <Field
+            label="Unidad de Negocio"
+            name="areas_trabajo"
+            value={form.areas_trabajo}
+            onChange={handleChange}
+            textarea
+            rows={6}
+            placeholder={"Jefe directo (Hugo Reynaldo Sanchez | Ana Lucia Bacigalupo | Ofelia Mariela Novoa)"}
+            tip="Colocar los nombres de los jefes directos"
+          />
+        </Section>
+
         <Section title="Asunto de Escalamiento a Riesgos">
           <Field label="Asunto escalamiento Riesgos" name="asunto_escalamiento"
               value={form.asunto_escalamiento} onChange={handleChange}
