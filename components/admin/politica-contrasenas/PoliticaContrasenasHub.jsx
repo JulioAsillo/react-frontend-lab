@@ -9,8 +9,7 @@ const ITEMS = [
     label: "Informe de Certificación",
     sub: "Carga de imágenes y generación del informe de política de contraseñas",
     route: "/admin/politica-contrasenas/informe",
-    available: false,
-    badge: "En desarrollo",
+    available: true,
   },
 ];
 
@@ -168,8 +167,7 @@ export default function PoliticaContrasenasHub() {
         }}
       >
         📌 El Informe de Certificación de este módulo se generará a partir de
-        imágenes capturadas desde una carpeta interna. La funcionalidad estará
-        disponible próximamente.
+        imágenes capturadas desde una carpeta interna.
       </div>
     </div>
   );
