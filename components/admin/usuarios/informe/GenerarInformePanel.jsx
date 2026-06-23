@@ -351,6 +351,7 @@ function buildExcelBuffer(rawData, persistKey, form) {
           const validacion = resolveValidacion(row, sc, valStore, rowId);
           const comentario = valStore[rowId]?.comentario ?? '';
           out['Validación'] = validacion;
+          out['Acción Correctiva'] = accionCorrectiva;
           out['Comentario'] = comentario;
           out.__resolvedVal = validacion; // temporal para filtrar
           return out;
@@ -367,7 +368,7 @@ function buildExcelBuffer(rawData, persistKey, form) {
       // Si tras el filtro no quedan hallazgos, no crear la hoja
       if (exportRows.length === 0) continue;
 
-      const allCols = [...colsOrdered, 'Validación', 'Comentario'];
+      const allCols = [...colsOrdered, 'Validación', 'Acción Correctiva', 'Comentario'];
       const processed = toExcelRows(exportRows, allCols);
       const ws = XLSX.utils.json_to_sheet(processed);
       applyDateFmt(ws, allCols);
