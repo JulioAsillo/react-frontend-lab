@@ -167,11 +167,10 @@ export default function DataTableRow({
         onClick={(e) => e.stopPropagation()}
       >
         <select
-          className={`val-select ${currentAccion ? "accion-select-set" : ""}`}
-          value={currentAccion ?? ""}
+          className={`val-select ${currentAccion && currentAccion !== "Ninguna" ? "accion-select-set" : ""}`}
+          value={currentAccion || "Ninguna"}
           onChange={(e) => setAccion && setAccion(row, e.target.value || null)}
         >
-          <option value="">— Seleccionar —</option>
           {accionOpts.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
