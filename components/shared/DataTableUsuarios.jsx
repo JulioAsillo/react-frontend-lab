@@ -142,9 +142,11 @@ export function exportAllUsuarios(sheets, persistKey, reportLabel) {
           else if (badgeVal === "incorrecto") fallback = "Incorrecto";
           else if (badgeVal === "sustentado") fallback = "Sustentado";
           out[`Validación (${label})`] = manual ?? fallback ?? "";
+          out[`Acción Correctiva (${label})`] = stored.accion ?? "";
           out[`Comentario (${label})`] = stored.comentario ?? "";
         } else {
           out[`Validación (${label})`] = "";
+          out[`Acción Correctiva (${label})`] = "";
           out[`Comentario (${label})`] = "";
         }
       }
@@ -202,7 +204,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
     [allSheetRows, badgeCol]
   );
 
-  const { getVal, getComentario, setValidacion, setComentario, countValidated, countModificados, flush, rowId } =
+  const { getVal, getComentario, getAccion, setValidacion, setComentario, setAccion, countValidated, countModificados, flush, rowId } =
     useValidaciones(persistKey, scenarioKey, scenarioRows, badgeCol);
 
   const [sortCol,    setSortCol]    = usePersistedState(`${pfx}-sort-col`,    null);
@@ -229,7 +231,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
     allDataCols.filter(c => !ALL_SCENARIO_COLS.has(c) || c === badgeCol),
     [allDataCols, badgeCol]
   );
-  const allCols = [...cols, "__validacion__", "__comentario__"];
+  const allCols = [...cols, "__validacion__", "__accion__", "__comentario__"];
 
   const hallazgosCount = useMemo(() =>
     scenarioRows.filter(r => {
@@ -297,7 +299,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
     const safeName = `${persistKey}_${sheetKey}_${scenario.label}`
       .replace(/\s+/g, "_")
       .replace(/[^a-zA-Z0-9_\-]/g, "");
-    const r = exportSheetValidaciones(sorted, cols, getVal, getComentario, scenario, safeName);
+    const r = exportSheetValidaciones(sorted, cols, getVal, getComentario, getAccion, scenario, safeName);
     if (r.ok) setExportOk(r);
   }
 
@@ -358,11 +360,11 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
           <thead>
             <tr>
               {allCols.map(col => {
-                const isSpecial = col === "__validacion__" || col === "__comentario__";
+                const isSpecial = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSpecial}
                     hasFilter={!isSpecial && colFilters[col]?.length > 0}
-                    width={colWidths[col] ?? (col === "__validacion__" ? 184 : col === "__comentario__" ? 230 : 130)}
+                    width={colWidths[col] ?? (col === "__validacion__" ? 184 : col === "__accion__" ? 184 : col === "__comentario__" ? 230 : 130)}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}
                     sortCol={sortCol} sortDir={sortDir}
                     rows={scenarioRows}
@@ -376,9 +378,9 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
           <tbody>
             {pageRows.map((row, ri) => (
               <DataTableRow key={rowId(row)} row={row} ri={ri} cols={cols} colWidths={colWidths}
-                getVal={getVal} getComentario={getComentario}
-                setValidacion={setValidacion} setComentario={setComentario}
-                badgeCol={badgeCol}
+                getVal={getVal} getComentario={getComentario} getAccion={getAccion}
+                setValidacion={setValidacion} setComentario={setComentario} setAccion={setAccion}
+                badgeCol={badgeCol} scenarioLabel={scenario.label}
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
               />

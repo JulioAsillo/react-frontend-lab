@@ -9,6 +9,7 @@
 import { useState } from "react";
 import Badge from "./Badge";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
+import { getAccionOptions } from "@/lib/constants/accionCorrectiva";
 
 const VALIDACION_OPTS = ["Correcto", "Incorrecto", "Sustentado"];
 
@@ -21,7 +22,10 @@ export default function DataTableRow({
   getComentario,
   setValidacion,
   setComentario,
+  getAccion,
+  setAccion,
   badgeCol,
+  scenarioLabel,
   extraEscenarioCols,
   expandedRow,
   setExpandedRow,
@@ -29,6 +33,7 @@ export default function DataTableRow({
   // Ocultar columnas extra opcionales (para DataTablePrivilegiados)
   hideValidacion,
   hideComentario,
+  hideAccion,
   // Props opcionales para virtualización
   trStyle,
   trRef,
@@ -82,6 +87,8 @@ export default function DataTableRow({
   const validBadgeVal = formatValue(badgeVal);
   const currentVal = storedVal ?? escenarioVal ?? extraEscVal ?? validBadgeVal ?? null;
   const currentCom = getComentario(row);
+  const accionOpts = getAccionOptions({ badgeCol, label: scenarioLabel });
+  const currentAccion = getAccion ? getAccion(row) : "";
   const isExpanded = expandedRow === rowId(row);
 
   // Draft local del textarea — para mostrar el botón guardar mientras se escribe
@@ -145,6 +152,26 @@ export default function DataTableRow({
         >
           <option value="">— Seleccionar —</option>
           {VALIDACION_OPTS.map((o) => (
+            <option key={o} value={o}>{o}</option>
+          ))}
+        </select>
+      </td>
+      )}
+
+      {/* Acción Correctiva */}
+      {!hideAccion && (
+      <td
+        className="td-accion"
+        style={{ width: colWidths["__accion__"] ?? 170 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <select
+          className={`val-select ${currentAccion ? "accion-select-set" : ""}`}
+          value={currentAccion ?? ""}
+          onChange={(e) => setAccion && setAccion(row, e.target.value || null)}
+        >
+          <option value="">— Seleccionar —</option>
+          {accionOpts.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
         </select>

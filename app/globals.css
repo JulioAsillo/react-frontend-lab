@@ -590,6 +590,8 @@ th:hover .th-chevron { color: var(--accent); }
 
 /* ── COMENTARIO ──────────────────────────────────────────────────────────── */
 .td-comentario { padding: 6px 10px; min-width: 200px; }
+.td-accion { padding: 6px 10px; white-space: nowrap; min-width: 150px; }
+.accion-select-set { border-color: var(--accent2); font-weight: 600; }
 
 .comentario-preview {
   font-size: 12.5px; color: var(--text4);
@@ -617,6 +619,7 @@ th:hover .th-chevron { color: var(--accent); }
    sin perder contraste de texto. */
 .row-validated td { opacity: 0.78; }
 .row-validated .td-validation,
+.row-validated .td-accion,
 .row-validated .td-comentario { opacity: 1 !important; }
 
 /* ── COL PANEL ───────────────────────────────────────────────────────────── */

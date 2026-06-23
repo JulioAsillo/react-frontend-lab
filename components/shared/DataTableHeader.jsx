@@ -165,7 +165,9 @@ export function ThCell({ col, isSpecial, hasFilter, width, openPanel, setOpenPan
       {isSpecial ? (
         <div className="th-wrap th-special">
           <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-            {col === "__validacion__" ? "✓ Validación" : "✎ Comentario"}
+            {label ?? (col === "__validacion__" ? "✓ Validación"
+                     : col === "__accion__"     ? "⚙ Acción Correctiva"
+                     : "✎ Comentario")}
           </span>
         </div>
       ) : (

@@ -24,7 +24,7 @@
 import { useCallback, useMemo } from "react";
 import { usePersistedState } from "./usePersistedState";
 
-type ValEntry = { validacion?: string; comentario?: string };
+type ValEntry = { validacion?: string; comentario?: string; accion?: string };
 type ValStore = Record<string, ValEntry>;
 
 export interface UseValidacionesReturn {
@@ -32,6 +32,9 @@ export interface UseValidacionesReturn {
   getComentario: (row: Record<string, unknown>) => string;
   setValidacion: (row: Record<string, unknown>, value: string | null) => void;
   setComentario: (row: Record<string, unknown>, text: string) => void;
+  /** Acción Correctiva — Select persistente, mismo store que validación. */
+  getAccion: (row: Record<string, unknown>) => string;
+  setAccion: (row: Record<string, unknown>, value: string | null) => void;
   countValidated: number;
   /**
    * Nº de filas cuyo valor de Validación fue CAMBIADO por el usuario respecto
@@ -97,40 +100,44 @@ export function useValidaciones(
     (row: Record<string, unknown>) => store[rowId(row)]?.comentario ?? "",
     [store]
   );
+  const getAccion = useCallback(
+    (row: Record<string, unknown>) => store[rowId(row)]?.accion ?? "",
+    [store]
+  );
 
-  const setValidacion = useCallback(
-    (row: Record<string, unknown>, value: string | null) => {
+  // Actualiza un campo de la entrada de una fila. Si la entrada queda sin
+  // ningún campo con valor (validacion/comentario/accion), se elimina por
+  // completo para no dejar basura en localStorage.
+  const setField = useCallback(
+    (row: Record<string, unknown>, field: keyof ValEntry, value: string | null) => {
       const id = rowId(row);
       setStore((prev) => {
         const current = prev[id] ?? {};
-        // Si el usuario "limpia" la validación (value === null o ""),
-        // borramos el campo validacion pero mantenemos comentario si lo tiene.
-        if (value === null || value === "") {
-          if (!current.comentario) {
-            const { [id]: _, ...rest } = prev;
-            return rest;
-          }
-          return { ...prev, [id]: { comentario: current.comentario } };
+        const next: ValEntry = { ...current };
+        if (value === null || value === "") delete next[field];
+        else next[field] = value;
+        const isEmpty = !next.validacion && !next.comentario && !next.accion;
+        if (isEmpty) {
+          const { [id]: _omit, ...rest } = prev;
+          return rest;
         }
-        return { ...prev, [id]: { ...current, validacion: value } };
+        return { ...prev, [id]: next };
       });
     },
     [setStore]
   );
 
+  const setValidacion = useCallback(
+    (row: Record<string, unknown>, value: string | null) => setField(row, "validacion", value),
+    [setField]
+  );
   const setComentario = useCallback(
-    (row: Record<string, unknown>, text: string) => {
-      const id = rowId(row);
-      setStore((prev) => {
-        const current = prev[id] ?? {};
-        if (!text && !current.validacion) {
-          const { [id]: _, ...rest } = prev;
-          return rest;
-        }
-        return { ...prev, [id]: { ...current, comentario: text } };
-      });
-    },
-    [setStore]
+    (row: Record<string, unknown>, text: string) => setField(row, "comentario", text),
+    [setField]
+  );
+  const setAccion = useCallback(
+    (row: Record<string, unknown>, value: string | null) => setField(row, "accion", value),
+    [setField]
   );
 
   const countValidated = useMemo(() => {
@@ -177,5 +184,5 @@ export function useValidaciones(
     setStore((prev) => ({ ...prev }));
   }, [setStore]);
 
-  return { getVal, getComentario, setValidacion, setComentario, countValidated, countModificados, flush, rowId };
+  return { getVal, getComentario, getAccion, setValidacion, setComentario, setAccion, countValidated, countModificados, flush, rowId };
 }

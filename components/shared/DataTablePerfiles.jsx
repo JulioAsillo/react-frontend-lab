@@ -126,6 +126,7 @@ export function exportAllPerfiles(tabs, persistKey, reportLabel) {
           const out = {};
           allCols.forEach(c => { out[c] = row[c] ?? ""; });
           out["Validación"] = validacion ?? "";
+          out["Acción Correctiva"] = store[id]?.accion ?? "";
           out["Comentario"] = store[id]?.comentario ?? "";
           return out;
         });
@@ -144,6 +145,7 @@ export function exportAllPerfiles(tabs, persistKey, reportLabel) {
         const out = {};
         allCols.forEach(c => { out[c] = row[c] ?? ""; });
         out["Validación"] = store[id]?.validacion ?? "";
+        out["Acción Correctiva"] = store[id]?.accion ?? "";
         out["Comentario"] = store[id]?.comentario ?? "";
         return out;
       });
@@ -186,7 +188,7 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
     [rows, scenario.col]
   );
 
-  const { getVal, getComentario, setValidacion, setComentario, countValidated, countModificados, flush, rowId } =
+  const { getVal, getComentario, getAccion, setValidacion, setComentario, setAccion, countValidated, countModificados, flush, rowId } =
     useValidaciones(`${persistKey}-prf`, `${sheetSlug}-${scenario.key}`, scenarioRows, scenario.col);
 
   const [sortCol,    setSortCol]    = usePersistedState(`${pfx}-sort-col`,    null);
@@ -214,7 +216,7 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
     return baseCols;
   }, [scenarioRows, otherScenarioCols, scenario.col]);
 
-  const allCols = useMemo(() => [...cols, "__validacion__", "__comentario__"], [cols]);
+  const allCols = useMemo(() => [...cols, "__validacion__", "__accion__", "__comentario__"], [cols]);
 
   const hallazgosCount = useMemo(() => {
     return scenarioRows.filter(r => {
@@ -278,7 +280,7 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
   async function handleExportVista() {
     const data = filteredSorted.map(row => {
       const out = {}; cols.forEach(c => { out[c] = row[c] ?? ""; });
-      out["Validación"] = getVal(row) ?? ""; out["Comentario"] = getComentario(row) ?? "";
+      out["Validación"] = getVal(row) ?? ""; out["Acción Correctiva"] = getAccion(row) ?? ""; out["Comentario"] = getComentario(row) ?? "";
       return out;
     });
     const wb = XLSX.utils.book_new();
@@ -328,10 +330,10 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
           <thead>
             <tr>
               {allCols.map(col => {
-                const isSpecial = col === "__validacion__" || col === "__comentario__";
+                const isSpecial = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSpecial}
-                    label={isSpecial ? (col === "__validacion__" ? "Validación" : "Comentario") : col}
+                    label={isSpecial ? (col === "__validacion__" ? "Validación" : col === "__accion__" ? "Acción Correctiva" : "Comentario") : col}
                     hasFilter={!isSpecial && getColFilterSet(col).size > 0}
                     width={colWidths[col]}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}
@@ -346,9 +348,9 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
           <tbody>
             {pageRows.map((row, ri) => (
               <DataTableRow key={rowId(row)} row={row} ri={ri} cols={cols} colWidths={colWidths}
-                getVal={getVal} getComentario={getComentario}
-                setValidacion={setValidacion} setComentario={setComentario}
-                badgeCol={scenario.col}
+                getVal={getVal} getComentario={getComentario} getAccion={getAccion}
+                setValidacion={setValidacion} setComentario={setComentario} setAccion={setAccion}
+                badgeCol={scenario.col} scenarioLabel={scenario.label}
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
               />
@@ -466,7 +468,7 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
   // ── MODO B: vista única combinada (DBs, Apps) ─────────────────────────────
   const primaryBadgeCol = escCols ? escCols[0] : "ESCENARIO";
 
-  const { getVal, getComentario, setValidacion, setComentario, countValidated, countModificados, flush, rowId } =
+  const { getVal, getComentario, getAccion, setValidacion, setComentario, setAccion, countValidated, countModificados, flush, rowId } =
     useValidaciones(`${persistKey}-prf`, sheetSlug, rows, primaryBadgeCol);
 
   const [sortCol,    setSortCol]    = usePersistedState(`${pfx}-sort-col`,    null);
@@ -483,7 +485,7 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
   const resizeRef = useRef({ active: false });
 
   const cols    = useMemo(() => rows.length ? Object.keys(rows[0]) : [], [rows]);
-  const allCols = useMemo(() => [...cols, "__validacion__", "__comentario__"], [cols]);
+  const allCols = useMemo(() => [...cols, "__validacion__", "__accion__", "__comentario__"], [cols]);
 
   const hallazgosCount = useMemo(() => {
     return rows.filter(r => {
@@ -543,7 +545,7 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
   async function handleExportVista() {
     const data = filteredSorted.map(row => {
       const out = {}; cols.forEach(c => { out[c] = row[c] ?? ""; });
-      out["Validación"] = getVal(row) ?? ""; out["Comentario"] = getComentario(row) ?? "";
+      out["Validación"] = getVal(row) ?? ""; out["Acción Correctiva"] = getAccion(row) ?? ""; out["Comentario"] = getComentario(row) ?? "";
       return out;
     });
     const wb = XLSX.utils.book_new(); const ws = XLSX.utils.json_to_sheet(data);
@@ -591,10 +593,10 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
           <thead>
             <tr>
               {allCols.map(col => {
-                const isSp = col === "__validacion__" || col === "__comentario__";
+                const isSp = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSp}
-                    label={isSp ? (col === "__validacion__" ? "Validación" : "Comentario") : col}
+                    label={isSp ? (col === "__validacion__" ? "Validación" : col === "__accion__" ? "Acción Correctiva" : "Comentario") : col}
                     hasFilter={!isSp && getColFilterSet(col).size > 0}
                     width={colWidths[col]}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}
@@ -609,9 +611,9 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
           <tbody>
             {pageRows.map((row, ri) => (
               <DataTableRow key={rowId(row)} row={row} ri={ri} cols={cols} colWidths={colWidths}
-                getVal={getVal} getComentario={getComentario}
-                setValidacion={setValidacion} setComentario={setComentario}
-                badgeCol={primaryBadgeCol}
+                getVal={getVal} getComentario={getComentario} getAccion={getAccion}
+                setValidacion={setValidacion} setComentario={setComentario} setAccion={setAccion}
+                badgeCol={primaryBadgeCol} scenarioLabel={escCols ? escCols[0] : undefined}
                 extraEscenarioCols={escCols ?? undefined}
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}

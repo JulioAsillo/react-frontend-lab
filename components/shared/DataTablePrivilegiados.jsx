@@ -96,6 +96,7 @@ export function exportAllPrivilegiados(sheets, persistKey, reportLabel, scenario
         const manual   = stored.validacion ?? null;
         const resolved = resolveValidacion(row, sc.badgeCol, manual);
         if (sc.hasValidacion) out["Validación"] = resolved ?? "";
+        if (sc.hasValidacion) out["Acción Correctiva"] = stored.accion ?? "";
         if (sc.hasComentario) {
           out["Comentario"] = stored.comentario ?? row["Comentario"] ?? "";
         }
@@ -176,7 +177,7 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
     [rows, sc.badgeCol]
   );
 
-  const { getVal, getComentario, setValidacion, setComentario, countValidated, countModificados, flush, rowId } =
+  const { getVal, getComentario, getAccion, setValidacion, setComentario, setAccion, countValidated, countModificados, flush, rowId } =
     useValidaciones(valPfx, sc.key, scenarioRows, sc.badgeCol);
 
   const [sortCol,    setSortCol]    = usePersistedState(`${pfx}-sort-col`,    null);
@@ -208,6 +209,7 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
   const allCols = useMemo(() => {
     const extras = [];
     if (sc.hasValidacion) extras.push("__validacion__");
+    if (sc.hasValidacion) extras.push("__accion__");
     if (sc.hasComentario) extras.push("__comentario__");
     return [...cols, ...extras];
   }, [cols, sc]);
@@ -282,6 +284,7 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
       if (sc.hasValidacion) {
         const stored  = getVal(row);
         out["Validación"] = resolveValidacion(row, sc.badgeCol, stored) ?? "";
+        out["Acción Correctiva"] = getAccion(row) ?? "";
       }
       if (sc.hasComentario) {
         const storedCom = getComentario(row);
@@ -348,11 +351,11 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
           <thead>
             <tr>
               {allCols.map(col => {
-                const isSpecial = col === "__validacion__" || col === "__comentario__";
+                const isSpecial = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSpecial}
                     hasFilter={!isSpecial && colFilters[col]?.length > 0}
-                    width={colWidths[col] ?? (col === "__validacion__" ? 184 : col === "__comentario__" ? 260 : 130)}
+                    width={colWidths[col] ?? (col === "__validacion__" ? 184 : col === "__accion__" ? 184 : col === "__comentario__" ? 260 : 130)}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}
                     sortCol={sortCol} sortDir={sortDir}
                     rows={scenarioRows}
@@ -370,12 +373,15 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
                 row={row} ri={ri} cols={cols} colWidths={colWidths}
                 getVal={getVal}
                 getComentario={getComentarioCombined}
+                getAccion={getAccion}
                 setValidacion={sc.hasValidacion ? setValidacion : () => {}}
                 setComentario={sc.hasComentario ? setComentario : () => {}}
-                badgeCol={sc.badgeCol}
+                setAccion={sc.hasValidacion ? setAccion : () => {}}
+                badgeCol={sc.badgeCol} scenarioLabel={sc.label}
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 hideComentario={!sc.hasComentario}
                 hideValidacion={!sc.hasValidacion}
+                hideAccion={!sc.hasValidacion}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
               />
             ))}
