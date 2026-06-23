@@ -350,6 +350,7 @@ function buildExcelBuffer(rawData, persistKey, form) {
           const rowId      = fnvHash(row);
           const validacion = resolveValidacion(row, sc, valStore, rowId);
           const comentario = valStore[rowId]?.comentario ?? '';
+          const accionCorrectiva = valStore[rowId]?.accion ?? '';
           out['Validación'] = validacion;
           out['Acción Correctiva'] = accionCorrectiva;
           out['Comentario'] = comentario;
