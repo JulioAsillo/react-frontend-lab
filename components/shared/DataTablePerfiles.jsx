@@ -350,7 +350,7 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
               <DataTableRow key={rowId(row)} row={row} ri={ri} cols={cols} colWidths={colWidths}
                 getVal={getVal} getComentario={getComentario} getAccion={getAccion}
                 setValidacion={setValidacion} setComentario={setComentario} setAccion={setAccion}
-                badgeCol={scenario.col} scenarioLabel={scenario.label}
+                badgeCol={scenario.col} scenarioLabel={scenario.label} accionModule="perfiles"
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
               />
@@ -613,7 +613,7 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
               <DataTableRow key={rowId(row)} row={row} ri={ri} cols={cols} colWidths={colWidths}
                 getVal={getVal} getComentario={getComentario} getAccion={getAccion}
                 setValidacion={setValidacion} setComentario={setComentario} setAccion={setAccion}
-                badgeCol={primaryBadgeCol} scenarioLabel={escCols ? escCols[0] : undefined}
+                badgeCol={primaryBadgeCol} scenarioLabel={escCols ? escCols[0] : undefined} accionModule="perfiles"
                 extraEscenarioCols={escCols ?? undefined}
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}

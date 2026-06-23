@@ -26,6 +26,7 @@ export default function DataTableRow({
   setAccion,
   badgeCol,
   scenarioLabel,
+  accionModule,
   extraEscenarioCols,
   expandedRow,
   setExpandedRow,
@@ -87,7 +88,7 @@ export default function DataTableRow({
   const validBadgeVal = formatValue(badgeVal);
   const currentVal = storedVal ?? escenarioVal ?? extraEscVal ?? validBadgeVal ?? null;
   const currentCom = getComentario(row);
-  const accionOpts = getAccionOptions({ badgeCol, label: scenarioLabel });
+  const accionOpts = getAccionOptions({ badgeCol, label: scenarioLabel, moduleKey: accionModule });
   const currentAccion = getAccion ? getAccion(row) : "";
   const isExpanded = expandedRow === rowId(row);
 

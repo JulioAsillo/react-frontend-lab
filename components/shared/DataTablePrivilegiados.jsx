@@ -377,7 +377,7 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
                 setValidacion={sc.hasValidacion ? setValidacion : () => {}}
                 setComentario={sc.hasComentario ? setComentario : () => {}}
                 setAccion={sc.hasValidacion ? setAccion : () => {}}
-                badgeCol={sc.badgeCol} scenarioLabel={sc.label}
+                badgeCol={sc.badgeCol} scenarioLabel={sc.label} accionModule="privilegiados"
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 hideComentario={!sc.hasComentario}
                 hideValidacion={!sc.hasValidacion}
