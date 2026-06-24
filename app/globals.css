@@ -333,6 +333,25 @@ body {
 .date-pill:hover  { border-color: var(--accent); }
 .date-pill:focus  { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 
+/* ── Input de fecha de corte: texto DD-MM-YYYY + botón calendario ─────────── */
+.date-cutoff { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.date-cutoff-text { min-width: 130px; cursor: text; }
+.date-cutoff-text::placeholder { color: var(--text4); letter-spacing: 0.5px; }
+.date-cutoff-btn {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 6px 9px; font-size: 14px;
+  line-height: 1; cursor: pointer; outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.date-cutoff-btn:hover { border-color: var(--accent); background: var(--accent-bg); }
+.date-cutoff-btn:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+/* Input nativo oculto: solo aporta el selector de fecha del navegador */
+.date-cutoff-native {
+  position: absolute; right: 0; bottom: 0;
+  width: 1px; height: 1px; opacity: 0; padding: 0; border: 0;
+  pointer-events: none;
+}
+
 /* ── SPINNER ─────────────────────────────────────────────────────────────── */
 .spinner {
   width: 15px; height: 15px;

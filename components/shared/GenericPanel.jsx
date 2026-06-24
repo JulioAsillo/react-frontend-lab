@@ -15,7 +15,7 @@
  * La UX es idéntica: misma topbar, mismos modales, mismo empty state.
  */
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useReporteRaw, useReportesStore, useFechaCorte } from "@/lib/store/reportesStore";
 import { useReporteMutation } from "@/lib/hooks/useReporteMutation";
 import { flattenData } from "@/lib/utils/flattenData";
@@ -28,10 +28,94 @@ import ConfirmModal from "@/components/shared/ConfirmModal";
 
 function formatCutoff(iso) {
   if (!iso) return "";
-  // Acepta "YYYY-MM-DD" o ISO completo. Devuelve "DD/MM/YYYY".
+  // Acepta "YYYY-MM-DD" o ISO completo. Devuelve "DD-MM-YYYY".
   const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
   return String(iso);
+}
+
+// ── Input de fecha de corte: texto DD-MM-YYYY + calendario nativo ───────────
+// El estado externo (value/onChange) SIEMPRE es ISO (YYYY-MM-DD) para no romper
+// fetchReporte (?fecha_ref=YYYY-MM-DD) ni el cacheo en IndexedDB. La UI muestra
+// y acepta DD-MM-YYYY. El ícono 📅 abre el selector de fecha nativo.
+function isoToDisplay(iso) {
+  const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
+}
+function maskDdMmYyyy(raw) {
+  const d = String(raw).replace(/\D/g, "").slice(0, 8);
+  return [d.slice(0, 2), d.slice(2, 4), d.slice(4, 8)].filter(Boolean).join("-");
+}
+function displayToIso(str) {
+  const m = String(str || "").trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (!m) return null;
+  const dd = m[1].padStart(2, "0");
+  const mm = m[2].padStart(2, "0");
+  const yyyy = m[3];
+  const iso = `${yyyy}-${mm}-${dd}`;
+  // Validar que sea una fecha real (rechaza 31-02-2026, 00-00-…, etc.)
+  const dt = new Date(`${iso}T00:00:00`);
+  if (
+    Number.isNaN(dt.getTime()) ||
+    dt.getFullYear() !== Number(yyyy) ||
+    dt.getMonth() + 1 !== Number(mm) ||
+    dt.getDate() !== Number(dd)
+  ) return null;
+  return iso;
+}
+
+function DateCutoffInput({ value, onChange }) {
+  const [text, setText] = useState(isoToDisplay(value));
+  const nativeRef = useRef(null);
+
+  // Reflejar cambios externos de value (ej. hidratación de fechaCorte desde IDB)
+  useEffect(() => { setText(isoToDisplay(value)); }, [value]);
+
+  function commit(str) {
+    const iso = displayToIso(str);
+    if (iso) { onChange(iso); setText(isoToDisplay(iso)); }
+    else { setText(isoToDisplay(value)); } // texto inválido → revertir al último válido
+  }
+
+  function openPicker() {
+    const el = nativeRef.current;
+    if (!el) return;
+    try { el.showPicker(); }
+    catch { el.focus(); el.click(); }
+  }
+
+  return (
+    <div className="date-cutoff">
+      <input
+        type="text"
+        inputMode="numeric"
+        className="date-pill date-cutoff-text"
+        placeholder="DD-MM-YYYY"
+        value={text}
+        maxLength={10}
+        onChange={e => setText(maskDdMmYyyy(e.target.value))}
+        onBlur={e => commit(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter") commit(e.currentTarget.value); }}
+      />
+      <button
+        type="button"
+        className="date-cutoff-btn"
+        onClick={openPicker}
+        title="Abrir calendario"
+        aria-label="Abrir calendario"
+      >📅</button>
+      {/* Input nativo oculto: solo provee el selector de fecha del navegador */}
+      <input
+        ref={nativeRef}
+        type="date"
+        className="date-cutoff-native"
+        value={value || ""}
+        onChange={e => { if (e.target.value) onChange(e.target.value); }}
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+    </div>
+  );
 }
 
 function GenerateResultModal({ result, onClose, consolidadoRoute }) {
@@ -280,8 +364,7 @@ export default function GenericPanel({
                   </span>
                 </span>
               )}
-              <input type="date" className="date-pill" value={fecha}
-                onChange={e => setFecha(e.target.value)} />
+              <DateCutoffInput value={fecha} onChange={setFecha} />
             </div>
           )}
           {mounted && hasVisibleData && (
