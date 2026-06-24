@@ -163,6 +163,15 @@ export default function GenericPanel({
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Restaurar la fecha seleccionada desde la fecha de corte cacheada (IDB →
+  // reportesStore). useFechaCorte hidrata async: cuando llega un valor, el
+  // input de fecha deja de mostrar "hoy" y refleja el corte real con el que se
+  // generó el reporte. Solo dispara cuando fechaCorte cambia, así no pisa una
+  // selección manual en curso del usuario (que aún no ha regenerado).
+  useEffect(() => {
+    if (fechaCorte) setFecha(fechaCorte);
+  }, [fechaCorte]);
+
   const rows = useMemo(() => flattenData(rawData), [rawData]);
   const hasData     = rawData !== null && rawData !== undefined;
   const isHydrating = mounted && !hydrated;
@@ -247,7 +256,7 @@ export default function GenericPanel({
           <div className="breadcrumb">{section ? <>{section} / </> : null}<span>{breadcrumb}</span></div>
           <h2 className="page-title">
             {reporte.label}
-            {fechaCorte && (
+            {!reporte.needsDate && fechaCorte && (
               <span className="cutoff-pill" title="Fecha de corte de los datos">
                 📅 Datos al {formatCutoff(fechaCorte)}
               </span>

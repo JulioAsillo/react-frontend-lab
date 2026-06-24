@@ -69,11 +69,18 @@ function resolveValidacion(row, sc, store, rowId) {
     return v === 'CORRECTO' ? 'Correcto' : 'Incorrecto';
   }
 
-  // 3. Valor del badgeCol formateado
+  // 3. Valor del badgeCol — MISMA lógica que contarHallazgosVisual (informeCalculo.js):
+  //    correcto/sustentado → no es hallazgo; CUALQUIER otro valor no vacío
+  //    (postcese "Si", "Activo", "Bloqueado", "Incorrecto"…) → hallazgo = "Incorrecto".
+  //    Antes este paso solo aceptaba valores canónicos y devolvía '' para "Si",
+  //    por lo que el filtro de la hoja detalle excluía filas que el resumen SÍ
+  //    contaba (form/contarHallazgosVisual) → descuadre Nº Hallazgos vs filas.
   const badgeRaw = row[sc.badgeCol];
-  if (badgeRaw !== null && badgeRaw !== undefined && badgeRaw !== '') {
-    const formatted = String(badgeRaw).charAt(0).toUpperCase() + String(badgeRaw).slice(1).toLowerCase();
-    if (VALIDACION_OPTS_SET.has(formatted)) return formatted;
+  if (badgeRaw !== null && badgeRaw !== undefined && String(badgeRaw).trim() !== '') {
+    const bv = String(badgeRaw).trim().toLowerCase();
+    if (bv === 'correcto')   return 'Correcto';
+    if (bv === 'sustentado') return 'Sustentado';
+    return 'Incorrecto';
   }
 
   return ''; // Sin validación
