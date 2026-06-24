@@ -67,97 +67,101 @@ function rowIdFnv(row) {
 // ── Export completo: todas las hojas × todos los escenarios ──────────────────
 export function exportAllUsuarios(sheets, persistKey, reportLabel) {
   /**
-   * v18.1 — una hoja Excel por fuente del backend.
+   * v27 — una hoja Excel por (fuente × escenario), MISMO patrón que
+   * exportAllPerfiles / exportAllPrivilegiados.
    *
-   * Estructura de cada hoja:
-   *   columnas_base | Esc1 | Validacion1 | Comentario1 | Esc2 | Validacion2 | Comentario2 | ...
+   * Orden: agrupado por fuente y luego por escenario →
+   *   Fuente1 - Esc1, Fuente1 - Esc2, …, Fuente2 - Esc1, Fuente2 - Esc2, …
    *
-   * Todas las filas aparecen UNA vez. Las columnas de escenario/validacion/comentario
-   * van vacías si esa fila no tiene dato para ese escenario.
+   * Cada hoja contiene SOLO las filas de ese escenario (las que tienen valor en
+   * su badgeCol), con las columnas base + Validación + Acción Correctiva +
+   * Comentario, igual que la exportación "por vista" de un escenario.
    */
   const wb = XLSX.utils.book_new();
   let n = 0;
   const allBadgeColsGlobal = new Set(ESCENARIOS_ORDEN.map(s => s.badgeCol));
 
+  // Nombre de hoja válido (≤31, sin caracteres prohibidos) y único en el libro.
+  function addSheet(baseName, rowsForSheet) {
+    let name = String(baseName).replace(/[:\\/?*[\]]/g, "_").slice(0, 31);
+    if (wb.SheetNames.includes(name)) {
+      let i = 2, candidate;
+      do { candidate = `${name.slice(0, 28)}_${i++}`; } while (wb.SheetNames.includes(candidate));
+      name = candidate;
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rowsForSheet), name);
+    n++;
+  }
+
   for (const [sheetKey, rows] of Object.entries(sheets)) {
     if (!rows?.length) continue;
 
-    // Escenarios con al menos 1 fila con dato en esta hoja
+    const sheetSlug = sheetKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+
+    // Escenarios con al menos 1 fila con dato en esta fuente
     const scenariosInSheet = ESCENARIOS_ORDEN.filter(s =>
       rows.some(r => r[s.badgeCol] != null && r[s.badgeCol] !== "")
     );
 
-    // Precargar validaciones de todos los escenarios de esta hoja
-    const sheetSlug = sheetKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    const valStores = {};
-    for (const scenario of scenariosInSheet) {
-      const key = `${persistKey}-val-${sheetSlug}-${scenario.key}`;
-      try {
-        const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null;
-        valStores[scenario.key] = raw ? JSON.parse(raw) : {};
-      } catch { valStores[scenario.key] = {}; }
-    }
-
-    // Columnas base: todas menos las badgeCols de escenarios canónicos
-    const baseColSet = new Set();
-    const baseColsOrdered = [];
-    rows.forEach(r =>
-      Object.keys(r).forEach(c => {
-        if (!baseColSet.has(c) && !allBadgeColsGlobal.has(c)) {
-          baseColSet.add(c);
-          baseColsOrdered.push(c);
-        }
-      })
-    );
-
-    // Sin escenarios → volcar filas con columnas base solamente
+    // Fuente sin escenarios → una sola hoja con las columnas base
     if (scenariosInSheet.length === 0) {
+      const baseSet = new Set();
+      const baseCols = [];
+      rows.forEach(r => Object.keys(r).forEach(c => {
+        if (!baseSet.has(c) && !allBadgeColsGlobal.has(c)) { baseSet.add(c); baseCols.push(c); }
+      }));
       const exportRows = rows.map(row => {
         const out = {};
-        baseColsOrdered.forEach(c => { out[c] = row[c] ?? ""; });
+        baseCols.forEach(c => { out[c] = row[c] ?? ""; });
         return out;
       });
-      const ws = XLSX.utils.json_to_sheet(exportRows);
-      const safeName = sheetKey.slice(0, 31).replace(/[:\/\?\*\[\]]/g, "_");
-      XLSX.utils.book_append_sheet(wb, ws, safeName);
-      n++;
+      addSheet(sheetKey, exportRows);
       continue;
     }
 
-    // Filas fusionadas: base + columnas de cada escenario
-    const exportRows = rows.map(row => {
-      const out = {};
-      baseColsOrdered.forEach(c => { out[c] = row[c] ?? ""; });
+    // Una hoja por escenario de esta fuente (bucle interno = escenarios)
+    for (const scenario of scenariosInSheet) {
+      const { badgeCol, key, label } = scenario;
 
-      for (const scenario of scenariosInSheet) {
-        const { badgeCol, label } = scenario;
-        const hasVal = row[badgeCol] != null && row[badgeCol] !== "";
-        out[label] = hasVal ? (row[badgeCol] ?? "") : "";
+      // Solo las filas que pertenecen a este escenario
+      const scenarioRows = rows.filter(r => r[badgeCol] != null && r[badgeCol] !== "");
+      if (scenarioRows.length === 0) continue;
 
-        if (hasVal) {
-          const stored   = (valStores[scenario.key] ?? {})[rowIdFnv(row)] ?? {};
-          const manual   = stored.validacion ?? null;
-          const badgeVal = String(row[badgeCol] || "").trim().toLowerCase();
-          let fallback   = null;
-          if (badgeVal === "correcto")        fallback = "Correcto";
-          else if (badgeVal === "incorrecto") fallback = "Incorrecto";
-          else if (badgeVal === "sustentado") fallback = "Sustentado";
-          out[`Validación (${label})`] = manual ?? fallback ?? "";
-          out[`Acción Correctiva (${label})`] = displayAccion(stored.accion);
-          out[`Comentario (${label})`] = stored.comentario ?? "";
-        } else {
-          out[`Validación (${label})`] = "";
-          out[`Acción Correctiva (${label})`] = "";
-          out[`Comentario (${label})`] = "";
-        }
-      }
-      return out;
-    });
+      // Validaciones guardadas de este escenario
+      let valStore = {};
+      try {
+        const raw = typeof window !== "undefined"
+          ? localStorage.getItem(`${persistKey}-val-${sheetSlug}-${key}`)
+          : null;
+        valStore = raw ? JSON.parse(raw) : {};
+      } catch { valStore = {}; }
 
-    const ws = XLSX.utils.json_to_sheet(exportRows);
-    const safeName = sheetKey.slice(0, 31).replace(/[:\/\?\*\[\]]/g, "_");
-    XLSX.utils.book_append_sheet(wb, ws, safeName);
-    n++;
+      // Columnas: todas menos las badgeCols de OTROS escenarios (se conserva la propia)
+      const otherBadge = new Set([...allBadgeColsGlobal].filter(c => c !== badgeCol));
+      const colSet = new Set();
+      const cols = [];
+      scenarioRows.forEach(r => Object.keys(r).forEach(c => {
+        if (!colSet.has(c) && !otherBadge.has(c)) { colSet.add(c); cols.push(c); }
+      }));
+
+      const exportRows = scenarioRows.map(row => {
+        const out = {};
+        cols.forEach(c => { out[c] = row[c] ?? ""; });
+        const stored   = valStore[rowIdFnv(row)] ?? {};
+        const manual   = stored.validacion ?? null;
+        const badgeVal = String(row[badgeCol] || "").trim().toLowerCase();
+        let fallback = null;
+        if (badgeVal === "correcto")        fallback = "Correcto";
+        else if (badgeVal === "incorrecto") fallback = "Incorrecto";
+        else if (badgeVal === "sustentado") fallback = "Sustentado";
+        out["Validación"]        = manual ?? fallback ?? "";
+        out["Acción Correctiva"] = displayAccion(stored.accion);
+        out["Comentario"]        = stored.comentario ?? "";
+        return out;
+      });
+
+      addSheet(`${sheetKey} - ${label}`, exportRows);
+    }
   }
 
   if (n === 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{}]), "Vacío");
