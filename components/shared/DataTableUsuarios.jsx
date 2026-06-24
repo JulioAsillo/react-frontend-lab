@@ -22,6 +22,7 @@
  */
 
 import { useMemo, useState, useRef, useCallback } from "react";
+import { displayAccion } from "@/lib/constants/accionCorrectiva";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
 import { ESCENARIOS_ORDEN } from "@/lib/constants/reportes";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
@@ -142,7 +143,7 @@ export function exportAllUsuarios(sheets, persistKey, reportLabel) {
           else if (badgeVal === "incorrecto") fallback = "Incorrecto";
           else if (badgeVal === "sustentado") fallback = "Sustentado";
           out[`Validación (${label})`] = manual ?? fallback ?? "";
-          out[`Acción Correctiva (${label})`] = stored.accion ?? "";
+          out[`Acción Correctiva (${label})`] = displayAccion(stored.accion);
           out[`Comentario (${label})`] = stored.comentario ?? "";
         } else {
           out[`Validación (${label})`] = "";

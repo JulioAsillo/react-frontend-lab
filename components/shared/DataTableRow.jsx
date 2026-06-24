@@ -9,7 +9,7 @@
 import { useState } from "react";
 import Badge from "./Badge";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
-import { getAccionOptions } from "@/lib/constants/accionCorrectiva";
+import { getAccionOptions, ACCION_NONE, displayAccion } from "@/lib/constants/accionCorrectiva";
 
 const VALIDACION_OPTS = ["Correcto", "Incorrecto", "Sustentado"];
 
@@ -167,8 +167,8 @@ export default function DataTableRow({
         onClick={(e) => e.stopPropagation()}
       >
         <select
-          className={`val-select ${currentAccion && currentAccion !== "Ninguna" ? "accion-select-set" : ""}`}
-          value={currentAccion || "Ninguna"}
+          className={`val-select ${currentAccion && displayAccion(currentAccion) !== ACCION_NONE ? "accion-select-set" : ""}`}
+          value={displayAccion(currentAccion)}
           onChange={(e) => setAccion && setAccion(row, e.target.value || null)}
         >
           {accionOpts.map((o) => (

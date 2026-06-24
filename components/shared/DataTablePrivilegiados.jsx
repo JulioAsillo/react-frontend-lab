@@ -21,6 +21,7 @@
  */
 
 import { useMemo, useState, useRef, useCallback } from "react";
+import { displayAccion } from "@/lib/constants/accionCorrectiva";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones }   from "@/lib/hooks/useValidaciones";
 import DataTableRow          from "./DataTableRow";
@@ -96,7 +97,7 @@ export function exportAllPrivilegiados(sheets, persistKey, reportLabel, scenario
         const manual   = stored.validacion ?? null;
         const resolved = resolveValidacion(row, sc.badgeCol, manual);
         if (sc.hasValidacion) out["Validación"] = resolved ?? "";
-        if (sc.hasValidacion) out["Acción Correctiva"] = stored.accion ?? "";
+        if (sc.hasValidacion) out["Acción Correctiva"] = displayAccion(stored.accion);
         if (sc.hasComentario) {
           out["Comentario"] = stored.comentario ?? row["Comentario"] ?? "";
         }

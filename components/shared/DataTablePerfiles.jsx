@@ -17,6 +17,7 @@
  */
 
 import { useMemo, useState, useRef, useCallback } from "react";
+import { displayAccion } from "@/lib/constants/accionCorrectiva";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones } from "@/lib/hooks/useValidaciones";
 import DataTableRow from "./DataTableRow";
@@ -126,7 +127,7 @@ export function exportAllPerfiles(tabs, persistKey, reportLabel) {
           const out = {};
           allCols.forEach(c => { out[c] = row[c] ?? ""; });
           out["Validación"] = validacion ?? "";
-          out["Acción Correctiva"] = store[id]?.accion ?? "";
+          out["Acción Correctiva"] = displayAccion(store[id]?.accion);
           out["Comentario"] = store[id]?.comentario ?? "";
           return out;
         });
@@ -145,7 +146,7 @@ export function exportAllPerfiles(tabs, persistKey, reportLabel) {
         const out = {};
         allCols.forEach(c => { out[c] = row[c] ?? ""; });
         out["Validación"] = store[id]?.validacion ?? "";
-        out["Acción Correctiva"] = store[id]?.accion ?? "";
+        out["Acción Correctiva"] = displayAccion(store[id]?.accion);
         out["Comentario"] = store[id]?.comentario ?? "";
         return out;
       });

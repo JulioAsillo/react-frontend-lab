@@ -33,6 +33,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { displayAccion } from '@/lib/constants/accionCorrectiva';
 import { usePersistedState } from '@/lib/hooks/usePersistedState';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useBDFechasCorte } from '@/lib/store/uiStore';
@@ -350,7 +351,7 @@ function buildExcelBuffer(rawData, persistKey, form) {
           const rowId      = fnvHash(row);
           const validacion = resolveValidacion(row, sc, valStore, rowId);
           const comentario = valStore[rowId]?.comentario ?? '';
-          const accionCorrectiva = valStore[rowId]?.accion ?? '';
+          const accionCorrectiva = displayAccion(valStore[rowId]?.accion);
           out['Validación'] = validacion;
           out['Acción Correctiva'] = accionCorrectiva;
           out['Comentario'] = comentario;
