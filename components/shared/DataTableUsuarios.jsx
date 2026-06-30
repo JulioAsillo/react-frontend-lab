@@ -2,23 +2,23 @@
 
 /**
  * DataTableUsuarios — tabla multi-nivel para los 4 reportes de usuarios
- * con backend unificado (v18).
+ * con backend unificado.
  *
  * Estructura de navegación:
- *   SUPERIOR (tabs de hoja)  → claves del backend: "AD", "Entra ID", "DB_SDP", etc.
- *   INFERIOR (tabs escenario) → ESCENARIOS_ORDEN filtrados por badgeCol
+ * SUPERIOR (tabs de hoja) → claves del backend: "AD", "Entra ID", "DB_SDP", etc.
+ * INFERIOR (tabs escenario) → ESCENARIOS_ORDEN filtrados por badgeCol
  *
  * El backend ahora devuelve { data: { "AD": [...], "Entra ID": [...] } }
  * o { "DB_SDP": [...], "DB_EXACTUS": [...], "DB_SIT": [...] }.
  * rawData ya llega normalizado desde fetchReporte (sin wrapper data).
  *
  * Export completo:
- *   Por cada hoja del backend → por cada escenario disponible en esa hoja
- *   → 1 hoja Excel llamada "{hojaBackend} - {escenario.label}"
- *   con columnas: [...columnas_datos, Validación, Comentario]
+ * Por cada hoja del backend → por cada escenario disponible en esa hoja
+ * → 1 hoja Excel llamada "{hojaBackend} - {escenario.label}"
+ * con columnas: [...columnas_datos, Validación, Comentario]
  *
  * Export vista:
- *   Solo las filas visibles del escenario + hoja activos.
+ * Solo las filas visibles del escenario + hoja activos.
  */
 
 import { useMemo, useState, useRef, useCallback } from "react";

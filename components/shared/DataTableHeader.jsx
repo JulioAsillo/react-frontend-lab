@@ -4,15 +4,15 @@
  * DataTableHeader — piezas de header reutilizables entre DataTable y DataTablePlano.
  *
  * ColPanel: el panel flotante con sort + checkboxes de filtro por valor.
- * ThCell:   el <th> que abre el ColPanel y soporta resize de columna.
+ * ThCell: el <th> que abre el ColPanel y soporta resize de columna.
  *
- * Cambios v11:
- *   - useLayoutEffect (en lugar de useEffect) para posicionar el panel ANTES
- *     del paint. Elimina el flash arriba-izquierda.
- *   - Visibility hidden hasta que pos quede calculado (defensa adicional para
- *     navegadores que no respetan el orden esperado).
- *   - Iconos sutiles en headers: chevron unicode más limpio + icono de filtro
- *     activo cuando la columna tiene filtros aplicados.
+ * Notas:
+ * - useLayoutEffect (en lugar de useEffect) para posicionar el panel ANTES
+ * del paint. Elimina el flash arriba-izquierda.
+ * - Visibility hidden hasta que pos quede calculado (defensa adicional para
+ * navegadores que no respetan el orden esperado).
+ * - Iconos sutiles en headers: chevron unicode más limpio + icono de filtro
+ * activo cuando la columna tiene filtros aplicados.
  */
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";

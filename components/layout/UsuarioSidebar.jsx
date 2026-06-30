@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * UsuarioSidebar — v21.0
+ * UsuarioSidebar
  * Sidebar para el rol `usuario` (visualizador).
  *
- * Cambios v21:
- *   - Se añade enlace "Informe de Certificación" → /usuario/informe
- *     El rol usuario puede generar el informe en .docx desde aquí.
+ * Notas:
+ * - Se añade enlace "Informe de Certificación" → /usuario/informe
+ * El rol usuario puede generar el informe en .docx desde aquí.
  */
 
 import { useRouter, usePathname } from "next/navigation";

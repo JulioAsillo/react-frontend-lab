@@ -1,24 +1,24 @@
 "use client";
 /**
- * InformePreview (compartido) — v25.0
+ * InformePreview (compartido)
  *
  * Render en vivo del informe .docx vía docx-preview. Antes existían 3 copias casi
  * idénticas (usuarios/privilegiados/perfiles) que solo diferían en el endpoint.
  * Ahora es UN solo componente parametrizado por `endpoint`.
  *
- * NUEVO v25.0 — Vista previa en TIEMPO REAL con debounce:
- *   - Cuando `payload` cambia (el usuario escribe), se espera `debounceMs`
- *     antes de pedir el documento. Así se actualiza solo, sin clic, pero sin
- *     disparar un fetch por cada tecla.
- *   - El botón "Vista previa" del padre sigue funcionando como refresco manual
- *     inmediato (fuerza un nuevo payload → render sin esperar el debounce sería
- *     ideal; aquí el cambio de payload simplemente reinicia el temporizador).
+ * Vista previa en TIEMPO REAL con debounce:
+ * - Cuando `payload` cambia (el usuario escribe), se espera `debounceMs`
+ * antes de pedir el documento. Así se actualiza solo, sin clic, pero sin
+ * disparar un fetch por cada tecla.
+ * - El botón "Vista previa" del padre sigue funcionando como refresco manual
+ * inmediato (fuerza un nuevo payload → render sin esperar el debounce sería
+ * ideal; aquí el cambio de payload simplemente reinicia el temporizador).
  *
  * Props:
- *   payload    {object}   valores del formulario (lo arma el padre)
- *   visible    {boolean}
- *   endpoint   {string}   ruta API que genera el .docx
- *   debounceMs {number}   espera tras el último cambio (default 700)
+ * payload {object} valores del formulario (lo arma el padre)
+ * visible {boolean}
+ * endpoint {string} ruta API que genera el .docx
+ * debounceMs {number} espera tras el último cambio (default 700)
  */
 import { useEffect, useRef, useState, useCallback } from "react";
 

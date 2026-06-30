@@ -9,32 +9,32 @@
  * para que el scroll del documento no se pierda al teclear.
  *
  * Variables del template cubiertas (87 campos + conclusiones):
- *   {mes_anio_priv}
- *   Fechas de corte: {fc__priv} {fc_gdh_priv} {fc_mr_priv} {fc_windows_priv}
- *     {fc_linux_priv} {fc_dba_priv} {fc_sysadmin_priv} {fc_domain_priv}
- *     {fc_local_priv} {fc_infra_priv} {fc_mfa_priv}
- *   Windows:  {windows_cesados_priv} {windows_noid_sinsus_priv}
- *             {Windows_noid_sinsus_priv} {windows_cesados_com_priv} {windows_noid_sinsus_com_priv}
- *   Linux:    {linux_cesados_priv} {linux_noid_sinsus_priv} {Linux_noid_sinsus_priv}
- *             {linux_cesados_com_priv} {linux_noid_sinsus_com_priv}
- *   DBA:      {dba_cesados_priv} {dba_sinid_priv} {dba_cesados_com_priv} {dba_sinid_com_priv}
- *   SysAdmin: {sys_cesados_priv} {sys_sinid_priv} {sys_cesados_com_priv} {sys_sinid_com_priv}
- *   Domain:   {domain_cesados_priv} {domain_noid_sinsus_priv}
- *             {domain_cesados_com_priv} {domain_noid_sinsus_com_priv}
- *   Local:    {local_cesados_priv} {local_ noid_sinsus_priv} {local_noid_sinsus_com_priv}
- *             {local_cesados_com_priv}  (typo en template: "local_ noid" con espacio)
- *   Apps x4:  {apps_{exactus|sdp|sit|npac}_{cesados|noid_sinsus}_priv}
- *             {apps_{exactus|sdp|sit|npac}_{cesados|noid_sinsus}_com_priv}
- *   MFA:      {mfa_sinac_priv} {mfa_sinac_com_priv}
- *   PCT x31:  {pct_{windows|linux|dba|sys|domain|local|apps_*|mfa}_{activos_correctos|auto|id}_priv}
- *   {conclusiones_priv}
+ * {mes_anio_priv}
+ * Fechas de corte: {fc__priv} {fc_gdh_priv} {fc_mr_priv} {fc_windows_priv}
+ * {fc_linux_priv} {fc_dba_priv} {fc_sysadmin_priv} {fc_domain_priv}
+ * {fc_local_priv} {fc_infra_priv} {fc_mfa_priv}
+ * Windows: {windows_cesados_priv} {windows_noid_sinsus_priv}
+ * {Windows_noid_sinsus_priv} {windows_cesados_com_priv} {windows_noid_sinsus_com_priv}
+ * Linux: {linux_cesados_priv} {linux_noid_sinsus_priv} {Linux_noid_sinsus_priv}
+ * {linux_cesados_com_priv} {linux_noid_sinsus_com_priv}
+ * DBA: {dba_cesados_priv} {dba_sinid_priv} {dba_cesados_com_priv} {dba_sinid_com_priv}
+ * SysAdmin: {sys_cesados_priv} {sys_sinid_priv} {sys_cesados_com_priv} {sys_sinid_com_priv}
+ * Domain: {domain_cesados_priv} {domain_noid_sinsus_priv}
+ * {domain_cesados_com_priv} {domain_noid_sinsus_com_priv}
+ * Local: {local_cesados_priv} {local_ noid_sinsus_priv} {local_noid_sinsus_com_priv}
+ * {local_cesados_com_priv} (typo en template: "local_ noid" con espacio)
+ * Apps x4: {apps_{exactus|sdp|sit|npac}_{cesados|noid_sinsus}_priv}
+ * {apps_{exactus|sdp|sit|npac}_{cesados|noid_sinsus}_com_priv}
+ * MFA: {mfa_sinac_priv} {mfa_sinac_com_priv}
+ * PCT x31: {pct_{windows|linux|dba|sys|domain|local|apps_*|mfa}_{activos_correctos|auto|id}_priv}
+ * {conclusiones_priv}
  *
  * Excels incrustados (no generados aún — se conservan del template):
- *   rId14 → AD + Apps Críticas
- *   rId16 → Servidores Apps Críticas
- *   rId18 → Base de Datos
- *   rId20 → MFA
- *   rId22 → Infraestructura
+ * rId14 → AD + Apps Críticas
+ * rId16 → Servidores Apps Críticas
+ * rId18 → Base de Datos
+ * rId20 → MFA
+ * rId22 → Infraestructura
  */
 
 import React, { useState, useRef } from 'react';

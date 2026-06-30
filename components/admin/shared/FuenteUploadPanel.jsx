@@ -1,6 +1,6 @@
 "use client";
 /**
- * FuenteUploadPanel — v26
+ * FuenteUploadPanel
  *
  * UI de carga de archivos para una fuente de Recopilar Información cuando el
  * GET falla (aún no hay info subida en el backend). Se muestra dentro de la
@@ -10,11 +10,11 @@
  * - UNA fecha de corte manual compartida (obligatoria, formato ISO al enviar).
  * - Valida columnas en el front (normalizadas, match exacto) antes de subir.
  * - POST multipart por zona; al terminar todas OK, dispara onUploaded() para
- *   que el contenedor re-haga el GET.
+ * que el contenedor re-haga el GET.
  *
  * Props:
- *   config     → { titulo, zonas:[{ label, endpoint, cols }] }
- *   onUploaded → callback tras subir todo correctamente
+ * config → { titulo, zonas:[{ label, endpoint, cols }] }
+ * onUploaded → callback tras subir todo correctamente
  */
 import { useState, useRef } from "react";
 import * as XLSX from "xlsx";

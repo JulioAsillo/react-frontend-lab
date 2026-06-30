@@ -1,21 +1,21 @@
 'use client';
 
 /**
- * GenerarInformePerfilesPanel — v24.5
+ * GenerarInformePerfilesPanel
  *
- * Cambios sobre v1.0:
- *  - Split-view: formulario izq + InformePreview der (igual que Usuarios).
- *  - Preview se actualiza con botón "↺ Refrescar" — NO se auto-dispara en
- *    cada keystroke para no perder la posición de scroll del usuario.
- *  - Fechas de corte automáticas (leídas de uiStore.bdFechaCorte):
- *      fecha_corte_gdh_perfiles     → prf-gdh
- *      fecha_corte_moviper_perfiles → prf-moviper
- *      fecha_corte_mr_perfiles      → prf-matriz-rol
- *      fecha_corte_apps_perfiles    → primer valor no vacío entre prf-app-{exactus,sdp,sit,npac}
- *      fecba_corte_bd_perfiles      → primer valor no vacío entre prf-db-{sdp,exactus}
- *      fecha_corte_ad_perfiles      → prf-ad
- *  - {mes_anio_perfiles} permanece 100% manual.
- *  - Los campos de fecha AUTO se muestran con badge AUTO + tooltip (igual que Usuarios).
+ * Cambios sobre :
+ * - Split-view: formulario izq + InformePreview der (igual que Usuarios).
+ * - Preview se actualiza con botón "↺ Refrescar" — NO se auto-dispara en
+ * cada keystroke para no perder la posición de scroll del usuario.
+ * - Fechas de corte automáticas (leídas de uiStore.bdFechaCorte):
+ * fecha_corte_gdh_perfiles → prf-gdh
+ * fecha_corte_moviper_perfiles → prf-moviper
+ * fecha_corte_mr_perfiles → prf-matriz-rol
+ * fecha_corte_apps_perfiles → primer valor no vacío entre prf-app-{exactus,sdp,sit,npac}
+ * fecba_corte_bd_perfiles → primer valor no vacío entre prf-db-{sdp,exactus}
+ * fecha_corte_ad_perfiles → prf-ad
+ * - {mes_anio_perfiles} permanece 100% manual.
+ * - Los campos de fecha AUTO se muestran con badge AUTO + tooltip (igual que Usuarios).
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';

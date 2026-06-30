@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * DataTablePerfiles — v24.8
+ * DataTablePerfiles
  *
  * Tabla multi-tab para hallazgos del módulo Perfiles.
  *
  * Dos niveles de tabs:
- *   NIVEL 1 (superior) — claves de hoja del backend: "Roles", "SDP", "EXACTUS", etc.
- *   NIVEL 2 (escenarios) — solo para persistKeys con escenarios nombrados:
- *     prf-roles   → "Existe en MR" · "Validación Rol"
- *     prf-moviper → "Existe en MR" · "Validación Rol"
- *     Los demás (prf-dbs, prf-apps) → vista única sin sub-tabs de escenario
+ * NIVEL 1 (superior) — claves de hoja del backend: "Roles", "SDP", "EXACTUS", etc.
+ * NIVEL 2 (escenarios) — solo para persistKeys con escenarios nombrados:
+ * prf-roles → "Existe en MR" · "Validación Rol"
+ * prf-moviper → "Existe en MR" · "Validación Rol"
+ * Los demás (prf-dbs, prf-apps) → vista única sin sub-tabs de escenario
  *
  * Cada sub-tab de escenario tiene su propio VALIDACIÓN + COMENTARIO independiente,
  * persistido bajo: {persistKey}-prf-val-{scKey}-{scenarioKey}

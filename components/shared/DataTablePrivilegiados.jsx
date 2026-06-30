@@ -1,23 +1,23 @@
 "use client";
 
 /**
- * DataTablePrivilegiados — v18.6
+ * DataTablePrivilegiados
  *
  * Tabla para todos los hallazgos del módulo Privilegiados.
  * Diferencias vs DataTablePerfiles:
  *
- *  - Los escenarios son columnas badge propias del backend (ej. "Cesado Activo",
- *    "No Identificado", "Sin Sustento") — NO usan ESCENARIOS_ORDEN canónicos.
- *  - Configuración por reporte (scenarioCfg):
- *      escenarios: [{ key, badgeCol, hasValidacion, hasComentario }]
- *    · hasValidacion: siempre true para todos los escenarios actuales
- *    · hasComentario: true en los escenarios que deben mostrar comentario editable
- *  - Comentario: pre-cargado del campo "Comentario" que viene del backend,
- *    editable en todas las filas independientemente del escenario.
- *  - Validación: pre-cargada del valor del escenario badge correspondiente.
- *  - La navegación SUPERIOR son las hojas del backend (tabs de hoja).
- *  - La navegación INFERIOR son los escenarios (tabs de escenario tipo sheet Excel).
- *  - Export completo: por hoja × por escenario, con columnas Validación y Comentario.
+ * - Los escenarios son columnas badge propias del backend (ej. "Cesado Activo",
+ * "No Identificado", "Sin Sustento") — NO usan ESCENARIOS_ORDEN canónicos.
+ * - Configuración por reporte (scenarioCfg):
+ * escenarios: [{ key, badgeCol, hasValidacion, hasComentario }]
+ * · hasValidacion: siempre true para todos los escenarios actuales
+ * · hasComentario: true en los escenarios que deben mostrar comentario editable
+ * - Comentario: pre-cargado del campo "Comentario" que viene del backend,
+ * editable en todas las filas independientemente del escenario.
+ * - Validación: pre-cargada del valor del escenario badge correspondiente.
+ * - La navegación SUPERIOR son las hojas del backend (tabs de hoja).
+ * - La navegación INFERIOR son los escenarios (tabs de escenario tipo sheet Excel).
+ * - Export completo: por hoja × por escenario, con columnas Validación y Comentario.
  */
 
 import { useMemo, useState, useRef, useCallback } from "react";

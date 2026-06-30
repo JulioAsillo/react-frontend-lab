@@ -2,7 +2,7 @@
 
 /**
  * FuenteDetallePerfiles
- * @TODO v19: unificar con FuenteDetalle pasando `sources` y `routeBase` como props.
+ * @TODO : unificar con FuenteDetalle pasando `sources` y `routeBase` como props.
  * FuenteDetalle ya tiene resize, paginación y búsqueda — esta versión no.
  * Mientras tanto conviven sin duplicar lógica de negocio. — vista individual de una fuente BD del módulo Perfiles.
  * Igual que FuenteDetalle de Usuarios pero apunta a PERFILES_BD_SOURCES y

@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * ConsolidadosPrivilegiadosPage — v24.2
+ * ConsolidadosPrivilegiadosPage
  *
  * 4 tabs + Clasificación de Cuenta (componente compartido):
- *   1. Clasificación de Cuenta  → ClasificacionTab (compartido)
- *   2. DBA    → CRUD /consolidado/dba    (POST para crear y editar — backend detecta dup)
- *   3. Linux  → CRUD /consolidado/linux  (POST crear, PUT editar)
- *   4. Windows→ CRUD /consolidado/windows (POST crear, PUT editar)
+ * 1. Clasificación de Cuenta → ClasificacionTab (compartido)
+ * 2. DBA → CRUD /consolidado/dba (POST para crear y editar — backend detecta dup)
+ * 3. Linux → CRUD /consolidado/linux (POST crear, PUT editar)
+ * 4. Windows→ CRUD /consolidado/windows (POST crear, PUT editar)
  */
 
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";

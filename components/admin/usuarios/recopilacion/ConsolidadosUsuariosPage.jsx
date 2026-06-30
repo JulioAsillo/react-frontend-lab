@@ -1,14 +1,14 @@
 'use client';
 
 /**
- * ConsolidadosUsuariosPage.jsx — v18.3
+ * ConsolidadosUsuariosPage.jsx
  *
  * Cambios:
- *   - Edición inline por doble clic en celda (sin botón Editar).
- *     Clic fuera de la celda → PUT automático al endpoint.
- *   - Comentario en Post Ceses: botón Guardar explícito → PUT /api/post-ceses/{id}.
- *   - Import fila por fila para ambas tabs (ya era así, ahora el comentario
- *     también se envía al endpoint via PUT después del POST).
+ * - Edición inline por doble clic en celda (sin botón Editar).
+ * Clic fuera de la celda → PUT automático al endpoint.
+ * - Comentario en Post Ceses: botón Guardar explícito → PUT /api/post-ceses/{id}.
+ * - Import fila por fila para ambas tabs (ya era así, ahora el comentario
+ * también se envía al endpoint via PUT después del POST).
  */
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';

@@ -1,24 +1,24 @@
 "use client";
 
 /**
- * DataTableCesados — v21.0
+ * DataTableCesados
  *
  * Tabla multi-hoja para Hallazgos Preliminares.
  *
- * Cambios v21:
- *  - Filtro por header estilo Excel: ahora usa `ThCell` del módulo
- *    `DataTableHeader.jsx` (el mismo que usa `DataTableUsuarios`).
- *    Esto reemplaza el header custom de v20 que tenía un panel inline
- *    con UX inconsistente. Ahora el panel flotante de filtro/orden es
- *    idéntico al resto de las tablas de la app.
- *  - Limpieza: se eliminan los ~110 líneas de markup de header custom.
- *  - Mismo set de features: orden A→Z/Z→A, búsqueda en valores únicos,
- *    selección por checkboxes, sticky positioning, resize de columnas.
+ * Notas:
+ * - Filtro por header estilo Excel: ahora usa `ThCell` del módulo
+ * `DataTableHeader.jsx` (el mismo que usa `DataTableUsuarios`).
+ * Esto reemplaza el header custom de que tenía un panel inline
+ * con UX inconsistente. Ahora el panel flotante de filtro/orden es
+ * idéntico al resto de las tablas de la app.
+ * - Limpieza: se eliminan los ~110 líneas de markup de header custom.
+ * - Mismo set de features: orden A→Z/Z→A, búsqueda en valores únicos,
+ * selección por checkboxes, sticky positioning, resize de columnas.
  *
- * Estructura externa idéntica a v20.2:
- *  - Tabs superiores (scenario-tabs-bar) por hoja del backend.
- *  - Toolbar con búsqueda + chip de filtros activos + Exportar.
- *  - Paginación inferior con botones de tamaño.
+ * Estructura externa idéntica a :
+ * - Tabs superiores (scenario-tabs-bar) por hoja del backend.
+ * - Toolbar con búsqueda + chip de filtros activos + Exportar.
+ * - Paginación inferior con botones de tamaño.
  */
 
 import { useState, useMemo, useRef, useCallback } from "react";

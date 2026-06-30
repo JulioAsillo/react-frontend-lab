@@ -3,14 +3,14 @@
 /**
  * GenericPanel — orquesta la generación y exportación de un reporte.
  *
- * Cambios v9 vs v8:
- *   - El raw del reporte vive en reportesStore (Zustand + IndexedDB), no en
- *     usePersistedState. Esto soporta datasets de varios MB sin pegar el
- *     límite de localStorage.
- *   - El fetch va a useReporteMutation (SWR mutation): cancelación,
- *     deduplicación y estados estandarizados gratis.
- *   - El flag de loading se publica al uiStore (en lugar de un CustomEvent
- *     manual sobre localStorage). El sidebar reacciona automáticamente.
+ * Notas:
+ * - El raw del reporte vive en reportesStore (Zustand + IndexedDB), no en
+ * usePersistedState. Esto soporta datasets de varios MB sin pegar el
+ * límite de localStorage.
+ * - El fetch va a useReporteMutation (SWR mutation): cancelación,
+ * deduplicación y estados estandarizados gratis.
+ * - El flag de loading se publica al uiStore (en lugar de un CustomEvent
+ * manual sobre localStorage). El sidebar reacciona automáticamente.
  *
  * La UX es idéntica: misma topbar, mismos modales, mismo empty state.
  */

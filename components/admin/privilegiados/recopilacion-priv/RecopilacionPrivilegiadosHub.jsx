@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * RecopilacionPrivilegiadosHub — v24.2
+ * RecopilacionPrivilegiadosHub
  * Dos tarjetas: Base de Datos → primera fuente (pendientes) | Consolidados
  */
 import { useRouter } from "next/navigation";

@@ -1,35 +1,35 @@
 'use client';
 
 /**
- * GenerarInformeUsuariosPanel — v22.0
+ * GenerarInformeUsuariosPanel
  *
  * Formulario web → genera el informe de certificación .docx
  *
- * Cambios v21.1 (sobre v21.0):
- *  - AUTOCÁLCULO: la mayoría de los campos del informe ya NO se llenan a mano.
- *    Se calculan desde el estado real de la app:
- *      · {ad,apps_*,bd_*,entra}_<escenario>: nº de filas marcadas como
- *        "Incorrecto" en la columna VALIDACIÓN del DataTable correspondiente.
- *      · fecha_corte_*: leídas de IndexedDB (lo que devolvió el backend al
- *        cargar cada fuente en /admin/usuarios/recopilacion/base-datos/*).
- *      · mes_anio: derivado de la primera fecha de corte disponible
- *        (ej. "2026-04-30" → "ABR26").
- *      · pct_*: mockeados con "99.8%".
- *  - El formulario SOLO pide manualmente:
- *      · asunto_escalamiento
- *      · comentarios (*_com_*)
- *      · conclusiones (conclusion_1/2/3)
- *  - Los campos automáticos se muestran en modo lectura, con badge "auto",
- *    estilo distinto y tooltip que explica de dónde sale el valor.
- *  - Botón "Recalcular automáticos" para refrescar los valores derivados
- *    cuando el usuario acaba de validar más filas en otra pestaña.
- *  - Recálculo automático al montar el componente y cada vez que la pestaña
- *    recupera el foco (event "focus" del window).
- *  - Persistencia: solo se guarda en localStorage la parte MANUAL del form;
- *    los automáticos se recalculan siempre desde la fuente de verdad.
+ * Notas:
+ * - AUTOCÁLCULO: la mayoría de los campos del informe ya NO se llenan a mano.
+ * Se calculan desde el estado real de la app:
+ * · {ad,apps_*,bd_*,entra}_<escenario>: nº de filas marcadas como
+ * "Incorrecto" en la columna VALIDACIÓN del DataTable correspondiente.
+ * · fecha_corte_*: leídas de IndexedDB (lo que devolvió el backend al
+ * cargar cada fuente en /admin/usuarios/recopilacion/base-datos/*).
+ * · mes_anio: derivado de la primera fecha de corte disponible
+ * (ej. "2026-04-30" → "ABR26").
+ * · pct_*: mockeados con "99.8%".
+ * - El formulario SOLO pide manualmente:
+ * · asunto_escalamiento
+ * · comentarios (*_com_*)
+ * · conclusiones (conclusion_1/2/3)
+ * - Los campos automáticos se muestran en modo lectura, con badge "auto",
+ * estilo distinto y tooltip que explica de dónde sale el valor.
+ * - Botón "Recalcular automáticos" para refrescar los valores derivados
+ * cuando el usuario acaba de validar más filas en otra pestaña.
+ * - Recálculo automático al montar el componente y cada vez que la pestaña
+ * recupera el foco (event "focus" del window).
+ * - Persistencia: solo se guarda en localStorage la parte MANUAL del form;
+ * los automáticos se recalculan siempre desde la fuente de verdad.
  *
  * Restricción de rol:
- *  - Certificador → ve "Acceso restringido" (no puede generar el informe).
+ * - Certificador → ve "Acceso restringido" (no puede generar el informe).
  */
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';

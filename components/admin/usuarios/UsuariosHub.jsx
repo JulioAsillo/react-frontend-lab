@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * UsuariosHub — v21.0
+ * UsuariosHub
  *
  * Hub principal del módulo Usuarios.
  * Muestra 3 tarjetas para admin: Recopilar, Hallazgos, Informe.
  * Muestra 2 tarjetas para certificador: Recopilar, Hallazgos.
- *   (El certificador no puede generar el informe — restricción de negocio.)
+ * (El certificador no puede generar el informe — restricción de negocio.)
  */
 
 import { useRouter } from "next/navigation";

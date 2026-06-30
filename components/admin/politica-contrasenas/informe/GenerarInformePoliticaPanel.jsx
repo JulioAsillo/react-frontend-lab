@@ -1,29 +1,29 @@
 'use client';
 
 /**
- * GenerarInformePoliticaPanel — v2.0
+ * GenerarInformePoliticaPanel
  *
  * Formulario MANUAL con VALIDACIÓN y CUMPLIMIENTO AUTOMÁTICO.
  *
  * Reglas por campo (una plataforma "Cumple" solo si pasa las 5):
- *   - Longitud mínima  : número, ≥ 8
- *   - Complejidad      : Habilitado | No Habilitado  → cumple si "Habilitado"
- *   - Intentos fallidos: número, ≤ 5
- *   - Historial        : número, ≤ 12
- *   - Caducidad        : número (días), ≤ 60
+ * - Longitud mínima : número, ≥ 8
+ * - Complejidad : Habilitado | No Habilitado → cumple si "Habilitado"
+ * - Intentos fallidos: número, ≤ 5
+ * - Historial : número, ≤ 12
+ * - Caducidad : número (días), ≤ 60
  *
  * Cuadro de Resultados (auto, en la sección 3 "Alcance" del Word). Cada app se
  * valida contra AD si autentica con AD (Cuadro 1), con un AND lógico:
- *   cumple_sit       = AD ∧ SIT
- *   cumple_sdp       = SDP
- *   cumple_exactus   = Exactus ∧ Exactus AD
- *   cumple_plat_back = AD
- *   cumple_azad      = AD ∧ EntraID
- *   cumple_devops    = AD ∧ DevOps
- *   cumple_github    = AD ∧ GitHub
- *   cumple_guardium  = Guardium
- *   cumple_snow      = Service Now
- *   (AD = la política configurada en Active Directory, sección propia editable)
+ * cumple_sit = AD ∧ SIT
+ * cumple_sdp = SDP
+ * cumple_exactus = Exactus ∧ Exactus AD
+ * cumple_plat_back = AD
+ * cumple_azad = AD ∧ EntraID
+ * cumple_devops = AD ∧ DevOps
+ * cumple_github = AD ∧ GitHub
+ * cumple_guardium = Guardium
+ * cumple_snow = Service Now
+ * (AD = la política configurada en Active Directory, sección propia editable)
  *
  * Un campo vacío/ inválido ⇒ esa plataforma NO cumple ⇒ arrastra el AND.
  * Los cumple_XXXX se envían como texto "Sí Cumple" / "No Cumple".

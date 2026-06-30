@@ -2,7 +2,7 @@
 
 /**
  * GestionUsuariosPanel — CRUD mockeado de usuarios.
- * v16.1: columnas redimensionables, acciones siempre visibles.
+ * columnas redimensionables, acciones siempre visibles.
  */
 
 import { useState, useEffect, useCallback } from "react";

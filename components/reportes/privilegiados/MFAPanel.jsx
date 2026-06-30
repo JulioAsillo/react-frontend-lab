@@ -1,16 +1,16 @@
 'use client';
 /**
- * MFAPanel — Hallazgo "MFA Genéricas" de Privilegiados (v25.4).
+ * MFAPanel — Hallazgo "MFA Genéricas" de Privilegiados.
  *
  * Particularidades:
- *   - Un solo escenario: "Validación" (la propia columna del backend trae
- *     "Correcto" / "Incorrecto"). Una sola hoja (mfa_generics).
- *   - Tiene columna "Tipo Cuenta" → al doble clic abre el modal de
- *     clasificación usando UPN como usuario (matrícula la valida el backend).
+ * - Un solo escenario: "Validación" (la propia columna del backend trae
+ * "Correcto" / "Incorrecto"). Una sola hoja (mfa_generics).
+ * - Tiene columna "Tipo Cuenta" → al doble clic abre el modal de
+ * clasificación usando UPN como usuario (matrícula la valida el backend).
  *
  * Respuesta backend (GET /privilegiados/mfa-generics):
- *   { "data": { "mfa_generics": [ { ...UPN, Tipo Cuenta, Validación } ] } }
- *   fetchReporte desempaqueta `data` → { mfa_generics: [...] } (1 hoja).
+ * { "data": { "mfa_generics": [ { ...UPN, Tipo Cuenta, Validación } ] } }
+ * fetchReporte desempaqueta `data` → { mfa_generics: [...] } (1 hoja).
  */
 import { makePrivilegiadosPanel } from './makePrivilegiadosPanel';
 

@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * ClasificacionTab — v23.5
+ * ClasificacionTab
  *
  * Componente compartido que expone la vista CRUD de Clasificación de Cuentas
  * (consolidado/clasificacion-cuentas) reutilizable en los módulos:
- *   - Usuarios   → ConsolidadosPage.jsx (tab "clasificacion")
- *   - Perfiles   → ConsolidadosPerfilesPage.jsx
- *   - Privilegiados → ConsolidadosPrivilegiadosPage.jsx (nuevo)
+ * - Usuarios → ConsolidadosPage.jsx (tab "clasificacion")
+ * - Perfiles → ConsolidadosPerfilesPage.jsx
+ * - Privilegiados → ConsolidadosPrivilegiadosPage.jsx (nuevo)
  *
  * Props:
- *   breadcrumb?: string  — prefijo para el toast de contexto (por defecto "")
+ * breadcrumb?: string — prefijo para el toast de contexto (por defecto "")
  *
  * La lógica es idéntica al ClasificacionTab que vivía en ConsolidadosPage.jsx
  * (Usuarios). Se extrae aquí para no duplicar ~300 líneas en cada módulo.

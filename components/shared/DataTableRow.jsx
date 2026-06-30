@@ -2,8 +2,8 @@
 
 /**
  * DataTableRow — renderiza UNA fila de DataTable.
- * v16: Botón "Guardar" aparece cuando el usuario escribe en sustento
- *      (solo visual — autoguardado sigue activo; el botón da feedback).
+ * Botón "Guardar" aparece cuando el usuario escribe en sustento
+ * (solo visual — autoguardado sigue activo; el botón da feedback).
  */
 
 import { useState } from "react";

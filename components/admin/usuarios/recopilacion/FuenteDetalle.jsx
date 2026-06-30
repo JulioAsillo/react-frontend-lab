@@ -1,23 +1,23 @@
 "use client";
 
 /**
- * FuenteDetalle — v18.5
+ * FuenteDetalle
  *
  * Componente único para TODAS las fuentes de la recopilación BD.
  * Absorbe FuenteDetalleEntraID.jsx (eliminado). Entra ID ahora usa
  * este mismo componente con sourceId="entra-id".
  *
  * Features consolidados:
- *  - Resize de columnas drag-to-drop + persistido en localStorage (de v18.3)
- *  - Paginación (100 registros/página, de FuenteDetalleEntraID)
- *  - Búsqueda rápida inline (de FuenteDetalleEntraID)
- *  - Modal de confirmación en Recargar (de FuenteDetalleEntraID)
- *  - Parser JSON robusto: findFechaCorte recursivo + resolveCollectionRows (de v18.3)
- *  - fecha_corte mostrada como pill en topbar
- *  - Chips de grupos para fuentes con hasGroups: true
- *  - Badges semánticos para isActivo y booleanos
- *  - Fechas formateadas DD/MM/YYYY con ícono
- *  - Banner de estadísticas rápidas
+ * - Resize de columnas drag-to-drop + persistido en localStorage (de )
+ * - Paginación (100 registros/página, de FuenteDetalleEntraID)
+ * - Búsqueda rápida inline (de FuenteDetalleEntraID)
+ * - Modal de confirmación en Recargar (de FuenteDetalleEntraID)
+ * - Parser JSON robusto: findFechaCorte recursivo + resolveCollectionRows (de )
+ * - fecha_corte mostrada como pill en topbar
+ * - Chips de grupos para fuentes con hasGroups: true
+ * - Badges semánticos para isActivo y booleanos
+ * - Fechas formateadas DD/MM/YYYY con ícono
+ * - Banner de estadísticas rápidas
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";

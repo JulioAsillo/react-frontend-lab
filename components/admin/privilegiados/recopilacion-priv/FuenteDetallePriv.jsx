@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * FuenteDetallePriv — v26.2
+ * FuenteDetallePriv
  *
  * Vista individual de cada fuente de Recopilación de Privilegiados.
  * Sigue el mismo patrón de FuenteDetalle (Usuarios):
- *  - Carga vía cargarFuente() del uiStore
- *  - Persiste en IndexedDB con prefijo "priv-data"
- *  - Paginación, búsqueda, filtros Excel (ThCell), resize de columnas
- *  - Vistas especiales para server-linux y server-windows
+ * - Carga vía cargarFuente() del uiStore
+ * - Persiste en IndexedDB con prefijo "priv-data"
+ * - Paginación, búsqueda, filtros Excel (ThCell), resize de columnas
+ * - Vistas especiales para server-linux y server-windows
  */
 
 import { useState, useEffect, useRef, useMemo } from "react";

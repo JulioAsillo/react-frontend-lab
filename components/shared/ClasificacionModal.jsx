@@ -1,25 +1,25 @@
 "use client";
 
 /**
- * ClasificacionModal — v24.6
+ * ClasificacionModal
  *
  * Modal flotante para editar TIPO DE CUENTA, MATRÍCULA y USUARIO
  * de una fila de hallazgo. Se abre con doble clic en la fila.
  *
- * Cambios v24.6:
- *   - Acepta `fieldMap` prop para configurar qué columnas de la fila
- *     se usan como fuente de usuario/matrícula/tipoCuenta, según el
- *     módulo y hallazgo (Usuarios, Perfiles, Privilegiados).
- *   - `fieldMap` es un objeto con claves opcionales:
- *       { usuarioCols, matriculaCols, tipoCuentaCols }
- *     Cada valor es un array de nombres de columna a buscar en orden.
- *     Si no se pasa `fieldMap`, se usa el resolver genérico anterior.
- *   - El campo USUARIO puede ser read-only cuando proviene de una columna
- *     específica (ej. GRANTEE en DBA), controlado por `usuarioReadOnly`.
+ * Notas:
+ * - Acepta `fieldMap` prop para configurar qué columnas de la fila
+ * se usan como fuente de usuario/matrícula/tipoCuenta, según el
+ * módulo y hallazgo (Usuarios, Perfiles, Privilegiados).
+ * - `fieldMap` es un objeto con claves opcionales:
+ * { usuarioCols, matriculaCols, tipoCuentaCols }
+ * Cada valor es un array de nombres de columna a buscar en orden.
+ * Si no se pasa `fieldMap`, se usa el resolver genérico anterior.
+ * - El campo USUARIO puede ser read-only cuando proviene de una columna
+ * específica (ej. GRANTEE en DBA), controlado por `usuarioReadOnly`.
  *
  * Endpoint:
- *   POST http://localhost:8000/consolidado/clasificacion-cuentas
- *   Body: { usuario, tipo_cuenta, matricula }
+ * POST http://localhost:8000/consolidado/clasificacion-cuentas
+ * Body: { usuario, tipo_cuenta, matricula }
  */
 
 import { useState, useEffect, useRef } from "react";

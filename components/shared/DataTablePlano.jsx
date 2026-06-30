@@ -4,18 +4,18 @@
  * DataTablePlano — tabla única para reportes que NO se separan en escenarios.
  *
  * Diferencias con DataTable:
- *   - No hay escenarios (sin tabs en la parte inferior).
- *   - No hay columnas Validación ni Comentario.
- *   - Muestra TODAS las columnas crudas que devuelve el backend.
- *   - El export de vista descarga las mismas columnas tal cual.
+ * - No hay escenarios (sin tabs en la parte inferior).
+ * - No hay columnas Validación ni Comentario.
+ * - Muestra TODAS las columnas crudas que devuelve el backend.
+ * - El export de vista descarga las mismas columnas tal cual.
  *
  * Comparte con DataTable:
- *   - ColPanel y ThCell (filtros por columna + sort + resize) — desde DataTableHeader.
- *   - DataTableRow no aplica (lleva validación/comentario embebidos). Aquí
- *     renderizamos celdas directamente con Badge para columnas conocidas.
- *   - VirtualTableBody no aplica directamente (asume validación). Para v10
- *     mantenemos render clásico — el threshold es alto y los Preliminares no
- *     suelen ser datasets enormes. Si en el futuro lo son, se puede extender.
+ * - ColPanel y ThCell (filtros por columna + sort + resize) — desde DataTableHeader.
+ * - DataTableRow no aplica (lleva validación/comentario embebidos). Aquí
+ * renderizamos celdas directamente con Badge para columnas conocidas.
+ * - VirtualTableBody no aplica directamente (asume validación). Para
+ * mantenemos render clásico — el threshold es alto y los Preliminares no
+ * suelen ser datasets enormes. Si en el futuro lo son, se puede extender.
  *
  * Persistencia: las prefs UI (sort, filtros, anchos, paginación) usan claves
  * con sufijo "-flat-" para no colisionar con DataTable si comparten persistKey.

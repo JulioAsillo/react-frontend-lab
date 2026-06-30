@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * ConsolidadosPerfilesPage — v24.5
+ * ConsolidadosPerfilesPage
  *
  * Cuatro tabs:
- *   1. Clasificación de Cuenta  → ClasificacionTab
- *   2. DB-Roles                 → CRUD /consolidado/db-roles
- *   3. DB-Sustentos             → CRUD /consolidado/db-sustentos
- *   4. App-Sustentos            → CRUD /consolidado/app-sustentos  ← NUEVO
+ * 1. Clasificación de Cuenta → ClasificacionTab
+ * 2. DB-Roles → CRUD /consolidado/db-roles
+ * 3. DB-Sustentos → CRUD /consolidado/db-sustentos
+ * 4. App-Sustentos → CRUD /consolidado/app-sustentos ← NUEVO
  */
 
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
