@@ -1,3 +1,3 @@
 "use client";
-import BDDashboard from "@/components/admin/usuarios/recopilacion/BDDashboard";
-export default function Page() { return <BDDashboard />; }
+import BDDashboardUsuarios from "@/components/admin/usuarios/recopilacion/BDDashboardUsuarios";
+export default function Page() { return <BDDashboardUsuarios />; }

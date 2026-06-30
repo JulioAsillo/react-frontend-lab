@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * GenerarInformePanel — v22.0
+ * GenerarInformeUsuariosPanel — v22.0
  *
  * Formulario web → genera el informe de certificación .docx
  *
@@ -660,7 +660,7 @@ function AccesoRestringido() {
 }
 
 // ── Componente principal ──────────────────────────────────────────────────
-export default function GenerarInformePanel() {
+export default function GenerarInformeUsuariosPanel() {
   const { user } = useAuthStore();
   // bdFechas: Record<sourceId, fechaCorte> — reactivo, actualizado por cargarFuente()
   // sin IDB async, disponible desde el primer render si las BDs ya se cargaron antes.

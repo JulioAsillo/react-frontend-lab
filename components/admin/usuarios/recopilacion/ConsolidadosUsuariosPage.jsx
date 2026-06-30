@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * ConsolidadosPage.jsx — v18.3
+ * ConsolidadosUsuariosPage.jsx — v18.3
  *
  * Cambios:
  *   - Edición inline por doble clic en celda (sin botón Editar).
@@ -715,7 +715,7 @@ function ConsolidadosInner() {
   );
 }
 
-export default function ConsolidadosPage() {
+export default function ConsolidadosUsuariosPage() {
   return (
     <Suspense fallback={<div className="recopilacion-page" />}>
       <ConsolidadosInner />

@@ -1,3 +1,3 @@
-import RecopilacionHub from "@/components/admin/usuarios/recopilacion/RecopilacionHub";
+import RecopilacionUsuariosHub from "@/components/admin/usuarios/recopilacion/RecopilacionUsuariosHub";
 export const metadata = { title: "Recopilación — ITSecOps" };
-export default function Page() { return <RecopilacionHub />; }
+export default function Page() { return <RecopilacionUsuariosHub />; }

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export default function RecopilacionHub() {
+export default function RecopilacionUsuariosHub() {
   const router = useRouter();
   return (
     <div style={{

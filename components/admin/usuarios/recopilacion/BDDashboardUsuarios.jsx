@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * BDDashboard — Usuarios.
+ * BDDashboardUsuarios — Usuarios.
  *
  * Paridad admin/certificador: AMBOS roles tienen los mismos botones
  * (Cargar a Todos, Cargar/Recargar, Validar, Guardar). El botón "Guardar"
@@ -41,7 +41,7 @@ function savedInfo(v) {
   return v;
 }
 
-export default function BDDashboard() {
+export default function BDDashboardUsuarios() {
   const router   = useRouter();
   const { user } = useAuthStore();
 
