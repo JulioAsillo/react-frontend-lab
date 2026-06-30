@@ -7,7 +7,7 @@
  * (Cargar a Todos, Cargar/Recargar, Validar, Guardar). El botón "Guardar"
  * marca la conformidad de la fuente y la persiste EN MEMORIA (localStorage),
  * registrando QUIÉN la marcó (admin o certificador) y la fecha. La tarjeta
- * lo muestra como "✓ Conforme por {rol}".
+ * lo muestra como "Conforme por {rol}".
  *
  * El fetch de cada fuente vive en uiStore.cargarFuente (no en este componente).
  */

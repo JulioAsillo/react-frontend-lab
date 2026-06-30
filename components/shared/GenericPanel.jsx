@@ -37,7 +37,7 @@ function formatCutoff(iso) {
 // ── Input de fecha de corte: texto DD-MM-YYYY + calendario nativo ───────────
 // El estado externo (value/onChange) SIEMPRE es ISO (YYYY-MM-DD) para no romper
 // fetchReporte (?fecha_ref=YYYY-MM-DD) ni el cacheo en IndexedDB. La UI muestra
-// y acepta DD-MM-YYYY. El ícono 📅 abre el selector de fecha nativo.
+// y acepta DD-MM-YYYY. El botón de calendario abre el selector nativo.
 function isoToDisplay(iso) {
   const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
   return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
