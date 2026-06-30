@@ -135,7 +135,7 @@ function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
         <div className="bd-card-title-block">
           <div className="bd-card-title">
             {src.label}
-            {isUpload && <span className="bd-card-upload-tag" title="Esta fuente se alimenta subiendo archivos .xlsx/.xls">📤 carga manual</span>}
+            {isUpload && <span className="bd-card-upload-tag" title="Esta fuente se alimenta subiendo archivos .xlsx/.xls">carga manual</span>}
           </div>
           <div className="bd-card-meta">
             {isLoading
@@ -159,12 +159,12 @@ function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
           margin: "2px 0 4px", padding: "3px 10px", borderRadius: 999,
           background: "var(--accent-bg)", border: "1px solid var(--accent2)",
           color: "var(--accent)", fontSize: 11.5, fontWeight: 600 }}>
-          📅 Fecha de corte: {fmtFechaCorte(fechaCorte)}
+          Fecha de corte: {fmtFechaCorte(fechaCorte)}
         </div>
       )}
       {needsUpload && (
         <div className="bd-card-upload-hint">
-          📋 Aún no hay información cargada. Entra para subir {src.id === 'gdh' ? 'los archivos (Activos y Cesados)' : 'el archivo'} .xlsx/.xls e indicar la fecha de corte.
+          Aún no hay información cargada. Entra para subir {src.id === 'gdh' ? 'los archivos (Activos y Cesados)' : 'el archivo'} .xlsx/.xls e indicar la fecha de corte.
         </div>
       )}
 
@@ -174,7 +174,7 @@ function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
           background: 'var(--inc-bg)', border: '1px solid var(--inc-border)',
           borderRadius: 'var(--radius)', color: 'var(--inc-text)', lineHeight: 1.4,
         }}>
-          ❌ {errorMsg}
+          {errorMsg}
         </div>
       )}
 
@@ -192,7 +192,7 @@ function BDSourceCard({ src, saved, onCargar, onValidar, onGuardar }) {
               Reintentar
             </button>
             <button className="btn-generate bd-card-upload-btn" onClick={onValidar} style={{ flex: 1 }}>
-              📤 Subir archivo
+              Subir archivo
             </button>
           </>
         ) : (

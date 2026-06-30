@@ -65,15 +65,6 @@ export default function AdminLanding() {
               <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>{m.label}</div>
               <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 4, lineHeight: 1.55 }}>{m.sub}</div>
             </div>
-            {!m.available && (
-              <span style={{
-                position: "absolute", top: 14, right: 14,
-                fontSize: 10, fontWeight: 600, fontFamily: "var(--mono)",
-                color: "var(--text4)", background: "var(--bg3)",
-                border: "1px solid var(--border)", borderRadius: 20,
-                padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.06em",
-              }}>Próximamente</span>
-            )}
           </div>
         ))}
       </div>

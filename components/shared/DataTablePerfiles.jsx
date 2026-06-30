@@ -320,9 +320,9 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
         </div>
         <div className="toolbar-right">
           <span className="row-count"><span className="row-count-num">{filteredSorted.length}</span> / {scenarioRows.length} filas</span>
-          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>✏ doble clic para clasificar</span>
+          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>doble clic para clasificar</span>
           <button className="btn-export-small" onClick={handleExportVista}>↓ Exportar vista</button>
-          <button className="btn-export-small" onClick={() => flush()}>💾 Guardar</button>
+          <button className="btn-export-small" onClick={() => flush()}>Guardar</button>
         </div>
       </div>
 
@@ -583,9 +583,9 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
         </div>
         <div className="toolbar-right">
           <span className="row-count"><span className="row-count-num">{filteredSorted.length}</span> / {rows.length} filas</span>
-          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>✏ doble clic para clasificar</span>
+          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>doble clic para clasificar</span>
           <button className="btn-export-small" onClick={handleExportVista}>↓ Exportar vista</button>
-          <button className="btn-export-small" onClick={() => flush()}>💾 Guardar</button>
+          <button className="btn-export-small" onClick={() => flush()}>Guardar</button>
         </div>
       </div>
 

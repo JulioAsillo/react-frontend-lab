@@ -194,7 +194,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
             <span>{src.icon} {src.label}</span>
             {fechaCorteSrc && (
               <span className="cutoff-pill-static" title="Fecha de corte del backend">
-                📅 Corte: <strong>{String(fechaCorteSrc).split("T")[0]}</strong>
+                Corte: <strong>{String(fechaCorteSrc).split("T")[0]}</strong>
               </span>
             )}
             {!uploadCfg && (
@@ -237,8 +237,8 @@ export default function FuenteDetallePerfiles({ sourceId }) {
               style={{ background: saved ? "var(--ok)" : undefined }}
             >
               {saved ? "✓ Guardado" : isLast
-                ? "💾 Guardar y pasar a Consolidados →"
-                : `💾 Guardar y continuar → ${nextSrc?.label}`}
+                ? "Guardar y pasar a Consolidados →"
+                : `Guardar y continuar → ${nextSrc?.label}`}
             </button>
           )}
           {status === "ok" && isCertificador && (
@@ -264,7 +264,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
                 style={{ background: certConfirm ? "var(--ok)" : undefined, minWidth: 150 }}>
                 {certConfirm
                   ? (saved ? "✓ Guardado" : "↩ Desmarcar acuerdo")
-                  : (saved ? "✓ Registrado" : "💾 Estoy de acuerdo")}
+                  : (saved ? "✓ Registrado" : "Estoy de acuerdo")}
               </button>
             </div>
           )}
@@ -361,7 +361,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
                     }}>
                       {col}
                       {src.dateCols?.includes(col) && (
-                        <span style={{ marginLeft: 4, opacity: 0.6, fontSize: 10 }}>📅</span>
+                        <span style={{ marginLeft: 4, opacity: 0.6, fontSize: 10 }}></span>
                       )}
                     </th>
                   ))}

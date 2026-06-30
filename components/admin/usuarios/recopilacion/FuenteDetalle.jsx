@@ -492,7 +492,7 @@ export default function FuenteDetalle({
     if (src.dateCols?.includes(col)) {
       const f = fmtDate(val);
       return f
-        ? <span style={{ fontFamily: "var(--mono)", fontSize: 12, whiteSpace: "nowrap" }}>📅 {f}</span>
+        ? <span style={{ fontFamily: "var(--mono)", fontSize: 12, whiteSpace: "nowrap" }}>{f}</span>
         : <span style={{ color: "var(--text4)", fontSize: 12 }}>—</span>;
     }
     if (typeof val === "boolean") return val ? "Sí" : "No";
@@ -622,7 +622,7 @@ export default function FuenteDetalle({
             </h2>
             {formattedFechaCorte && (
               <span className="cutoff-pill-static" title="Fecha de corte del backend">
-                📅 Corte: <strong>{formattedFechaCorte}</strong>
+                Corte: <strong>{formattedFechaCorte}</strong>
               </span>
             )}
           </div>
@@ -662,8 +662,8 @@ export default function FuenteDetalle({
             <button className="btn-generate" onClick={handleGuardar}
               style={{ background: saved ? "var(--ok)" : undefined }}>
               {saved ? "✓ Guardado"
-                : isLast ? "💾 Guardar y pasar a Consolidados →"
-                : `💾 Guardar y continuar → ${nextSrc?.label}`}
+                : isLast ? "Guardar y pasar a Consolidados →"
+                : `Guardar y continuar → ${nextSrc?.label}`}
             </button>
           )}
           {status === "ok" && isCertificador && (
@@ -692,8 +692,8 @@ export default function FuenteDetalle({
                   minWidth: 150,
                 }}>
                 {certConfirm
-                  ? (saved ? "✓ Guardado" : "↩ Desmarcar acuerdo")
-                  : (saved ? "✓ Registrado" : "💾 Estoy de acuerdo")}
+                  ? (saved ? "✓ Guardado" : "Desmarcar acuerdo")
+                  : (saved ? "✓ Registrado" : "Estoy de acuerdo")}
               </button>
             </div>
           )}
@@ -714,7 +714,7 @@ export default function FuenteDetalle({
         <div style={{ padding: "0 4px" }}>
           <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px 20px 0" }}>
             <button className="btn-export-small" onClick={() => setReupload(false)}>
-              ✕ Cancelar y volver a la tabla
+              Cancelar y volver a la tabla
             </button>
           </div>
           <FuenteUploadPanel config={uploadCfg} onUploaded={() => { setReupload(false); handleReset(); }} />
@@ -755,8 +755,8 @@ export default function FuenteDetalle({
                 style={c === "grupos" ? { color: "var(--sust-text)", background: "var(--sust-bg)" }
                   : src.dateCols?.includes(c) ? { color: "var(--accent)", background: "var(--accent-bg)" }
                   : {}}>
-                {c === "grupos" ? "📦 grupos" : c}
-                {src.dateCols?.includes(c) && " 📅"}
+                {c === "grupos" ? "grupos" : c}
+                {src.dateCols?.includes(c) && ""}
               </span>
             ))}
           </div>
@@ -827,13 +827,13 @@ export default function FuenteDetalle({
               />
               {search && (
                 <button className="btn-export-small" onClick={() => { setSearch(""); setPage(1); }}>
-                  ✕ Limpiar
+                  Limpiar
                 </button>
               )}
               {Object.values(colFilters).some(s => s.size > 0) && (
                 <button className="btn-export-small" style={{ color: "var(--accent)" }}
                   onClick={() => { setColFilters({}); setPage(1); }}>
-                  ✕ Quitar filtros
+                  Quitar filtros
                 </button>
               )}
             </div>

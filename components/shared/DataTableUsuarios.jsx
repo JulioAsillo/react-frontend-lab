@@ -345,7 +345,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
             onChange={e => { setFilter(e.target.value); setPage(0); }} />
           {Object.values(colFilters).some(a => a?.length > 0) && (
             <button className="btn-export-small" style={{ color: "var(--accent)" }}
-              onClick={() => { setColFilters({}); setPage(0); }}>✕ Quitar filtros</button>
+              onClick={() => { setColFilters({}); setPage(0); }}>Quitar filtros</button>
           )}
           <div className="chips-bar">
             <button className={`chip ${chips.includes("hallazgos") ? "chip-on" : ""}`} onClick={() => toggleChip("hallazgos")}>
@@ -421,7 +421,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
         </span>
         <button className="btn-save"
           onClick={() => { flush(); setSaveMsg("✓ Progreso confirmado"); setTimeout(() => setSaveMsg(null), 2500); }}>
-          💾 Guardar progreso
+          Guardar progreso
         </button>
       </div>
       {saveMsg && <div className="save-toast">{saveMsg}</div>}

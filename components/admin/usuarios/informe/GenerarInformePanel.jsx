@@ -21,7 +21,7 @@
  *      · conclusiones (conclusion_1/2/3)
  *  - Los campos automáticos se muestran en modo lectura, con badge "auto",
  *    estilo distinto y tooltip que explica de dónde sale el valor.
- *  - Botón "🔄 Recalcular automáticos" para refrescar los valores derivados
+ *  - Botón "Recalcular automáticos" para refrescar los valores derivados
  *    cuando el usuario acaba de validar más filas en otra pestaña.
  *  - Recálculo automático al montar el componente y cada vez que la pestaña
  *    recupera el foco (event "focus" del window).
@@ -44,7 +44,7 @@ import {
 } from '@/lib/utils/informeCalculo';
 import { idbGetItem } from '@/lib/storage';
 import * as XLSX from 'xlsx';
-import InformePreview from './InformePreview';
+import InformeUsuariosPreview from './InformeUsuariosPreview';
 
 // ── Generador de Excel de hallazgos para incrustar en el .docx ─────────────
 // Devuelve un Buffer base64 con el .xlsx del reporte completo.
@@ -842,7 +842,7 @@ export default function GenerarInformePanel() {
         <div className="topbar-right" style={{ gap: 8, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
           {error && (
             <span style={{ fontSize: 12, color: 'var(--inc-text)', marginRight: 8, maxWidth: 320 }}>
-              ❌ {error}
+              {error}
             </span>
           )}
           <button
@@ -851,7 +851,7 @@ export default function GenerarInformePanel() {
             disabled={loading}
             title="Vuelve a leer las validaciones y fechas de corte desde el navegador"
           >
-            🔄 Recalcular
+            Recalcular
           </button>
           <button
             className="btn-export-small"
@@ -865,14 +865,14 @@ export default function GenerarInformePanel() {
             disabled={loading}
             title="Actualiza la vista previa del documento manteniendo la posición de scroll"
           >
-            👁 Vista previa
+            Vista previa
           </button>
           <button
             className="btn-export-small"
             onClick={() => setShowClearConfirm(true)}
             disabled={loading || camposEditados === 0}
           >
-            🗑 Limpiar manuales
+            Limpiar manuales
           </button>
           <button
             className="btn-export"
@@ -882,12 +882,12 @@ export default function GenerarInformePanel() {
               background: 'var(--ok-bg)', color: 'var(--ok-text)', borderColor: 'var(--ok-border)',
             } : {}}
           >
-            {savedMsg ? '✓ Guardado' : '💾 Guardar valores'}
+            {savedMsg ? '✓ Guardado' : 'Guardar valores'}
           </button>
           <button className="btn-generate" onClick={handleGenerar} disabled={loading}>
             {loading ? <><span className="spinner" /> Generando…</>
              : ok     ? '✓ Descargado'
-             : '⬇ Generar .docx'}
+             : 'Generar .docx'}
           </button>
         </div>
       </div>
@@ -1107,7 +1107,7 @@ export default function GenerarInformePanel() {
           display: 'flex', flexDirection: 'column',
           minHeight: 0,
         }}>
-          <InformePreview payload={previewPayload} visible={true} />
+          <InformeUsuariosPreview payload={previewPayload} visible={true} />
         </div>
         {/* end preview panel */}
 

@@ -3,6 +3,6 @@
 // vive en components/shared/InformePreview.jsx; aquí solo se fija el endpoint.
 import SharedInformePreview from "@/components/shared/InformePreview";
 
-export default function InformePreview(props) {
+export default function InformeUsuariosPreview(props) {
   return <SharedInformePreview endpoint="/api/generar-informe" {...props} />;
 }

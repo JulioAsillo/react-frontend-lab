@@ -335,7 +335,7 @@ function ComentarioCell({ value, onSave }) {
             alignSelf:'flex-end',
           }}
         >
-          {saving ? '…' : saved ? '✓ Guardado' : '💾 Guardar'}
+          {saving ? '…' : saved ? '✓ Guardado' : 'Guardar'}
         </button>
       )}
     </div>
@@ -431,7 +431,7 @@ function PostCesesTab() {
     } catch {
       setRows(prev);
       await idbSetItem(IDB_KEY_POST, prev);
-      showToast('❌ Error al guardar — cambio revertido');
+      showToast('Error al guardar — cambio revertido');
     }
   }
 
@@ -452,7 +452,7 @@ function PostCesesTab() {
     } catch {
       setRows(prev);
       await idbSetItem(IDB_KEY_POST, prev);
-      showToast('❌ Error al guardar comentario');
+      showToast('Error al guardar comentario');
     }
   }
 
@@ -564,7 +564,7 @@ function PostCesesTab() {
         </div>
         <div className="toolbar-right" style={{ gap:8 }}>
           <span className="row-count"><span className="row-count-num">{filtered.length}</span> registros</span>
-          <span style={{ fontSize:11, color:'var(--text3)', fontFamily:'var(--mono)' }} title="Doble clic en celda para editar">✏ doble clic para editar</span>
+          <span style={{ fontSize:11, color:'var(--text3)', fontFamily:'var(--mono)' }} title="Doble clic en celda para editar">doble clic para editar</span>
           <button className="btn-export-small" title="Descargar template .xlsx" onClick={()=>downloadTemplateXLSX(['usuario','app_or_db','fecha_login','comentario'],'post-ceses')}>↓ Template .xlsx</button>
           <button className="btn-export-small" onClick={()=>fileRef.current?.click()}>↑ Importar (.csv / .xlsx)</button>
           <button className="btn-export" disabled={!filtered.length}

@@ -375,23 +375,23 @@ export default function GenerarInformePerfilesPanel() {
           <h2 className="page-title">Generar Informe de Certificación — Perfiles</h2>
         </div>
         <div className="topbar-right" style={{ gap: 8, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-          {error && <span style={{ fontSize: 12, color: 'var(--inc-text)', marginRight: 8, maxWidth: 320 }}>❌ {error}</span>}
+          {error && <span style={{ fontSize: 12, color: 'var(--inc-text)', marginRight: 8, maxWidth: 320 }}>{error}</span>}
           <button
             className="btn-export-small"
             onClick={handleRefreshPreview}
             disabled={loading}
             title="Actualiza la vista previa manteniendo la posición de scroll"
-          >👁 Vista previa</button>
+          >Vista previa</button>
           <button className="btn-export-small" onClick={() => setShowClearConfirm(true)}
-            disabled={loading || camposEditados === 0}>🗑 Limpiar manuales</button>
+            disabled={loading || camposEditados === 0}>Limpiar manuales</button>
           <button className="btn-export" onClick={handleGuardar} disabled={loading}
             style={savedMsg ? { background: 'var(--ok-bg)', color: 'var(--ok-text)', borderColor: 'var(--ok-border)' } : {}}>
-            {savedMsg ? '✓ Guardado' : '💾 Guardar valores'}
+            {savedMsg ? '✓ Guardado' : 'Guardar valores'}
           </button>
           <button className="btn-generate" onClick={handleGenerar} disabled={loading}>
             {loading ? <><span className="spinner" /> Generando…</>
              : ok     ? '✓ Descargado'
-             : '⬇ Generar .docx'}
+             : 'Generar .docx'}
           </button>
         </div>
       </div>

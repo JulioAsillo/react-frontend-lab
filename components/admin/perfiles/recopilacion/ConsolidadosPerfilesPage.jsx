@@ -188,7 +188,7 @@ function DBRolesTab() {
   async function handleRolesImport(e) {
     const file = e.target.files?.[0]; if (!file) return; e.target.value = "";
     let parsed;
-    try { parsed = await parseXLSX(file); } catch { showToast("❌ Error al leer el archivo"); return; }
+    try { parsed = await parseXLSX(file); } catch { showToast("Error al leer el archivo"); return; }
     let ok = 0;
     for (const row of parsed) {
       const db_name = DB_NAME_OPTIONS.includes(String(row.db_name ?? "").trim().toUpperCase())
@@ -261,7 +261,7 @@ function DBRolesTab() {
       showToast("Cambio guardado");
     } catch {
       setRows(prev); await idbSetItem(IDB_KEY_ROLES, prev);
-      showToast("❌ Error al guardar — cambio revertido");
+      showToast("Error al guardar — cambio revertido");
     }
   }
 
@@ -272,7 +272,7 @@ function DBRolesTab() {
       const updated = rows.filter(r => r.id !== id);
       setRows(updated); await idbSetItem(IDB_KEY_ROLES, updated);
       showToast("Registro eliminado");
-    } catch (e) { showToast("❌ Error al eliminar: " + e.message); }
+    } catch (e) { showToast("Error al eliminar: " + e.message); }
     finally { setDelTarget(null); }
   }
 
@@ -348,7 +348,7 @@ function DBRolesTab() {
         </div>
         <div className="toolbar-right">
           <span className="row-count"><span className="row-count-num">{filtered.length}</span> registros</span>
-          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>✏ doble clic para editar</span>
+          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>doble clic para editar</span>
           <button className="btn-export-small"
             onClick={() => exportViewXLSX(sorted, COLS_ROLES, "db-roles-vista")}>↓ Exportar vista</button>
           <button className="btn-export-small" title="Descargar template .xlsx"
@@ -458,7 +458,7 @@ function DBSustentosTab() {
   async function handleSustImport(e) {
     const file = e.target.files?.[0]; if (!file) return; e.target.value = "";
     let parsed;
-    try { parsed = await parseXLSX(file); } catch { showToast("❌ Error al leer el archivo"); return; }
+    try { parsed = await parseXLSX(file); } catch { showToast("Error al leer el archivo"); return; }
     const payload = parsed
       .filter(row => String(row.matricula ?? "").trim() && String(row.sustento ?? "").trim())
       .map(row => ({
@@ -478,7 +478,7 @@ function DBSustentosTab() {
       const d = await res.json();
       await load();
       showToast(`${d.creados?.length ?? payload.length} sustento(s) importados`);
-    } catch (err) { showToast("❌ Error en importación: " + err.message); }
+    } catch (err) { showToast("Error en importación: " + err.message); }
   }
 
   const load = useCallback(async () => {
@@ -537,7 +537,7 @@ function DBSustentosTab() {
       showToast("Cambio guardado");
     } catch {
       setRows(prev); await idbSetItem(IDB_KEY_SUSTENTOS, prev);
-      showToast("❌ Error al guardar — cambio revertido");
+      showToast("Error al guardar — cambio revertido");
     }
   }
 
@@ -548,7 +548,7 @@ function DBSustentosTab() {
       const updated = rows.filter(r => r.id !== id);
       setRows(updated); await idbSetItem(IDB_KEY_SUSTENTOS, updated);
       showToast("Registro eliminado");
-    } catch (e) { showToast("❌ Error al eliminar: " + e.message); }
+    } catch (e) { showToast("Error al eliminar: " + e.message); }
     finally { setDelTarget(null); }
   }
 
@@ -627,7 +627,7 @@ function DBSustentosTab() {
         </div>
         <div className="toolbar-right">
           <span className="row-count"><span className="row-count-num">{filtered.length}</span> registros</span>
-          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>✏ doble clic para editar</span>
+          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>doble clic para editar</span>
           <button className="btn-export-small"
             onClick={() => exportViewXLSX(sorted, COLS_SUST, "db-sustentos-vista")}>↓ Exportar vista</button>
           <button className="btn-export-small" title="Descargar template .xlsx"
@@ -739,7 +739,7 @@ function AppSustentosTab() {
   async function handleImport(e) {
     const file = e.target.files?.[0]; if (!file) return; e.target.value = "";
     let parsed;
-    try { parsed = await parseXLSX(file); } catch { showToast("❌ Error al leer el archivo"); return; }
+    try { parsed = await parseXLSX(file); } catch { showToast("Error al leer el archivo"); return; }
     const payload = parsed
       .filter(row => String(row.matricula ?? "").trim() && String(row.sustento ?? "").trim())
       .map(row => ({
@@ -758,7 +758,7 @@ function AppSustentosTab() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       await load();
       showToast(`${payload.length} sustento(s) importados`);
-    } catch (err) { showToast("❌ Error en importación: " + err.message); }
+    } catch (err) { showToast("Error en importación: " + err.message); }
   }
 
   const load = useCallback(async () => {
@@ -817,7 +817,7 @@ function AppSustentosTab() {
       showToast("Cambio guardado");
     } catch {
       setRows(prev); await idbSetItem(IDB_KEY_APP_SUST, prev);
-      showToast("❌ Error al guardar — cambio revertido");
+      showToast("Error al guardar — cambio revertido");
     }
   }
 
@@ -828,7 +828,7 @@ function AppSustentosTab() {
       const updated = rows.filter(r => r.id !== id);
       setRows(updated); await idbSetItem(IDB_KEY_APP_SUST, updated);
       showToast("Registro eliminado");
-    } catch (e) { showToast("❌ Error al eliminar: " + e.message); }
+    } catch (e) { showToast("Error al eliminar: " + e.message); }
     finally { setDelTarget(null); }
   }
 
@@ -910,7 +910,7 @@ function AppSustentosTab() {
         </div>
         <div className="toolbar-right">
           <span className="row-count"><span className="row-count-num">{filtered.length}</span> registros</span>
-          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>✏ doble clic para editar</span>
+          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>doble clic para editar</span>
           <button className="btn-export-small"
             onClick={() => exportViewXLSX(sorted, COLS_APP, "app-sustentos-vista")}>↓ Exportar vista</button>
           <button className="btn-export-small" title="Descargar template .xlsx"
