@@ -566,7 +566,7 @@ export default function FuenteDetallePriv({ sourceId }) {
             <h2 className="page-title" style={{ margin: 0 }}>{src.icon} {src.label}</h2>
             {fechaCorte && (
               <span className="cutoff-pill-static">
-                📅 Corte: <strong>{fmtFechaHora(fechaCorte)}</strong>
+                Corte: <strong>{fmtFechaHora(fechaCorte)}</strong>
               </span>
             )}
           </div>
@@ -606,7 +606,7 @@ export default function FuenteDetallePriv({ sourceId }) {
                     style={{ background: certConfirm ? "var(--ok)" : undefined, minWidth: 150 }}>
                     {certConfirm
                       ? (savedCert ? "✓ Guardado" : "↩ Desmarcar acuerdo")
-                      : (savedCert ? "✓ Registrado" : "💾 Estoy de acuerdo")}
+                      : (savedCert ? "✓ Registrado" : "Estoy de acuerdo")}
                   </button>
                 </div>
               ) : (
@@ -629,7 +629,7 @@ export default function FuenteDetallePriv({ sourceId }) {
           si no, el error normal con reintentar. */}
       {errorMsg && !uploadCfg && (
         <div className="error-box" style={{ margin: "0 24px 12px" }}>
-          ❌ {errorMsg} —{" "}
+          {errorMsg} —{" "}
           <button className="btn-export-small" onClick={handleCargar}>Reintentar</button>
         </div>
       )}

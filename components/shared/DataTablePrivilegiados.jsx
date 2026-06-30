@@ -417,7 +417,7 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
         </span>
         <button className="btn-save"
           onClick={() => { flush(); setSaveMsg("✓ Progreso confirmado"); setTimeout(() => setSaveMsg(null), 2500); }}>
-          💾 Guardar progreso
+          Guardar progreso
         </button>
       </div>
       {saveMsg && <div className="save-toast">{saveMsg}</div>}

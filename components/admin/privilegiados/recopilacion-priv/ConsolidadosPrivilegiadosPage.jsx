@@ -283,7 +283,7 @@ function CrudTab({ config }) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setNewVals(newDefaults);
       await load();
-      showToast("✅ Registro creado correctamente");
+      showToast("Registro creado correctamente");
     } catch (e) { setAddError(e.message); }
     finally { setAdding(false); }
   }
@@ -303,11 +303,11 @@ function CrudTab({ config }) {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error();
-      showToast("✅ Cambio guardado");
+      showToast("Cambio guardado");
     } catch {
       setRows(prev);
       await idbSetItem(idbKey, prev);
-      showToast("❌ Error al guardar — cambio revertido");
+      showToast("Error al guardar — cambio revertido");
     }
   }
 
@@ -318,15 +318,15 @@ function CrudTab({ config }) {
       const updated = rows.filter(r => r.id !== id);
       setRows(updated);
       await idbSetItem(idbKey, updated);
-      showToast("✅ Registro eliminado");
-    } catch (e) { showToast("❌ Error al eliminar: " + e.message); }
+      showToast("Registro eliminado");
+    } catch (e) { showToast("Error al eliminar: " + e.message); }
     finally { setDelTarget(null); }
   }
 
   async function handleImport(e) {
     const file = e.target.files?.[0]; if (!file) return; e.target.value = "";
     let parsed;
-    try { parsed = await parseXLSX(file); } catch { showToast("❌ Error al leer el archivo"); return; }
+    try { parsed = await parseXLSX(file); } catch { showToast("Error al leer el archivo"); return; }
     let ok = 0;
     for (const row of parsed) {
       const body  = buildBody(row);
@@ -344,7 +344,7 @@ function CrudTab({ config }) {
       } catch {}
     }
     await load();
-    showToast(`✅ ${ok} registro${ok !== 1 ? "s" : ""} importados`);
+    showToast(`${ok} registro${ok !== 1 ? "s" : ""} importados`);
   }
 
   const filtered = rows.filter(r => {
@@ -436,7 +436,7 @@ function CrudTab({ config }) {
         </div>
         <div className="toolbar-right">
           <span className="row-count"><span className="row-count-num">{filtered.length}</span> registros</span>
-          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>✏ doble clic para editar</span>
+          <span style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--mono)" }}>doble clic para editar</span>
           <button className="btn-export-small" title="Descargar template"
             onClick={() => downloadTemplateXLSX(templateCols, exportFilename)}>↓ Template .xlsx</button>
           <button className="btn-export-small" onClick={() => fileRef.current?.click()}>↑ Importar</button>

@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * GenerarInformePrivilegiadosPanel — v24.5
+ * GenerarInformePrivilegiadosPanel
  *
  * Formulario 100% manual para el informe de certificación de Privilegiados.
  * Split-view: formulario (izq) + preview en vivo (der).
@@ -443,21 +443,21 @@ export default function GenerarInformePrivilegiadosPanel() {
           <h2 className="page-title">Generar Informe de Certificación — Privilegiados</h2>
         </div>
         <div className="topbar-right" style={{ gap: 8, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-          {error && <span style={{ fontSize: 12, color: 'var(--inc-text)', maxWidth: 300 }}>❌ {error}</span>}
+          {error && <span style={{ fontSize: 12, color: 'var(--inc-text)', maxWidth: 300 }}>{error}</span>}
           <button
             className="btn-export-small"
             onClick={handleRefresh}
             disabled={loading}
             title="Actualiza la vista previa manteniendo la posición de scroll"
-          >👁 Vista previa</button>
+          >Vista previa</button>
           <button className="btn-export-small" onClick={() => setShowClear(true)}
-            disabled={loading || camposEditados === 0}>🗑 Limpiar</button>
+            disabled={loading || camposEditados === 0}>Limpiar</button>
           <button className="btn-export" onClick={handleGuardar} disabled={loading}
             style={savedMsg ? { background: 'var(--ok-bg)', color: 'var(--ok-text)', borderColor: 'var(--ok-border)' } : {}}>
-            {savedMsg ? '✓ Guardado' : '💾 Guardar valores'}
+            {savedMsg ? '✓ Guardado' : 'Guardar valores'}
           </button>
           <button className="btn-generate" onClick={handleGenerar} disabled={loading}>
-            {loading ? <><span className="spinner" /> Generando…</> : ok ? '✓ Descargado' : '⬇ Generar .docx'}
+            {loading ? <><span className="spinner" /> Generando…</> : ok ? '✓ Descargado' : 'Generar .docx'}
           </button>
         </div>
       </div>
