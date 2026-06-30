@@ -23,7 +23,7 @@ export default function PerfilesHub() {
         <HubCard
           icon="📥"
           label="Recopilar Información"
-          desc={<>Carga las 5 fuentes de base<br />de datos y consolidados</>}
+          desc={<>Carga las 10 fuentes de base<br />de datos y valida los consolidados</>}
           onClick={() => router.push("/admin/perfiles/recopilacion")}
         />
         <HubCard
@@ -35,7 +35,7 @@ export default function PerfilesHub() {
         <HubCard
           icon="📄"
           label="Informe"
-          desc={<>Genera el informe .docx<br />de certificación de Perfiles</>}
+          desc={<>Genera el informe de certificación .docx<br />de certificación de Perfiles</>}
           onClick={() => router.push("/admin/perfiles/informe")}
         />
       </div>

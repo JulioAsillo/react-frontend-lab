@@ -339,16 +339,16 @@ export default function GenerarInformePoliticaPanel() {
         <div className="topbar-left">
           <div className="breadcrumb">política de contraseñas / <span>informe de certificación</span></div>
           <h2 className="page-title">
-            🔑 Informe de Política de Contraseñas
+            Informe de Política de Contraseñas
             <span style={{ marginLeft: 10, fontSize: 11, fontFamily: 'var(--mono)', padding: '2px 8px', borderRadius: 10, background: 'var(--accent-bg)', color: 'var(--accent)', verticalAlign: 'middle', fontWeight: 700 }}>
               {totalImgs} imagen{totalImgs === 1 ? '' : 'es'}
             </span>
           </h2>
         </div>
         <div className="topbar-right" style={{ gap: 8, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-          {error && <span style={{ fontSize: 12, color: 'var(--inc-text)', marginRight: 8, maxWidth: 320 }}>❌ {error}</span>}
+          {error && <span style={{ fontSize: 12, color: 'var(--inc-text)', marginRight: 8, maxWidth: 320 }}>{error}</span>}
           <button className="btn-generate" onClick={handleGenerar} disabled={loading}>
-            {loading ? <><span className="spinner" /> Generando…</> : ok ? '✓ Descargado' : '⬇ Generar .docx'}
+            {loading ? <><span className="spinner" /> Generando…</> : ok ? '✓ Descargado' : 'Generar .docx'}
           </button>
         </div>
       </div>

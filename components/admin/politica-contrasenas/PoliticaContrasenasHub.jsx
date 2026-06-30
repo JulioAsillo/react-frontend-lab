@@ -166,7 +166,7 @@ export default function PoliticaContrasenasHub() {
           textAlign: "center",
         }}
       >
-        📌 El Informe de Certificación de este módulo se generará a partir de
+        El Informe de Certificación de este módulo se generará a partir de
         imágenes capturadas desde una carpeta interna.
       </div>
     </div>
