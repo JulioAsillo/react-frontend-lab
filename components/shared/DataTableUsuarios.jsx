@@ -385,7 +385,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
               <DataTableRow key={rowId(row)} row={row} ri={ri} cols={cols} colWidths={colWidths}
                 getVal={getVal} getComentario={getComentario} getAccion={getAccion}
                 setValidacion={setValidacion} setComentario={setComentario} setAccion={setAccion}
-                badgeCol={badgeCol} scenarioLabel={scenario.label} accionModule="usuarios"
+                badgeCol={badgeCol} scenarioLabel={scenario.label} accionModule="usuarios" sheetKey={sheetKey}
                 expandedRow={expandedRow} setExpandedRow={setExpandedRow} rowId={rowId}
                 onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
               />

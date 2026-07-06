@@ -9,7 +9,7 @@
 import { useState } from "react";
 import Badge from "./Badge";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
-import { getAccionOptions, ACCION_NONE, displayAccion } from "@/lib/constants/accionCorrectiva";
+import { getAccionOptions, ACCION_NONE, displayAccion, normalizeAccionToOptions } from "@/lib/constants/accionCorrectiva";
 
 const VALIDACION_OPTS = ["Correcto", "Incorrecto", "Sustentado"];
 
@@ -27,6 +27,7 @@ export default function DataTableRow({
   badgeCol,
   scenarioLabel,
   accionModule,
+  sheetKey,
   extraEscenarioCols,
   expandedRow,
   setExpandedRow,
@@ -88,8 +89,8 @@ export default function DataTableRow({
   const validBadgeVal = formatValue(badgeVal);
   const currentVal = storedVal ?? escenarioVal ?? extraEscVal ?? validBadgeVal ?? null;
   const currentCom = getComentario(row);
-  const accionOpts = getAccionOptions({ badgeCol, label: scenarioLabel, moduleKey: accionModule });
-  const currentAccion = getAccion ? getAccion(row) : "";
+  const accionOpts = getAccionOptions({ badgeCol, label: scenarioLabel, moduleKey: accionModule, sheetKey });
+  const currentAccion = normalizeAccionToOptions(getAccion ? getAccion(row) : "", accionOpts);
   const isExpanded = expandedRow === rowId(row);
 
   // Draft local del textarea — para mostrar el botón guardar mientras se escribe
