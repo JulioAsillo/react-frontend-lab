@@ -486,7 +486,7 @@ export default function FuenteDetallePriv({ sourceId }) {
   const autoTried = useRef(false);
   useEffect(() => {
     if (!hydrated || autoTried.current) return;
-    if (uploadCfg && !isCertificador && !hasData && status !== "loading" && status !== "ok") {
+    if (uploadCfg && !hasData && status !== "loading" && status !== "ok") {
       autoTried.current = true;
       handleCargar();
     }
@@ -580,9 +580,7 @@ export default function FuenteDetallePriv({ sourceId }) {
           )}
           {hasData && !isLoading && (
             <>
-              {!isCertificador && (
-                <button className="btn-export" onClick={() => setShowConfirm(true)}>↺ Recargar</button>
-              )}
+              <button className="btn-export" onClick={() => setShowConfirm(true)}>↺ Recargar</button>
               {isCertificador ? (
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   {certConfirm && (
@@ -642,7 +640,7 @@ export default function FuenteDetallePriv({ sourceId }) {
             {isLoading ? "Cargando datos del servidor…" : "Iniciando…"}
           </p>
         </div>
-      ) : ((reupload || (!hasData && errorMsg)) && uploadCfg && !isCertificador) ? (
+      ) : ((reupload || (!hasData && errorMsg)) && uploadCfg) ? (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
           {reupload && hasData && (
             <div style={{

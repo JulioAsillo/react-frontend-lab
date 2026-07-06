@@ -420,7 +420,7 @@ export default function FuenteDetalle({
     if (autoTriedRef.current) return;
     const _isUpload = isUploadSource(sourceId);
     const _hasData = rows && (Array.isArray(rows) ? rows.length > 0 : Object.keys(rows).length > 0);
-    if (_isUpload && !isCertificador && !_hasData && status !== "loading" && status !== "ok") {
+    if (_isUpload && !_hasData && status !== "loading" && status !== "ok") {
       autoTriedRef.current = true;
       handleCargar();
     }
@@ -632,15 +632,11 @@ export default function FuenteDetalle({
           {status === "ok" && (
             <>
               {/*
-                Botón "Recargar":
-                  - Admin/usuario: siempre disponible cuando hay datos cargados.
-                  - Certificador: NO se muestra. Para el certificador la fuente
-                    queda inmutable una vez cargada — no debe re-disparar fetches
-                    contra el backend desde la vista de validación.
+                Botón "Recargar": disponible para todos los roles cuando hay datos.
+                Para fuentes de carga manual abre el modal con "Volver a consultar"
+                o "Subir archivo nuevo" (el certificador también puede resubir Excel).
               */}
-              {!isCertificador && (
-                <button className="btn-export" onClick={() => setShowConfirm(true)}>↺ Recargar</button>
-              )}
+              <button className="btn-export" onClick={() => setShowConfirm(true)}>↺ Recargar</button>
               <button className="btn-export" onClick={handleExportar}
                 disabled={!hasData}>
                 ↓ Exportar
@@ -703,14 +699,14 @@ export default function FuenteDetalle({
       {status === "loading" && <div className="loading-bar"><div className="loading-bar-fill" /></div>}
 
       {/* Error de backend: en fuentes de upload mostramos el panel de carga */}
-      {errorBackend && uploadCfg && !isCertificador && !reupload && (
+      {errorBackend && uploadCfg && !reupload && (
         <div style={{ padding: "0 4px" }}>
           <FuenteUploadPanel config={uploadCfg} onUploaded={handleCargar} />
         </div>
       )}
 
       {/* Re-subida manual (desde "Subir archivo nuevo" del modal) */}
-      {reupload && uploadCfg && !isCertificador && (
+      {reupload && uploadCfg && (
         <div style={{ padding: "0 4px" }}>
           <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px 20px 0" }}>
             <button className="btn-export-small" onClick={() => setReupload(false)}>

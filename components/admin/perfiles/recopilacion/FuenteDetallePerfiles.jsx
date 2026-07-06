@@ -116,7 +116,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
   useEffect(() => {
     if (autoTriedRef.current) return;
     const _hasData = rows && rows.length > 0;
-    if (uploadCfg && !isCertificador && !_hasData && status !== "loading" && status !== "ok") {
+    if (uploadCfg && !_hasData && status !== "loading" && status !== "ok") {
       autoTriedRef.current = true;
       handleCargar();
     }
@@ -210,10 +210,8 @@ export default function FuenteDetallePerfiles({ sourceId }) {
           <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("perfiles", sourceId)} reloadFn={handleCargar} />
           {status === "ok" && (
             <>
-              {!isCertificador && (
-                <button className="btn-export"
-                  onClick={() => uploadCfg ? setShowConfirm(true) : handleReset()}>↺ Recargar</button>
-              )}
+              <button className="btn-export"
+                onClick={() => uploadCfg ? setShowConfirm(true) : handleReset()}>↺ Recargar</button>
               <button className="btn-export" onClick={handleExportar} disabled={!rows || rows.length === 0}>
                 ↓ Exportar vista
               </button>
@@ -278,12 +276,12 @@ export default function FuenteDetallePerfiles({ sourceId }) {
 
       {/* Error */}
       {/* Panel de upload para fuentes mapeadas cuando falta info */}
-      {error && uploadCfg && !isCertificador && !reupload && (
+      {error && uploadCfg && !reupload && (
         <FuenteUploadPanel config={uploadCfg} onUploaded={handleCargar} />
       )}
 
       {/* Re-subida manual (desde "Subir archivo nuevo" del modal) */}
-      {reupload && uploadCfg && !isCertificador && (
+      {reupload && uploadCfg && (
         <div>
           <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px 20px 0" }}>
             <button className="btn-export-small" onClick={() => setReupload(false)}>
