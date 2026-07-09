@@ -24,7 +24,7 @@
 import { useMemo, useState, useRef, useCallback } from "react";
 import { displayAccion } from "@/lib/constants/accionCorrectiva";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
-import { HEADER_COLUMN_MAP } from "@/lib/constants/headerColumnMap";
+import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/columnDefs";
 import { ESCENARIOS_ORDEN } from "@/lib/constants/reportes";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones } from "@/lib/hooks/useValidaciones";
@@ -376,7 +376,8 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
                     rows={scenarioRows}
                     getColFilterSet={getColFilterSet} setColFilterSet={setColFilterSet}
                     handleSort={handleSort} onResizeStart={onResizeStart}
-                    headerClass={HEADER_COLUMN_MAP.usuarios?.[col]}
+                    headerClass={isSpecial ? undefined : getHeaderColorClass(persistKey, sheetKey, col)}
+                    label={isSpecial ? undefined : getColumnLabel(persistKey, sheetKey, col)}
                   />
                 );
               })}

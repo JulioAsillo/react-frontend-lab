@@ -25,7 +25,7 @@ import { useState, useMemo, useRef, useCallback } from "react";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { ThCell } from "./DataTableHeader";
 import Badge from "./Badge";
-import { HEADER_COLUMN_MAP } from "@/lib/constants/headerColumnMap";
+import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/columnDefs";
 import * as XLSX from "xlsx";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
@@ -241,7 +241,8 @@ function HojaSheet({ rows, hojaKey, columnas, persistKey }) {
                   setColFilterSet={setColFilterSet}
                   handleSort={handleSort}
                   onResizeStart={onResizeStart}
-                  headerClass={HEADER_COLUMN_MAP.usuarios?.[col]}
+                  headerClass={getHeaderColorClass(persistKey, hojaKey, col)}
+                  label={getColumnLabel(persistKey, hojaKey, col)}
                 />
               ))}
             </tr>
