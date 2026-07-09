@@ -153,10 +153,11 @@ export function ColPanel({ col, rows, activeVals, sortCol, sortDir, onSort, onCh
 // ── ThCell — header con sort + filtro + resize ─────────────────────────────
 export function ThCell({ col, isSpecial, hasFilter, width, openPanel, setOpenPanel,
   sortCol, sortDir, rows, getColFilterSet, setColFilterSet, handleSort, onResizeStart,
-  label, valueFormatter, splitValues }) {
+  label, valueFormatter, splitValues, headerClass }) {
   const thRef = useRef(null);
   return (
     <th ref={thRef}
+      className={headerClass || undefined}
       style={{ width: width ?? 120, position: "relative",
                cursor: isSpecial ? "default" : "pointer",
                overflow: "hidden" }}

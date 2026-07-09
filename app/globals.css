@@ -573,6 +573,29 @@ th:hover .th-chevron { color: var(--accent); }
 .badge-bloq   { background: #f8fafc;        color: #475569;          border: 1px solid #e2e8f0; }
 .badge-sust   { background: var(--sust-bg); color: var(--sust-text); border: 1px solid var(--sust-border); }
 
+/* ── PALETA DE CABECERAS POR FUENTE (th-src-1 .. th-src-15) ──────────────────
+   Uso: asignar manualmente una clase a cada columna en
+   lib/constants/headerColumnMap.js, para distinguir de qué fuente/sistema
+   viene cada columna en el DataTable. Ver también lib/constants/headerPalette.js
+   (referencia de los mismos 15 colores en JS, por si se necesita el hex). */
+.th-src-1  { background: #FDE68A; border-bottom: 2px solid #F59E0B; color: #78350F; }
+.th-src-2  { background: #FCA5A5; border-bottom: 2px solid #EF4444; color: #7F1D1D; }
+.th-src-3  { background: #FDBA74; border-bottom: 2px solid #F97316; color: #7C2D12; }
+.th-src-4  { background: #FDE047; border-bottom: 2px solid #EAB308; color: #713F12; }
+.th-src-5  { background: #BEF264; border-bottom: 2px solid #84CC16; color: #365314; }
+.th-src-6  { background: #86EFAC; border-bottom: 2px solid #22C55E; color: #14532D; }
+.th-src-7  { background: #6EE7B7; border-bottom: 2px solid #10B981; color: #064E3B; }
+.th-src-8  { background: #5EEAD4; border-bottom: 2px solid #14B8A6; color: #134E4A; }
+.th-src-9  { background: #7DD3FC; border-bottom: 2px solid #0EA5E9; color: #0C4A6E; }
+.th-src-10 { background: #93C5FD; border-bottom: 2px solid #3B82F6; color: #1E3A8A; }
+.th-src-11 { background: #A5B4FC; border-bottom: 2px solid #6366F1; color: #312E81; }
+.th-src-12 { background: #C4B5FD; border-bottom: 2px solid #8B5CF6; color: #4C1D95; }
+.th-src-13 { background: #D8B4FE; border-bottom: 2px solid #A855F7; color: #581C87; }
+.th-src-14 { background: #F0ABFC; border-bottom: 2px solid #D946EF; color: #701A75; }
+.th-src-15 { background: #FDA4AF; border-bottom: 2px solid #F43F5E; color: #881337; }
+
+html[data-theme="dark"] [class^="th-src-"] { filter: brightness(0.82); }
+
 /* ── VALIDACIÓN SELECT ───────────────────────────────────────────────────── */
 .td-validation { padding: 6px 10px; white-space: nowrap; min-width: 150px; }
 .th-special { justify-content: flex-start; padding-left: 2px; }

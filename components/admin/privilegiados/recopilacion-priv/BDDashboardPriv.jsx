@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { PRIV_BD_SOURCES } from "@/lib/mock/privBDSources";
 import { useUIStore, useBDStatus, useBDCount, useBDError } from "@/lib/store/uiStore";
 import { isUploadSource } from "@/lib/constants/uploadSources";
+import { formatFechaDDMMYYYY } from "@/lib/utils/formatFecha";
 import { useAuthStore } from "@/lib/store/authStore";
 import { lsGet, lsSet } from "@/lib/storage";
 
@@ -28,9 +29,7 @@ function roleLabel(by) {
 }
 function fmtFechaCorte(fc) {
   if (!fc) return null;
-  const d = /^\d{4}-\d{2}-\d{2}$/.test(fc) ? new Date(fc + "T00:00:00") : new Date(fc);
-  if (isNaN(d.getTime())) return fc;
-  return d.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
+  return formatFechaDDMMYYYY(fc);
 }
 
 function savedInfo(v) {

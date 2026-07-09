@@ -10,6 +10,7 @@ import { useState } from "react";
 import Badge from "./Badge";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
 import { getAccionOptions, ACCION_NONE, displayAccion, normalizeAccionToOptions } from "@/lib/constants/accionCorrectiva";
+import { formatFechaDDMMYYYY } from "@/lib/utils/formatFecha";
 
 const VALIDACION_OPTS = ["Correcto", "Incorrecto", "Sustentado"];
 
@@ -130,15 +131,26 @@ export default function DataTableRow({
       className={`${ri % 2 === 0 ? "row-even" : "row-odd"} ${currentVal ? "row-validated" : ""}`}
       onDoubleClick={onDoubleClick}
     >
-      {cols.map((col) => (
-        <td key={col} style={{ width: colWidths[col] ?? 130 }}>
-          {BADGE_COLS.has(col) || col === badgeCol ? (
-            <Badge value={row[col]} />
-          ) : (
-            <span className="cell-text">{row[col] ?? "—"}</span>
-          )}
-        </td>
-      ))}
+      {cols.map((col) => {
+        // "usuarios" usa el patrón nuevo (pintado por valor, ver badgeValueMap.js).
+        // Perfiles/Privilegiados mantienen el patrón legacy (Set BADGE_COLS) sin cambios.
+        const isUsuarios = accionModule === "usuarios";
+        // DD-MM-YYYY sin horas, solo Perfiles/Privilegiados (pedido explícito).
+        const needsFechaFormat = accionModule === "perfiles" || accionModule === "privilegiados";
+        const cellVal = needsFechaFormat ? formatFechaDDMMYYYY(row[col]) : row[col];
+
+        return (
+          <td key={col} style={{ width: colWidths[col] ?? 130 }}>
+            {isUsuarios ? (
+              <Badge value={cellVal} moduleKey="usuarios" />
+            ) : BADGE_COLS.has(col) || col === badgeCol ? (
+              <Badge value={cellVal} />
+            ) : (
+              <span className="cell-text">{cellVal ?? "—"}</span>
+            )}
+          </td>
+        );
+      })}
 
       {/* Validación */}
       {!hideValidacion && (

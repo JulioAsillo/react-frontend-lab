@@ -237,6 +237,12 @@ export default function GenericPanel({
 
   const { user } = useAuthStore();
   const isCertificador = user?.role === "certificador";
+  // Perfiles y Privilegiados: el Certificador debe poder generar hallazgos en
+  // TODOS los reportes, tengan o no needsDate (antes solo se mostraba el
+  // botón si needsDate=true, dejando sin botón a los reportes needsDate=false
+  // de estos dos módulos). Usuarios no se toca: sigue con needsDate como filtro.
+  const certificadorSiempreGenera =
+    section?.startsWith("perfiles") || section?.startsWith("privilegiados");
 
   const rawData  = useReporteRaw(persistKey);
   const hydrated = useReportesStore(s => s.hydrated[persistKey] ?? false);
@@ -371,10 +377,11 @@ export default function GenericPanel({
             <button className="btn-export" onClick={handleExport}>Exportar reporte</button>
           )}
           {isCertificador ? (
-            // Certificador: puede generar reporte con fecha si needsDate=true,
-            // y siempre tiene botón Guardar validaciones
+            // Certificador: genera reporte si needsDate=true, o si el módulo
+            // es Perfiles/Privilegiados (ahí siempre tiene el botón).
+            // Además siempre tiene botón Guardar validaciones.
             <>
-              {reporte.needsDate && (
+              {(reporte.needsDate || certificadorSiempreGenera) && (
                 <button className="btn-generate" onClick={handleGenerarClick}
                   disabled={isMutating || localLoading}
                   style={{ background: "var(--accent2)", borderColor: "var(--accent2)" }}>
