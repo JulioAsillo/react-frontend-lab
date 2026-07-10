@@ -25,7 +25,7 @@ import { useState, useMemo, useRef, useCallback } from "react";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { ThCell } from "./DataTableHeader";
 import Badge from "./Badge";
-import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/columnDefs";
+import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos";
 import * as XLSX from "xlsx";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
