@@ -18,6 +18,7 @@
 
 import { useMemo, useState, useRef, useCallback } from "react";
 import { displayAccion } from "@/lib/constants/accionCorrectiva";
+import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos-perfiles";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones } from "@/lib/hooks/useValidaciones";
 import DataTableRow from "./DataTableRow";
@@ -334,7 +335,8 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
                 const isSpecial = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSpecial}
-                    label={isSpecial ? (col === "__validacion__" ? "Validación" : col === "__accion__" ? "Acción Correctiva" : "Comentario") : col}
+                    label={isSpecial ? (col === "__validacion__" ? "Validación" : col === "__accion__" ? "Acción Correctiva" : "Comentario") : getColumnLabel(persistKey, tabKey, col)}
+                    headerClass={isSpecial ? undefined : getHeaderColorClass(persistKey, tabKey, col)}
                     hasFilter={!isSpecial && getColFilterSet(col).size > 0}
                     width={colWidths[col]}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}
@@ -597,7 +599,8 @@ function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
                 const isSp = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSp}
-                    label={isSp ? (col === "__validacion__" ? "Validación" : col === "__accion__" ? "Acción Correctiva" : "Comentario") : col}
+                    label={isSp ? (col === "__validacion__" ? "Validación" : col === "__accion__" ? "Acción Correctiva" : "Comentario") : getColumnLabel(persistKey, tabKey, col)}
+                    headerClass={isSp ? undefined : getHeaderColorClass(persistKey, tabKey, col)}
                     hasFilter={!isSp && getColFilterSet(col).size > 0}
                     width={colWidths[col]}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}

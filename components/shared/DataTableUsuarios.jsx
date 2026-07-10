@@ -24,7 +24,7 @@
 import { useMemo, useState, useRef, useCallback } from "react";
 import { displayAccion } from "@/lib/constants/accionCorrectiva";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
-import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos";
+import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos-usuarios";
 import { ESCENARIOS_ORDEN } from "@/lib/constants/reportes";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones } from "@/lib/hooks/useValidaciones";

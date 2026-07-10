@@ -22,6 +22,7 @@
 
 import { useMemo, useState, useRef, useCallback } from "react";
 import { displayAccion } from "@/lib/constants/accionCorrectiva";
+import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos-privilegiados";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones }   from "@/lib/hooks/useValidaciones";
 import DataTableRow          from "./DataTableRow";
@@ -355,6 +356,8 @@ function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBa
                 const isSpecial = col === "__validacion__" || col === "__accion__" || col === "__comentario__";
                 return (
                   <ThCell key={col} col={col} isSpecial={isSpecial}
+                    label={isSpecial ? undefined : getColumnLabel(persistKey, sheetKey, col)}
+                    headerClass={isSpecial ? undefined : getHeaderColorClass(persistKey, sheetKey, col)}
                     hasFilter={!isSpecial && colFilters[col]?.length > 0}
                     width={colWidths[col] ?? (col === "__validacion__" ? 184 : col === "__accion__" ? 184 : col === "__comentario__" ? 260 : 130)}
                     openPanel={openPanel} setOpenPanel={setOpenPanel}
