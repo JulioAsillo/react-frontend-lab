@@ -16,6 +16,11 @@ export const GROUP_COLORS: Record<string, string> = {
   C4:        "th-src-12",  // violeta
   C5:        "th-src-3",   // naranja
   C6:       "th-src-14",  // fucsia
-  C7:        "th-src-5",   // lima — campos cruzados desde GDH
+  C7:        "th-src-5",
+  C8:        "th-src-7",
+  C9:        "th-src-8",
+  C10:       "th-src-9",
+  C11:       "th-src-10",
+  C12:       "th-src-11",  // lima — campos cruzados desde GDH
   VALIDACION: "th-src-2",   // rojo — columnas de resultado de validación
 };
