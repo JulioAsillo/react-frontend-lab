@@ -10,12 +10,12 @@
  * columnas.
  */
 export const GROUP_COLORS: Record<string, string> = {
-  AD:         "th-src-9",   // celeste
-  ENTRA:      "th-src-10",  // azul
-  EXACTUS:    "th-src-6",   // verde
-  SDP:        "th-src-12",  // violeta
-  SIT:        "th-src-3",   // naranja
-  NPAC:       "th-src-14",  // fucsia
-  GDH:        "th-src-5",   // lima — campos cruzados desde GDH
+  C1:         "th-src-9",   // celeste
+  C2:      "th-src-10",  // azul
+  C3:    "th-src-6",   // verde
+  C4:        "th-src-12",  // violeta
+  C5:        "th-src-3",   // naranja
+  C6:       "th-src-14",  // fucsia
+  C7:        "th-src-5",   // lima — campos cruzados desde GDH
   VALIDACION: "th-src-2",   // rojo — columnas de resultado de validación
 };
