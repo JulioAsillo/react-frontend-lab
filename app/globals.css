@@ -586,8 +586,8 @@ th:hover .th-chevron { color: var(--accent); }
 .th-src-6  { background: #86EFAC; border-bottom: 2px solid #22C55E; color: #14532D; }
 .th-src-7  { background: #6EE7B7; border-bottom: 2px solid #10B981; color: #064E3B; }
 .th-src-8  { background: #5EEAD4; border-bottom: 2px solid #14B8A6; color: #134E4A; }
-.th-src-9  { background: #7DD3FC; border-bottom: 2px solid #0EA5E9; color: #0C4A6E; }
-.th-src-10 { background: #93C5FD; border-bottom: 2px solid #3B82F6; color: #1E3A8A; }
+.th-src-9  { background: #0EA5E9; border-bottom: 2px solid #0EA5E9; color: #0C4A6E; }
+.th-src-10 { background: #3B82F6; border-bottom: 2px solid #3B82F6; color: #1E3A8A; }
 .th-src-11 { background: #A5B4FC; border-bottom: 2px solid #6366F1; color: #312E81; }
 .th-src-12 { background: #C4B5FD; border-bottom: 2px solid #8B5CF6; color: #4C1D95; }
 .th-src-13 { background: #D8B4FE; border-bottom: 2px solid #A855F7; color: #581C87; }
