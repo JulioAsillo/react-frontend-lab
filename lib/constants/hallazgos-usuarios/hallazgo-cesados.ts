@@ -36,11 +36,11 @@ const preliminares: ColumnDef[] = [
   { key: "PostCese DB SDP",           header: "Post Cese DB SDP",          group: "C7" },
 
   { key: "Usr SIT",                   header: "Usr SIT",                   group: "C8" },
-  { key: "DB SIT",                    header: "DB SIT",                    group: "C8" },
-  { key: "DB SIT Ultimo Login",       header: "DB SIT Último Login",      group: "C8" },
-  { key: "PostCese DB SIT",           header: "Post Cese DB SIT",          group: "C8" },
+  { key: "DB SIT",                    header: "DB SIT",                    group: "C9" },
+  { key: "DB SIT Ultimo Login",       header: "DB SIT Último Login",      group: "C9" },
+  { key: "PostCese DB SIT",           header: "Post Cese DB SIT",          group: "C9" },
 
-  { key: "Usr NPAC",                  header: "Usr NPAC",                  group: "C9" },
+  { key: "Usr NPAC",                  header: "Usr NPAC",                  group: "C10" },
 
   { key: "Validación Cesado Activo",  header: "Validación Cesado Activo",  group: "VALIDACION" },
   { key: "Validación Post Cese",      header: "Validación Post Cese",      group: "VALIDACION" },
@@ -48,14 +48,14 @@ const preliminares: ColumnDef[] = [
 ];
 
 const sinCity: ColumnDef[] = [
-  { key: "Nombre",       header: "Nombre",         group: "" },
-  { key: "Mail",         header: "Mail",           group: "ENTRA" },
-  { key: "UPN",          header: "UPN",            group: "ENTRA" },
-  { key: "Estado",       header: "Estado",         group: "ENTRA" },
-  { key: "Creado",       header: "Fecha Creación", group: "ENTRA" },
-  { key: "ultimo login", header: "Último Login",   group: "ENTRA" },
-  { key: "City",         header: "City",           group: "" },
-  { key: "Observación",  header: "Observación",    group: "" },
+  { key: "Nombre",       header: "Nombre",         group: "C1" },
+  { key: "Mail",         header: "Mail",           group: "C1" },
+  { key: "UPN",          header: "UPN",            group: "C1" },
+  { key: "Estado",       header: "Estado",         group: "C1" },
+  { key: "Creado",       header: "Fecha Creación", group: "C1" },
+  { key: "ultimo login", header: "Último Login",   group: "C1" },
+  { key: "City",         header: "City",           group: "C1" },
+  { key: "Observación",  header: "Observación",    group: "VALIDACION" },
 ];
 
 // Nombres de hoja = keys exactas del dict que devuelve el backend.
