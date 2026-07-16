@@ -12,9 +12,9 @@
  * líneas si prefieres otros colores — es el único lugar que hay que tocar.
  */
 export const SPECIAL_COLUMN_HEADER_CLASS: Record<string, string> = {
-  __validacion__: "th-src-8",   // Validación
-  __accion__:     "th-src-11",  // Acción Correctiva
-  __comentario__: "th-src-4",   // Comentario
+  __validacion__: "th-src-2",   // Validación
+  __accion__:     "th-src-2",  // Acción Correctiva
+  __comentario__: "th-src-2",   // Comentario
 };
 
 export function getSpecialColumnHeaderClass(col: string): string | undefined {
