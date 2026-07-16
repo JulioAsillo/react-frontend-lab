@@ -25,6 +25,7 @@ import { useMemo, useState, useRef, useCallback } from "react";
 import { displayAccion } from "@/lib/constants/accionCorrectiva";
 import { BADGE_COLS } from "@/lib/constants/badgeCols";
 import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos-usuarios";
+import { getSpecialColumnHeaderClass } from "@/lib/constants/specialColumnColors";
 import { ESCENARIOS_ORDEN } from "@/lib/constants/reportes";
 import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { useValidaciones } from "@/lib/hooks/useValidaciones";
@@ -376,7 +377,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
                     rows={scenarioRows}
                     getColFilterSet={getColFilterSet} setColFilterSet={setColFilterSet}
                     handleSort={handleSort} onResizeStart={onResizeStart}
-                    headerClass={isSpecial ? undefined : getHeaderColorClass(persistKey, sheetKey, col)}
+                    headerClass={isSpecial ? getSpecialColumnHeaderClass(col) : getHeaderColorClass(persistKey, sheetKey, col)}
                     label={isSpecial ? undefined : getColumnLabel(persistKey, sheetKey, col)}
                   />
                 );
