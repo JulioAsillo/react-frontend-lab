@@ -13,9 +13,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { PERFILES_BD_SOURCES } from "@/lib/mock/perfilesBDSources";
+import { normalizeSource } from "@/lib/mock/sourceCols";
 import { useBDStatus, setBDStatus, setBDCount, setBDFechaCorte, useUIStore, useBDFechasCorte } from "@/lib/store/uiStore";
 import { idbGetItem, idbSetItem, idbDelItem } from "@/lib/storage";
 import { exportSheetPlano } from "@/lib/utils/excel";
+import { labelFor } from "@/lib/utils/fieldLabels";
 import { makeRows } from "@/lib/mock/mockData";
 import { useAuthStore } from "@/lib/store/authStore";
 import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
@@ -27,7 +29,7 @@ const DATA_KEY = (id) => `prf-bd-data-${id}`;
 
 export default function FuenteDetallePerfiles({ sourceId }) {
   const router = useRouter();
-  const src = PERFILES_BD_SOURCES.find(s => s.id === sourceId);
+  const src = normalizeSource(PERFILES_BD_SOURCES.find(s => s.id === sourceId));
 
   const status  = useBDStatus(sourceId);
   const { user } = useAuthStore();
@@ -136,7 +138,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
 
   function handleExportar() {
     if (!rows || rows.length === 0) return;
-    exportSheetPlano(rows, src.cols, `prf-${src.id}`);
+    exportSheetPlano(rows, src.cols, `prf-${src.id}`, (k) => labelFor(src, k));
   }
 
   async function handleReset() {
@@ -322,7 +324,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
             {src.cols.map(c => (
               <span key={c} className="source-col-pill"
                 style={src.dateCols?.includes(c) ? { color: "var(--accent)", background: "var(--accent-bg)" } : {}}>
-                {c}
+                {labelFor(src, c)}
               </span>
             ))}
           </div>
@@ -357,7 +359,7 @@ export default function FuenteDetallePerfiles({ sourceId }) {
                       background: "var(--bg2)", borderBottom: "2px solid var(--border)",
                       whiteSpace: "nowrap", position: "sticky", top: 0, zIndex: 1,
                     }}>
-                      {col}
+                      {labelFor(src, col)}
                       {src.dateCols?.includes(col) && (
                         <span style={{ marginLeft: 4, opacity: 0.6, fontSize: 10 }}></span>
                       )}

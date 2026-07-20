@@ -14,13 +14,14 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PRIV_BD_SOURCES } from "@/lib/mock/privBDSources";
+import { normalizeSource } from "@/lib/mock/sourceCols";
 import { useBDStatus, useBDError, useUIStore } from "@/lib/store/uiStore";
 import FuenteUploadPanel from "@/components/admin/shared/FuenteUploadPanel";
 import { isUploadSource, getUploadConfig } from "@/lib/constants/uploadSources";
 import { idbGetItem, idbDelItem, idbSetItem } from "@/lib/storage";
 import { exportSheetPlano } from "@/lib/utils/excel";
 import { ThCell } from "@/components/shared/DataTableHeader";
-import { getLabel } from "@/lib/utils/fieldLabels";
+import { getLabel, labelFor } from "@/lib/utils/fieldLabels";
 import { useAuthStore } from "@/lib/store/authStore";
 import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
 import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
@@ -298,7 +299,7 @@ function StandardTableView({ rows, src }) {
             <span className="row-count-num">{sorted.length}</span> de {rows.length}
           </span>
           <button className="btn-export" disabled={!rows.length}
-            onClick={() => exportSheetPlano(rows, src.cols, `priv-${src.id}`)}>
+            onClick={() => exportSheetPlano(rows, src.cols, `priv-${src.id}`, (k) => labelFor(src, k))}>
             Exportar Excel
           </button>
         </div>
@@ -310,7 +311,7 @@ function StandardTableView({ rows, src }) {
             <tr>
               {src.cols.map(col => (
                 <ThCell key={col} col={col} isSpecial={false}
-                  label={getLabel(col)}
+                  label={labelFor(src, col)}
                   hasFilter={colFilters[col]?.size > 0}
                   width={`${columnWidths[col] ?? 150}px`}
                   openPanel={openPanel} setOpenPanel={setOpenPanel}
@@ -396,7 +397,7 @@ function prettyColl(k) {
 
 export default function FuenteDetallePriv({ sourceId }) {
   const router = useRouter();
-  const src    = PRIV_BD_SOURCES.find(s => s.id === sourceId);
+  const src    = normalizeSource(PRIV_BD_SOURCES.find(s => s.id === sourceId));
 
   const status       = useBDStatus(sourceId);
   const errorMsg     = useBDError(sourceId);

@@ -24,6 +24,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { BD_SOURCES } from "@/lib/mock/bdSources";
 import { PERFILES_BD_SOURCES } from "@/lib/mock/perfilesBDSources";
+import { normalizeSource } from "@/lib/mock/sourceCols";
 import { useBDStatus, useBDError, useUIStore, useBDFechasCorte } from "@/lib/store/uiStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
@@ -31,7 +32,7 @@ import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
 import { idbGetItem, idbSetItem, idbDelItem } from "@/lib/storage";
 import { exportSheetPlano } from "@/lib/utils/excel";
 import { ThCell } from "@/components/shared/DataTableHeader";
-import { getLabel } from "@/lib/utils/fieldLabels";
+import { getLabel, labelFor } from "@/lib/utils/fieldLabels";
 import { findFechaCorte, resolveCollectionRows } from "@/lib/utils/payload";
 import FuenteUploadPanel from "@/components/admin/shared/FuenteUploadPanel";
 import { isUploadSource, getUploadConfig } from "@/lib/constants/uploadSources";
@@ -236,7 +237,7 @@ export default function FuenteDetalle({
   breadcrumbSection = "usuarios / recopilación / base de datos",
 }) {
   const router   = useRouter();
-  const src      = sources.find(s => s.id === sourceId);
+  const src      = normalizeSource(sources.find(s => s.id === sourceId));
   // Este FuenteDetalle lo comparten Usuarios y Perfiles; el módulo se infiere de
   // la ruta para resolver el endpoint de extracción correcto por sourceId.
   const moduloExtrac = routeBase.includes("/perfiles/")
@@ -454,7 +455,7 @@ export default function FuenteDetalle({
     const isObj = !Array.isArray(rows) && typeof rows === "object";
     if (isObj && Object.keys(rows).length === 0) return;
     if (!isObj && rows.length === 0) return;
-    exportSheetPlano(rows, src.cols, `bd-${src.id}`);
+    exportSheetPlano(rows, src.cols, `bd-${src.id}`, (k) => labelFor(src, k));
   }
 
   // ── Resize de columnas ────────────────────────────────────────────────────
@@ -751,7 +752,7 @@ export default function FuenteDetalle({
                 style={c === "grupos" ? { color: "var(--sust-text)", background: "var(--sust-bg)" }
                   : src.dateCols?.includes(c) ? { color: "var(--accent)", background: "var(--accent-bg)" }
                   : {}}>
-                {c === "grupos" ? "grupos" : c}
+                {labelFor(src, c)}
                 {src.dateCols?.includes(c) && ""}
               </span>
             ))}
@@ -863,7 +864,7 @@ export default function FuenteDetalle({
                     <ThCell
                       key={col}
                       col={col}
-                      label={getLabel(col)}
+                      label={labelFor(src, col)}
                       isSpecial={false}
                       hasFilter={colFilters[col]?.size > 0}
                       width={`${columnWidths[col] ?? 150}px`}
