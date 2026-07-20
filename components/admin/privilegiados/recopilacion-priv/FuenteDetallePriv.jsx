@@ -22,6 +22,7 @@ import { idbGetItem, idbDelItem, idbSetItem } from "@/lib/storage";
 import { exportSheetPlano } from "@/lib/utils/excel";
 import { ThCell } from "@/components/shared/DataTableHeader";
 import { getLabel, labelFor } from "@/lib/utils/fieldLabels";
+import { formatFechaHora } from "@/lib/utils/formatFecha";
 import { useAuthStore } from "@/lib/store/authStore";
 import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
 import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
@@ -30,15 +31,14 @@ const API_BASE  = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const DATA_KEY  = (id) => `priv-data-${id}`;
 const PAGE_SIZE = 100;
 
-// Formatea ISO "YYYY-MM-DDTHH:MM:SS" → "DD/MM/YYYY HH:MM:SS" (o solo fecha si no hay hora)
+// Fuentes que el backend ya trae completas: el bot "Extraer Información" no aplica
+// y por eso el botón no se muestra (ni deshabilitado).
+const SIN_EXTRACCION_BOT = new Set(["local-admin-ad", "domain-admin-ad"]);
+
+// Formatea fecha del backend (ISO o US "M/D/YYYY h:mm:ss AM/PM") → "DD/MM/YYYY [HH:MM:SS]".
 function fmtFechaHora(val) {
   if (!val) return "";
-  const s = String(val).trim();
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
-  if (!m) return s;
-  const [, yyyy, mm, dd, hh, mi, ss] = m;
-  if (hh !== undefined) return `${dd}/${mm}/${yyyy} ${hh}:${mi}:${ss ?? "00"}`;
-  return `${dd}/${mm}/${yyyy}`;
+  return formatFechaHora(val);
 }
 
 function buildDefaultWidths(cols) {
@@ -337,6 +337,8 @@ function StandardTableView({ rows, src }) {
                         border:     `1px solid ${val ? "var(--ok-border)" : "var(--inc-border)"}`,
                       }}>{val ? "Activo" : "Inactivo"}</span>
                     );
+                  } else if (src.dateCols?.includes(col)) {
+                    display = <span className="cell-text">{val ? formatFechaHora(val) : "—"}</span>;
                   } else {
                     display = <span className="cell-text">{String(val ?? "—")}</span>;
                   }
@@ -573,7 +575,9 @@ export default function FuenteDetallePriv({ sourceId }) {
           </div>
         </div>
         <div className="topbar-right">
-          <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("privilegiados", sourceId)} reloadFn={handleRecargar} />
+          {!SIN_EXTRACCION_BOT.has(sourceId) && (
+            <ExtraerInfoButton esManual={!!uploadCfg} botEndpoint={getBotEndpoint("privilegiados", sourceId)} reloadFn={handleRecargar} />
+          )}
           {!hasData && !isLoading && (
             <button className="btn-generate" onClick={handleCargar}>
               {isCertificador ? "Cargar para validar" : "Cargar información"}
