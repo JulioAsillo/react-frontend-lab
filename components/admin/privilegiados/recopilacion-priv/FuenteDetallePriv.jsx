@@ -11,7 +11,7 @@
  * - Vistas especiales para server-linux y server-windows
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PRIV_BD_SOURCES } from "@/lib/mock/privBDSources";
 import { normalizeSource } from "@/lib/mock/sourceCols";
@@ -40,7 +40,12 @@ const SIN_EXTRACCION_BOT = new Set(["local-admin-ad", "domain-admin-ad"]);
 
 export default function FuenteDetallePriv({ sourceId }) {
   const router = useRouter();
-  const src    = normalizeSource(PRIV_BD_SOURCES.find(s => s.id === sourceId));
+  // Memoizado por la misma razón que en FuenteDetalle: normalizeSource
+  // retorna un objeto nuevo por llamada y hay efectos con `src` en deps.
+  const src = useMemo(
+    () => normalizeSource(PRIV_BD_SOURCES.find(s => s.id === sourceId)),
+    [sourceId]
+  );
 
   const status       = useBDStatus(sourceId);
   const errorMsg     = useBDError(sourceId);

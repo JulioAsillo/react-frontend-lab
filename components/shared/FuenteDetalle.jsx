@@ -220,7 +220,14 @@ export default function FuenteDetalle({
   breadcrumbSection = "usuarios / recopilación / base de datos",
 }) {
   const router   = useRouter();
-  const src      = normalizeSource(sources.find(s => s.id === sourceId));
+  // Memoizado: normalizeSource retorna un objeto NUEVO en cada llamada.
+  // Sin useMemo, `src` cambia de referencia en cada render y los efectos
+  // que lo tienen como dependencia (anchos de columna) entran en bucle
+  // infinito de setState → "Maximum update depth exceeded".
+  const src = useMemo(
+    () => normalizeSource(sources.find(s => s.id === sourceId)),
+    [sources, sourceId]
+  );
   // Este FuenteDetalle lo comparten Usuarios y Perfiles; el módulo se infiere de
   // la ruta para resolver el endpoint de extracción correcto por sourceId.
   const moduloExtrac = routeBase.includes("/perfiles/")
