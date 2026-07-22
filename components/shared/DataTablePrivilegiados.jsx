@@ -30,33 +30,17 @@ import DataTableRow          from "./DataTableRow";
 import { ThCell }            from "./DataTableHeader";
 import ClasificacionModal    from "./ClasificacionModal";
 import * as XLSX             from "xlsx";
+import { rowIdFnv } from "@/lib/utils/rowId";
+import { normalizeSheets, toSheetSlug } from "@/lib/utils/sheets";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
 const DEFAULT_SIZE = 50;
 const VALIDACION_OPTS = ["Correcto", "Incorrecto", "Sustentado"];
 
 // ── Normalizar rawData → { sheetKey: rows[] } ─────────────────────────────────
-function normalizeSheets(rawData) {
-  if (!rawData) return {};
-  if (Array.isArray(rawData)) return rawData.length ? { Principal: rawData } : {};
-  if (typeof rawData !== "object") return {};
-  const result = {};
-  for (const [k, v] of Object.entries(rawData)) {
-    if (Array.isArray(v)) result[k] = v;
-  }
-  return result;
-}
+// normalizeSheets importado de lib/utils/sheets.
 
-// ── Hash FNV-1a (igual que useValidaciones) ───────────────────────────────────
-function rowIdFnv(row) {
-  let h = 0x811c9dc5;
-  for (const k of Object.keys(row).sort()) {
-    const v = row[k];
-    const s = `${k}\u0001${v === null || v === undefined ? "" : String(v)}\u0002`;
-    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
-  }
-  return h.toString(16).padStart(8, "0");
-}
+// rowIdFnv importado de lib/utils/rowId — fuente única de verdad.
 
 // ── Valor inicial de Validación a partir del badge del escenario ──────────────
 function resolveValidacion(row, badgeCol, stored) {
@@ -75,7 +59,7 @@ export function exportAllPrivilegiados(sheets, persistKey, reportLabel, scenario
 
   for (const [sheetKey, rows] of Object.entries(sheets)) {
     if (!rows?.length) continue;
-    const sheetSlug = sheetKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const sheetSlug = toSheetSlug(sheetKey);
 
     for (const sc of scenarioCfg.escenarios) {
       const scRows = rows.filter(r => r[sc.badgeCol] !== undefined && r[sc.badgeCol] !== null && r[sc.badgeCol] !== "");
@@ -170,7 +154,7 @@ function RowPriv({ row, ri, cols, colWidths, sc, pfxVal, rowId }) {
 
 // ── ScenarioSheet — una hoja de escenario ────────────────────────────────────
 function ScenarioSheet({ rows, sheetKey, sc, persistKey, onRowDoubleClick, allBadgeCols }) {
-  const sheetSlug = sheetKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const sheetSlug = toSheetSlug(sheetKey);
   const pfx       = `${persistKey}-priv-${sheetSlug}-${sc.key}`;
   const valPfx    = `${persistKey}-priv-val-${sheetSlug}`;
 

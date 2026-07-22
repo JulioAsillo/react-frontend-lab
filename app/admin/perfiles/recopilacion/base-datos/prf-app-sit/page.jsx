@@ -1,4 +1,4 @@
-import FuenteDetalle from "@/components/admin/usuarios/recopilacion/FuenteDetalle";
+import FuenteDetalle from "@/components/shared/FuenteDetalle";
 import { PERFILES_BD_SOURCES } from "@/lib/mock/perfilesBDSources";
 
 export default function Page() {

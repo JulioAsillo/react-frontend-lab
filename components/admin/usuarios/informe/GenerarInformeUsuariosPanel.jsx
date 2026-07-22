@@ -54,6 +54,8 @@ import InformeUsuariosPreview from './InformeUsuariosPreview';
 //   3. Valor del badgeCol formateado (si está en VALIDACION_OPTS)
 //   4. Vacío si ninguno aplica
 import { ESCENARIOS_ORDEN } from '@/lib/constants/reportes';
+import { rowIdFnv } from '@/lib/utils/rowId';
+import { toSheetSlug } from '@/lib/utils/sheets';
 
 const VALIDACION_OPTS_SET = new Set(['Correcto', 'Incorrecto', 'Sustentado']);
 
@@ -152,16 +154,8 @@ function hojaAbrev(sheetKey) {
   return k.replace(/[^A-Z0-9]/g,'').slice(0,4);
 }
 
-// ── FNV-1a hash (idéntico a useValidaciones.ts) ───────────────────────────
-function fnvHash(row) {
-  let h = 0x811c9dc5;
-  for (const k of Object.keys(row).sort()) {
-    const v = row[k];
-    const s = `${k}\u0001${v == null ? '' : String(v)}\u0002`;
-    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
-  }
-  return h.toString(16).padStart(8, '0');
-}
+// fnvHash (=rowIdFnv) canónico en lib/utils/rowId.
+const fnvHash = rowIdFnv;
 
 // ── Convertir fechas a serial Excel ──────────────────────────────────────
 const DATE_COL_RE3 = /(fecha|date|login|alta|cese|crea|cambio|bloqueo|time|expir|inicio|fin)/i;
@@ -316,7 +310,7 @@ function buildExcelBuffer(rawData, persistKey, form) {
     if (!rows?.length) continue;
 
     const abrev = hojaAbrev(sheetKey);
-    const slug  = sheetKey.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug  = toSheetSlug(sheetKey);
 
     const scenariosConHallazgos = ESCENARIOS_ORDEN.filter(sc =>
       rows.some(r => r[sc.badgeCol] != null && r[sc.badgeCol] !== '')

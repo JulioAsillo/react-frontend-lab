@@ -27,6 +27,7 @@ import { ThCell } from "./DataTableHeader";
 import Badge from "./Badge";
 import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos-usuarios";
 import * as XLSX from "xlsx";
+import { toSheetSlug } from "@/lib/utils/sheets";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
 const DEFAULT_SIZE = 50;
@@ -72,7 +73,7 @@ function ExportModal({ filename, onClose }) {
 
 // ── Hoja individual ────────────────────────────────────────────────────────
 function HojaSheet({ rows, hojaKey, columnas, persistKey }) {
-  const pfx = `${persistKey}-ces-${hojaKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}`;
+  const pfx = `${persistKey}-ces-${toSheetSlug(hojaKey)}`;
 
   const [filter,     setFilter]     = usePersistedState(`${pfx}-filter`,      "");
   const [sortCol,    setSortCol]    = usePersistedState(`${pfx}-sort-col`,    null);

@@ -35,6 +35,8 @@ import DataTableRow from "./DataTableRow";
 import { ThCell } from "./DataTableHeader";
 import * as XLSX from "xlsx";
 import ClasificacionModal from "./ClasificacionModal";
+import { rowIdFnv } from "@/lib/utils/rowId";
+import { normalizeSheets, toSheetSlug } from "@/lib/utils/sheets";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 const PAGE_SIZES       = [5, 15, 25, 50, 100, "TODOS"];
@@ -43,28 +45,9 @@ const VALIDACION_OPTS  = ["Correcto", "Incorrecto", "Sustentado"];
 const ALL_SCENARIO_COLS = new Set(ESCENARIOS_ORDEN.map(s => s.badgeCol));
 
 // ── Normalizar rawData → { sheetKey: rows[] } ─────────────────────────────────
-function normalizeSheets(rawData) {
-  if (!rawData) return {};
-  // Array plano → una sola hoja "Principal"
-  if (Array.isArray(rawData)) return rawData.length ? { Principal: rawData } : {};
-  if (typeof rawData !== "object") return {};
-  const result = {};
-  for (const [k, v] of Object.entries(rawData)) {
-    if (Array.isArray(v)) result[k] = v;
-  }
-  return result;
-}
+// normalizeSheets importado de lib/utils/sheets.
 
-// ── Hash determinista (igual que useValidaciones) ─────────────────────────────
-function rowIdFnv(row) {
-  let h = 0x811c9dc5;
-  for (const k of Object.keys(row).sort()) {
-    const v = row[k];
-    const s = `${k}\u0001${v === null || v === undefined ? "" : String(v)}\u0002`;
-    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
-  }
-  return h.toString(16).padStart(8, "0");
-}
+// rowIdFnv importado de lib/utils/rowId — fuente única de verdad.
 
 // ── Export completo: todas las hojas × todos los escenarios ──────────────────
 export function exportAllUsuarios(sheets, persistKey, reportLabel) {
@@ -98,7 +81,7 @@ export function exportAllUsuarios(sheets, persistKey, reportLabel) {
   for (const [sheetKey, rows] of Object.entries(sheets)) {
     if (!rows?.length) continue;
 
-    const sheetSlug = sheetKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const sheetSlug = toSheetSlug(sheetKey);
 
     // Escenarios con al menos 1 fila con dato en esta fuente
     const scenariosInSheet = ESCENARIOS_ORDEN.filter(s =>
@@ -202,7 +185,7 @@ function ScenarioSheet({ allSheetRows, sheetKey, persistKey, scenario, onExportS
   const { badgeCol } = scenario;
 
   // Clave única por hoja + escenario para persistencia
-  const sheetSlug   = sheetKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const sheetSlug   = toSheetSlug(sheetKey);
   const scenarioKey = `${sheetSlug}-${scenario.key}`;
   const pfx         = `${persistKey}-${scenarioKey}`;
 
@@ -475,7 +458,7 @@ export default function DataTableUsuarios({ rawData, persistKey, fieldMap }) {
     const rows = sheets[key] ?? [];
     let count = 0;
     for (const s of ESCENARIOS_ORDEN) {
-      const sheetSlug = key.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      const sheetSlug = toSheetSlug(key);
       let store = {};
       try {
         const raw = typeof window !== "undefined" ? localStorage.getItem(`${persistKey}-val-${sheetSlug}-${s.key}`) : null;
@@ -499,7 +482,7 @@ export default function DataTableUsuarios({ rawData, persistKey, fieldMap }) {
   // Conteo de hallazgos por escenario en la hoja activa
   // v21.1: igual que hallazgosBySheet pero para el escenario individual.
   function hallazgosByScenario(s) {
-    const sheetSlug = currentSheet.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const sheetSlug = toSheetSlug(currentSheet);
     let store = {};
     try {
       const raw = typeof window !== "undefined" ? localStorage.getItem(`${persistKey}-val-${sheetSlug}-${s.key}`) : null;

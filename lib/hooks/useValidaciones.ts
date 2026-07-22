@@ -23,6 +23,7 @@
 
 import { useCallback, useMemo } from "react";
 import { usePersistedState } from "./usePersistedState";
+import { rowIdFnv as rowId } from "@/lib/utils/rowId";
 
 type ValEntry = { validacion?: string; comentario?: string; accion?: string };
 type ValStore = Record<string, ValEntry>;
@@ -47,35 +48,8 @@ export interface UseValidacionesReturn {
   rowId: (row: Record<string, unknown>) => string;
 }
 
-/**
- * Hash FNV-1a 32-bit. Determinista, sin colisiones prácticas para nuestro
- * dominio (decenas de miles de filas distintas). 8 chars hex.
- */
-function fnv1a(str: string): string {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (h * 0x01000193) >>> 0;
-  }
-  return h.toString(16).padStart(8, "0");
-}
+// rowId (hash FNV-1a) vive en lib/utils/rowId.ts — fuente única de verdad.
 
-/**
- * Genera un id estable para una fila: ordena las claves alfabéticamente,
- * concatena valores con un separador no ambiguo, y hashea.
- */
-function rowId(row: Record<string, unknown>): string {
-  const keys = Object.keys(row).sort();
-  const parts: string[] = [];
-  for (const k of keys) {
-    const v = row[k];
-    parts.push(k);
-    parts.push("\u0001");
-    parts.push(v === null || v === undefined ? "" : String(v));
-    parts.push("\u0002");
-  }
-  return fnv1a(parts.join(""));
-}
 
 export function useValidaciones(
   persistKey: string,

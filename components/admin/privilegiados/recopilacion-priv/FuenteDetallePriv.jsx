@@ -4,398 +4,39 @@
  * FuenteDetallePriv
  *
  * Vista individual de cada fuente de Recopilación de Privilegiados.
- * Sigue el mismo patrón de FuenteDetalle (Usuarios):
+ * Sigue el mismo patrón del FuenteDetalle compartido (components/shared):
  * - Carga vía cargarFuente() del uiStore
  * - Persiste en IndexedDB con prefijo "priv-data"
  * - Paginación, búsqueda, filtros Excel (ThCell), resize de columnas
  * - Vistas especiales para server-linux y server-windows
  */
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { PRIV_BD_SOURCES } from "@/lib/mock/privBDSources";
 import { normalizeSource } from "@/lib/mock/sourceCols";
 import { useBDStatus, useBDError, useUIStore } from "@/lib/store/uiStore";
 import FuenteUploadPanel from "@/components/admin/shared/FuenteUploadPanel";
 import { isUploadSource, getUploadConfig } from "@/lib/constants/uploadSources";
-import { idbGetItem, idbDelItem, idbSetItem } from "@/lib/storage";
-import { exportSheetPlano } from "@/lib/utils/excel";
-import { ThCell } from "@/components/shared/DataTableHeader";
-import { getLabel, labelFor } from "@/lib/utils/fieldLabels";
+import { idbGetItem, idbDelItem } from "@/lib/storage";
 import { formatFechaHora } from "@/lib/utils/formatFecha";
 import { useAuthStore } from "@/lib/store/authStore";
 import ExtraerInfoButton from "@/components/shared/ExtraerInfoButton";
 import { getBotEndpoint } from "@/lib/constants/extraccionEndpoints";
+import { splitStored, prettyColl } from "@/lib/utils/collections";
+import ServerView from "./ServerView";
+import StandardTableView from "@/components/shared/StandardTableView";
 
-const API_BASE  = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const DATA_KEY  = (id) => `priv-data-${id}`;
-const PAGE_SIZE = 100;
 
 // Fuentes que el backend ya trae completas: el bot "Extraer Información" no aplica
 // y por eso el botón no se muestra (ni deshabilitado).
 const SIN_EXTRACCION_BOT = new Set(["local-admin-ad", "domain-admin-ad"]);
 
-// Formatea fecha del backend (ISO o US "M/D/YYYY h:mm:ss AM/PM") → "DD/MM/YYYY [HH:MM:SS]".
-function fmtFechaHora(val) {
-  if (!val) return "";
-  return formatFechaHora(val);
-}
 
-function buildDefaultWidths(cols) {
-  return Object.fromEntries(cols.map(col => [col, col.length > 20 ? 220 : 150]));
-}
-
-// ── Server Linux / Windows — tabla plana con filtros ─────────────────────────
-// Expande cada registro dentro de cada servidor como una fila independiente.
-// Linux:   servidor | tipo | aplicaciones | usuario | descripción | home | grupos | último login
-// Windows: servidor | tipo | aplicaciones | usuario/grupo
-function ServerView({ rows, tipo }) {
-  const [search,     setSearch]     = useState("");
-  const [colFilters, setColFilters] = useState({});
-  const [openPanel,  setOpenPanel]  = useState(null);
-  const [sortCol,    setSortCol]    = useState(null);
-  const [sortDir,    setSortDir]    = useState("asc");
-  const [page,       setPage]       = useState(1);
-  const PAGE_SZ = 100;
-
-  const isLinux = tipo === "server-linux";
-  const servers = Array.isArray(rows) ? rows : [];
-
-  // Aplanar: un registro (string de user) por fila.
-  // Backend devuelve srv.users como array de strings planos (no objetos en srv.registros).
-  const flatRows = servers.flatMap(srv => {
-    const apps = (srv.aplicaciones ?? []).join(", ");
-    const users = Array.isArray(srv.users) ? srv.users : [];
-    return users.map(u => {
-      const raw = String(u ?? "");
-      if (isLinux) {
-        // Formato: usuario:descripción:home
-        const parts = raw.split(":");
-        return {
-          servidor:     srv.server_name ?? "",
-          tipo:         srv.tipo ?? "linux",
-          aplicaciones: apps,
-          usuario:      parts[0] ?? "",
-          descripcion:  parts[1] ?? "",
-          home:         parts[2] ?? "",
-          grupos:       "",
-          ultimo_login: "",
-        };
-      }
-      // Windows: el string es directamente el usuario/grupo (ej. "ADPRIMA\\Domain Admins")
-      return {
-        servidor:     srv.server_name ?? "",
-        tipo:         srv.tipo ?? "windows",
-        aplicaciones: apps,
-        usuario:      raw,
-      };
-    });
-  });
-
-  const cols = isLinux
-    ? ["servidor","aplicaciones","usuario","descripcion","home","grupos","ultimo_login"]
-    : ["servidor","aplicaciones","usuario"];
-
-  function getColFilterSet(col) { return colFilters[col] || new Set(); }
-  function setColFilterSet(col, set) { setColFilters(prev => ({ ...prev, [col]: set })); setPage(1); }
-  function handleSort(col, dir) { setSortCol(col); setSortDir(dir); setPage(1); }
-
-  const filtered = flatRows.filter(row => {
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      if (!cols.some(c => String(row[c] ?? "").toLowerCase().includes(q))) return false;
-    }
-    for (const [col, active] of Object.entries(colFilters)) {
-      if (active.size > 0 && !active.has(String(row[col] ?? "—"))) return false;
-    }
-    return true;
-  });
-
-  const sorted = sortCol
-    ? [...filtered].sort((a, b) => {
-        const cmp = String(a[sortCol] ?? "").localeCompare(String(b[sortCol] ?? ""), "es", { numeric: true });
-        return sortDir === "asc" ? cmp : -cmp;
-      })
-    : filtered;
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SZ));
-  const pageRows   = sorted.slice((page - 1) * PAGE_SZ, page * PAGE_SZ);
-
-  return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      {/* Toolbar */}
-      <div className="table-toolbar">
-        <div className="toolbar-left">
-          <input className="search-input" placeholder="Buscar servidor, usuario…"
-            value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-            style={{ width: 260 }} />
-          {search && (
-            <button className="btn-export-small" onClick={() => { setSearch(""); setPage(1); }}>✕ Limpiar</button>
-          )}
-          {Object.values(colFilters).some(s => s.size > 0) && (
-            <button className="btn-export-small" style={{ color: "var(--accent)" }}
-              onClick={() => { setColFilters({}); setPage(1); }}>✕ Quitar filtros</button>
-          )}
-        </div>
-        <div className="toolbar-right">
-          <span className="row-count">
-            <span className="row-count-num">{sorted.length}</span> de {flatRows.length} registros
-            {totalPages > 1 && ` · pág. ${page}/${totalPages}`}
-          </span>
-        </div>
-      </div>
-
-      {/* Tabla */}
-      <div className="scroll-x">
-        <table className="data-table" style={{ minWidth: "max-content", width: "100%", tableLayout: "fixed" }}>
-          <thead>
-            <tr>
-              {cols.map(col => (
-                <ThCell key={col} col={col} label={getLabel(col)} isSpecial={false}
-                  hasFilter={colFilters[col]?.size > 0}
-                  width={
-                    col === "servidor"    ? "180px"
-                    : col === "grupos"   ? "340px"
-                    : col === "descripcion" ? "220px"
-                    : col === "ultimo_login" ? "180px"
-                    : col === "aplicaciones" ? "140px"
-                    : col === "home"     ? "180px"
-                    : "160px"
-                  }
-                  openPanel={openPanel} setOpenPanel={setOpenPanel}
-                  sortCol={sortCol} sortDir={sortDir} rows={flatRows}
-                  getColFilterSet={getColFilterSet} setColFilterSet={setColFilterSet}
-                  handleSort={handleSort} onResizeStart={e => e.preventDefault()} />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {pageRows.map((row, i) => (
-              <tr key={i} style={{ background: i % 2 === 0 ? "var(--bg2)" : "var(--bg)" }}>
-                {cols.map(col => (
-                  <td key={col} style={{
-                    padding: "7px 10px", whiteSpace: "nowrap",
-                    overflow: "hidden", textOverflow: "ellipsis",
-                    borderBottom: "1px solid var(--border)",
-                    fontFamily: col === "servidor" || col === "usuario" ? "var(--mono)" : "var(--sans)",
-                    fontSize: 12.5,
-                    color: col === "servidor" ? "var(--accent)" : "var(--text2)",
-                    fontWeight: col === "servidor" ? 600 : 400,
-                  }}>
-                    <span title={String(row[col] ?? "")}>
-                      {String(row[col] ?? "") || "—"}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-            ))}
-            {pageRows.length === 0 && (
-              <tr><td colSpan={cols.length} style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>
-                Sin resultados
-              </td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="pagination">
-          <div className="pagination-left">
-            <span className="page-info">Página {page} de {totalPages}</span>
-          </div>
-          <div className="pagination-right">
-            <button className="page-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
-            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map(p => (
-              <button key={p} className={`page-size-btn ${p === page ? "ps-active" : ""}`}
-                onClick={() => setPage(p)}>{p}</button>
-            ))}
-            <button className="page-btn" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>›</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-
-// ── Vista de tabla estándar ────────────────────────────────────────────────────
-function StandardTableView({ rows, src }) {
-  const [search,       setSearch]       = useState("");
-  const [page,         setPage]         = useState(1);
-  const [sortCol,      setSortCol]      = useState(null);
-  const [sortDir,      setSortDir]      = useState("asc");
-  const [colFilters,   setColFilters]   = useState({});
-  const [openPanel,    setOpenPanel]    = useState(null);
-  const [columnWidths, setColumnWidths] = useState(() => buildDefaultWidths(src.cols));
-
-  function getColFilterSet(col) { return colFilters[col] || new Set(); }
-  function setColFilterSet(col, set) { setColFilters(prev => ({ ...prev, [col]: set })); setPage(1); }
-  function handleSort(col, dir) { setSortCol(col); setSortDir(dir); setPage(1); }
-
-  // Resize
-  const resizeRef = useRef({});
-  function startResize(col, e) {
-    e.preventDefault();
-    const startX = e.clientX;
-    const startW = columnWidths[col] ?? 150;
-    resizeRef.current = { col, startX, startW };
-    function onMove(ev) {
-      const delta = ev.clientX - resizeRef.current.startX;
-      setColumnWidths(w => ({ ...w, [resizeRef.current.col]: Math.max(60, resizeRef.current.startW + delta) }));
-    }
-    function onUp() { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); }
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  }
-
-  const filtered = useMemo(() => {
-    let r = rows;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      r = r.filter(row => src.cols.some(col => String(row[col] ?? "").toLowerCase().includes(q)));
-    }
-    for (const [col, active] of Object.entries(colFilters)) {
-      if (active.size > 0) r = r.filter(row => {
-        const v = row[col];
-        let n;
-        if (v === true  || v === 1 || v === "1" || v === "True"  || v === "true"
-            || v === "Si" || v === "si" || v === "Sí" || v === "sí"
-            || v === "YES" || v === "yes") n = "Activo";
-        else if (v === false || v === 0 || v === "0" || v === "False" || v === "false"
-            || v === "No" || v === "no" || v === "NO") n = "Inactivo";
-        else n = String(v ?? "—");
-        return active.has(n);
-      });
-    }
-    return r;
-  }, [rows, search, colFilters, src.cols]);
-
-  const sorted = useMemo(() => {
-    if (!sortCol) return filtered;
-    return [...filtered].sort((a, b) => {
-      const cmp = String(a[sortCol] ?? "").localeCompare(String(b[sortCol] ?? ""), "es", { numeric: true });
-      return sortDir === "asc" ? cmp : -cmp;
-    });
-  }, [filtered, sortCol, sortDir]);
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const pageRows   = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      {/* Toolbar */}
-      <div className="table-toolbar">
-        <div className="toolbar-left">
-          <input className="search-input" placeholder="Buscar…" value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }} style={{ width: 240 }} />
-          {search && <button className="btn-export-small" onClick={() => { setSearch(""); setPage(1); }}>✕ Limpiar</button>}
-          {Object.values(colFilters).some(s => s.size > 0) && (
-            <button className="btn-export-small" style={{ color: "var(--accent)" }}
-              onClick={() => { setColFilters({}); setPage(1); }}>✕ Quitar filtros</button>
-          )}
-        </div>
-        <div className="toolbar-right">
-          <span className="row-count">
-            <span className="row-count-num">{sorted.length}</span> de {rows.length}
-          </span>
-          <button className="btn-export" disabled={!rows.length}
-            onClick={() => exportSheetPlano(rows, src.cols, `priv-${src.id}`, (k) => labelFor(src, k))}>
-            Exportar Excel
-          </button>
-        </div>
-      </div>
-
-      <div className="scroll-x">
-        <table className="data-table">
-          <thead>
-            <tr>
-              {src.cols.map(col => (
-                <ThCell key={col} col={col} isSpecial={false}
-                  label={labelFor(src, col)}
-                  hasFilter={colFilters[col]?.size > 0}
-                  width={`${columnWidths[col] ?? 150}px`}
-                  openPanel={openPanel} setOpenPanel={setOpenPanel}
-                  sortCol={sortCol} sortDir={sortDir} rows={rows}
-                  getColFilterSet={getColFilterSet} setColFilterSet={setColFilterSet}
-                  handleSort={handleSort}
-                  onResizeStart={(e, c) => startResize(c, e)} />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {pageRows.map((row, i) => (
-              <tr key={i} className={i % 2 === 0 ? "row-even" : "row-odd"}>
-                {src.cols.map(col => {
-                  const val = row[col];
-                  let display;
-                  if (typeof val === "boolean") {
-                    display = (
-                      <span style={{
-                        fontSize: 11, fontWeight: 600, padding: "2px 9px", borderRadius: 20,
-                        background: val ? "var(--ok-bg)"  : "var(--inc-bg)",
-                        color:      val ? "var(--ok-text)": "var(--inc-text)",
-                        border:     `1px solid ${val ? "var(--ok-border)" : "var(--inc-border)"}`,
-                      }}>{val ? "Activo" : "Inactivo"}</span>
-                    );
-                  } else if (src.dateCols?.includes(col)) {
-                    display = <span className="cell-text">{val ? formatFechaHora(val) : "—"}</span>;
-                  } else {
-                    display = <span className="cell-text">{String(val ?? "—")}</span>;
-                  }
-                  return <td key={col} style={{ width: columnWidths[col] ?? 150 }}>{display}</td>;
-                })}
-              </tr>
-            ))}
-            {pageRows.length === 0 && (
-              <tr><td colSpan={src.cols.length} style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>
-                Sin resultados
-              </td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="pagination">
-          <div className="pagination-left">
-            <span className="page-info">Página {page} de {totalPages}</span>
-          </div>
-          <div className="pagination-right">
-            <button className="page-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
-            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map(p => (
-              <button key={p} className={`page-size-btn ${p === page ? "ps-active" : ""}`}
-                onClick={() => setPage(p)}>{p}</button>
-            ))}
-            <button className="page-btn" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>›</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ── Componente principal ───────────────────────────────────────────────────────
-// Deriva { rows, collections } de los datos guardados en IDB.
-//   array              → { rows, collections:null }
-//   { key:[...] } (1)  → { rows:[...], collections:null }
-//   { a:[...], b:[...] }→ { rows:primera, collections:{a,b} }  (ej. GDH activos/cesados)
-function splitStored(stored, src) {
-  if (Array.isArray(stored)) return { rows: stored, collections: null };
-  if (!stored || typeof stored !== "object") return { rows: [], collections: null };
-  if (typeof src?.dataKey === "string" && Array.isArray(stored[src.dataKey])) {
-    return { rows: stored[src.dataKey], collections: null };
-  }
-  const entries = Object.entries(stored).filter(([, v]) => Array.isArray(v));
-  if (entries.length === 0) return { rows: [], collections: null };
-  if (entries.length === 1) return { rows: entries[0][1], collections: null };
-  return { rows: entries[0][1], collections: Object.fromEntries(entries) };
-}
-
-// Etiqueta legible de una colección (gdh_activos → Activos)
-function prettyColl(k) {
-  return String(k).replace(/^gdh[_\s-]?/i, "").replace(/_/g, " ")
-    .replace(/\b\w/g, c => c.toUpperCase()).trim() || String(k);
-}
+// splitStored y prettyColl canónicos en lib/utils/collections.
 
 export default function FuenteDetallePriv({ sourceId }) {
   const router = useRouter();
@@ -569,7 +210,7 @@ export default function FuenteDetallePriv({ sourceId }) {
             <h2 className="page-title" style={{ margin: 0 }}>{src.icon} {src.label}</h2>
             {fechaCorte && (
               <span className="cutoff-pill-static">
-                Corte: <strong>{fmtFechaHora(fechaCorte)}</strong>
+                Corte: <strong>{fechaCorte ? formatFechaHora(fechaCorte) : ""}</strong>
               </span>
             )}
           </div>

@@ -23,7 +23,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { BD_SOURCES } from "@/lib/mock/bdSources";
-import { PERFILES_BD_SOURCES } from "@/lib/mock/perfilesBDSources";
 import { normalizeSource } from "@/lib/mock/sourceCols";
 import { useBDStatus, useBDError, useUIStore, useBDFechasCorte } from "@/lib/store/uiStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -36,6 +35,7 @@ import { getLabel, labelFor } from "@/lib/utils/fieldLabels";
 import { findFechaCorte, resolveCollectionRows } from "@/lib/utils/payload";
 import FuenteUploadPanel from "@/components/admin/shared/FuenteUploadPanel";
 import { isUploadSource, getUploadConfig } from "@/lib/constants/uploadSources";
+import { buildDefaultWidths } from "@/lib/utils/columnWidths";
 
 // ── Fix v21.1: hidratar status desde localStorage al montar directamente
 // en esta ruta (sin pasar por BDDashboard). El store lleva la bandera
@@ -49,24 +49,7 @@ const DATA_KEY  = (id, prefix = "bd-data") => `${prefix}-${id}`;
 const WIDTH_KEY = (id) => `bd-widths-${id}`;
 const PAGE_SIZE = 100;
 
-// ── Helpers de ancho por defecto ──────────────────────────────────────────────
-
-function buildDefaultWidths(cols) {
-  return Object.fromEntries(
-    cols.map((col) => [
-      col,
-      col === "grupos"      ? 320
-      : col === "id"        ? 280
-      : col === "upn"       ? 240
-      : col === "mail"      ? 220
-      : col === "display_name" || col === "full_name" || col === "nombre" ? 200
-      : col === "u_organizativa" || col === "funcion" ? 190
-      : col.length >= 18    ? 220
-      : col.length >= 12    ? 180
-      : 150,
-    ])
-  );
-}
+// buildDefaultWidths canónico en lib/utils/columnWidths.
 
 // ── Parsers de respuesta backend ──────────────────────────────────────────────
 

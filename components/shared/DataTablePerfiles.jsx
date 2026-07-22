@@ -26,6 +26,8 @@ import DataTableRow from "./DataTableRow";
 import { ThCell } from "./DataTableHeader";
 import ClasificacionModal from "./ClasificacionModal";
 import * as XLSX from "xlsx";
+import { rowIdFnv } from "@/lib/utils/rowId";
+import { normalizeSheets, toSheetSlug } from "@/lib/utils/sheets";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
 const DEFAULT_SIZE = 50;
@@ -76,28 +78,10 @@ function isHallazgoCombined(row, escCols) {
   return escCols.some(col => isHallazgoBadge(row, col));
 }
 
-// FNV-1a
-function rowIdFnv(row) {
-  let h = 0x811c9dc5;
-  for (const k of Object.keys(row).sort()) {
-    const v = row[k];
-    const s = `${k}\u0001${v === null || v === undefined ? "" : String(v)}\u0002`;
-    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
-  }
-  return h.toString(16).padStart(8, "0");
-}
+// rowIdFnv importado de lib/utils/rowId — fuente única de verdad.
 
-// Normaliza rawData → { tabKey: rows[] }
-function normalizeTabs(rawData) {
-  if (!rawData) return {};
-  if (Array.isArray(rawData)) return rawData.length ? { Principal: rawData } : {};
-  if (typeof rawData === "object") {
-    const result = {};
-    for (const [k, v] of Object.entries(rawData)) if (Array.isArray(v)) result[k] = v;
-    return result;
-  }
-  return {};
-}
+// normalizeTabs = normalizeSheets canónico (lib/utils/sheets), misma lógica.
+const normalizeTabs = normalizeSheets;
 
 // Export multi-hoja — soporta ambos modos
 export function exportAllPerfiles(tabs, persistKey, reportLabel) {
@@ -108,7 +92,7 @@ export function exportAllPerfiles(tabs, persistKey, reportLabel) {
 
   for (const [tabKey, rows] of Object.entries(tabs)) {
     if (!rows?.length) continue;
-    const sheetSlug = tabKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const sheetSlug = toSheetSlug(tabKey);
 
     if (scenarioDefs) {
       // Una hoja Excel por escenario
@@ -183,7 +167,7 @@ function StatsRow({ totalRows, hallazgosCount, countModificados }) {
 
 // ── ScenarioSheet — vista de UN escenario (GDH/Moviper) ──────────────────────
 function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick }) {
-  const sheetSlug = tabKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const sheetSlug = toSheetSlug(tabKey);
   const pfx       = `${persistKey}-prf-${sheetSlug}-${scenario.key}`;
 
   const scenarioRows = useMemo(() =>
@@ -397,7 +381,7 @@ function ScenarioSheet({ rows, tabKey, persistKey, scenario, onRowDoubleClick })
 function TabSheet({ rows, tabKey, persistKey, onRowDoubleClick }) {
   const scenarioDefs = getScenarioDefs(persistKey);
   const escCols      = getEscenarioCols(persistKey);
-  const sheetSlug    = tabKey.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const sheetSlug    = toSheetSlug(tabKey);
   const pfx          = `${persistKey}-prf-${sheetSlug}`;
 
   const [activeScenario, setActiveScenario] = usePersistedState(`${pfx}-active-sc`, "");
@@ -676,7 +660,7 @@ export default function DataTablePerfiles({ rawData, persistKey, fieldMap }) {
 
   function hallazgosForTab(key) {
     const rows = tabs[key] ?? [];
-    const sheetSlug = key.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const sheetSlug = toSheetSlug(key);
 
     if (scenarioDefs) {
       // Cargar stores para los escenarios
