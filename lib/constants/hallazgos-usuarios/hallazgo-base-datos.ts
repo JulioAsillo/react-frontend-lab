@@ -8,15 +8,15 @@
 import type { ColumnDef } from "./types";
 
 const dbSdp: ColumnDef[] = [
-  { key: "Usuario",             header: "Usuario",              group: "SDP" },
-  { key: "Matricula",           header: "Matrícula",            group: "SDP" },
-  { key: "Tipo de Cuenta",      header: "Tipo de Cuenta",        group: "SDP" },
-  { key: "Nombre",              header: "Nombre",                group: "SDP" },
-  { key: "Unidad organizativa", header: "Unidad Organizativa",  group: "SDP" },
-  { key: "Estado",              header: "Estado",                group: "SDP" },
-  { key: "Fecha Creación",      header: "Fecha Creación",        group: "SDP" },
-  { key: "Fecha Bloqueo",       header: "Fecha Bloqueo",         group: "SDP" },
-  { key: "Ultimo Login",        header: "Último Login",          group: "SDP" },
+  { key: "Usuario",             header: "Usuario",               group: "C1" },
+  { key: "Matricula",           header: "Matrícula",             group: "C1" },
+  { key: "Tipo de Cuenta",      header: "Tipo de Cuenta",        group: "C1" },
+  { key: "Nombre",              header: "Nombre",                group: "C1" },
+  { key: "Unidad organizativa", header: "Unidad Organizativa",   group: "C1" },
+  { key: "Estado",              header: "Estado",                group: "C1" },
+  { key: "Fecha Creación",      header: "Fecha Creación",        group: "C1" },
+  { key: "Fecha Bloqueo",       header: "Fecha Bloqueo",         group: "C1" },
+  { key: "Ultimo Login",        header: "Último Login",          group: "C1" },
 
   { key: "activoGDH",           header: "Activo en GDH",         group: "GDH" },
   { key: "cesadoGDH",           header: "Cesado en GDH",         group: "GDH" },
@@ -30,15 +30,15 @@ const dbSdp: ColumnDef[] = [
 ];
 
 const dbExactus: ColumnDef[] = [
-  { key: "Usuario",             header: "Usuario",              group: "EXACTUS" },
-  { key: "Matricula",           header: "Matrícula",            group: "EXACTUS" },
-  { key: "Tipo de Cuenta",      header: "Tipo de Cuenta",        group: "EXACTUS" },
-  { key: "Nombre",              header: "Nombre",                group: "EXACTUS" },
-  { key: "Unidad organizativa", header: "Unidad Organizativa",  group: "EXACTUS" },
-  { key: "Estado",              header: "Estado",                group: "EXACTUS" },
-  { key: "Fecha Creación",      header: "Fecha Creación",        group: "EXACTUS" },
-  { key: "Fecha Bloqueo",       header: "Fecha Bloqueo",         group: "EXACTUS" },
-  { key: "Ultimo Login",        header: "Último Login",          group: "EXACTUS" },
+  { key: "Usuario",             header: "Usuario",               group: "C1" },
+  { key: "Matricula",           header: "Matrícula",             group: "C1" },
+  { key: "Tipo de Cuenta",      header: "Tipo de Cuenta",        group: "C1" },
+  { key: "Nombre",              header: "Nombre",                group: "C1" },
+  { key: "Unidad organizativa", header: "Unidad Organizativa",   group: "C1" },
+  { key: "Estado",              header: "Estado",                group: "C1" },
+  { key: "Fecha Creación",      header: "Fecha Creación",        group: "C1" },
+  { key: "Fecha Bloqueo",       header: "Fecha Bloqueo",         group: "C1" },
+  { key: "Ultimo Login",        header: "Último Login",          group: "C1" },
 
   { key: "activoGDH",           header: "Activo en GDH",         group: "GDH" },
   { key: "cesadoGDH",           header: "Cesado en GDH",         group: "GDH" },
@@ -52,15 +52,15 @@ const dbExactus: ColumnDef[] = [
 ];
 
 const dbSit: ColumnDef[] = [
-  { key: "Usuario",             header: "Usuario",              group: "SIT" },
-  { key: "Matricula",           header: "Matrícula",            group: "SIT" },
-  { key: "Tipo de Cuenta",      header: "Tipo de Cuenta",        group: "SIT" },
-  { key: "Nombre",              header: "Nombre",                group: "SIT" },
-  { key: "Unidad organizativa", header: "Unidad Organizativa",  group: "SIT" },
-  { key: "Estado",              header: "Estado",                group: "SIT" },
-  { key: "Fecha Creación",      header: "Fecha Creación",        group: "SIT" },
-  { key: "Fecha Bloqueo",       header: "Fecha Bloqueo",         group: "SIT" },
-  { key: "Ultimo Login",        header: "Último Login",          group: "SIT" },
+  { key: "Usuario",             header: "Usuario",               group: "C1" },
+  { key: "Matricula",           header: "Matrícula",             group: "C1" },
+  { key: "Tipo de Cuenta",      header: "Tipo de Cuenta",        group: "C1" },
+  { key: "Nombre",              header: "Nombre",                group: "C1" },
+  { key: "Unidad organizativa", header: "Unidad Organizativa",   group: "C1" },
+  { key: "Estado",              header: "Estado",                group: "C1" },
+  { key: "Fecha Creación",      header: "Fecha Creación",        group: "C1" },
+  { key: "Fecha Bloqueo",       header: "Fecha Bloqueo",         group: "C1" },
+  { key: "Ultimo Login",        header: "Último Login",          group: "C1" },
 
   { key: "activoGDH",           header: "Activo en GDH",         group: "GDH" },
   { key: "cesadoGDH",           header: "Cesado en GDH",         group: "GDH" },
