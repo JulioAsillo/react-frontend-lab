@@ -475,17 +475,22 @@ body {
   border-collapse: collapse; font-size: 13px; font-family: var(--sans);
   table-layout: fixed; /* Respect explicit widths — text clips like Excel */
 }
-.data-table thead { position: sticky; top: 0; z-index: 10; background: var(--bg3); }
+.data-table thead { position: sticky; top: 0; z-index: 10; background: var(--accent); }
 .data-table th {
   padding: 10px 14px; text-align: left;
   font-weight: 700; font-size: 11px;
   text-transform: uppercase; letter-spacing: 0.065em;
-  color: var(--text3); white-space: nowrap;
-  border-bottom: 2px solid var(--border);
+  color: #ffffff; white-space: nowrap;
+  background: var(--accent);
+  border-bottom: 2px solid var(--accent2);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
   user-select: none; overflow: visible;
   position: relative;
 }
-.data-table th:hover { color: var(--text2); }
+.data-table th:last-child { border-right: none; }
+.data-table th:hover { background: var(--accent2); color: #ffffff; }
+.data-table th .th-icon,
+.data-table th .th-label { color: inherit; }
 .data-table td {
   padding: 8px 14px;
   border-bottom: 1px solid var(--border);
@@ -578,23 +583,34 @@ th:hover .th-chevron { color: var(--accent); }
    lib/constants/headerColumnMap.js, para distinguir de qué fuente/sistema
    viene cada columna en el DataTable. Ver también lib/constants/headerPalette.js
    (referencia de los mismos 15 colores en JS, por si se necesita el hex). */
-.th-src-1  { background: #FDE68A; border-bottom: 2px solid #F59E0B; color: #78350F; }
-.th-src-2  { background: #FCA5A5; border-bottom: 2px solid #EF4444; color: #7F1D1D; }
-.th-src-3  { background: #FDBA74; border-bottom: 2px solid #F97316; color: #7C2D12; }
-.th-src-4  { background: #FDE047; border-bottom: 2px solid #EAB308; color: #713F12; }
-.th-src-5  { background: #BEF264; border-bottom: 2px solid #84CC16; color: #365314; }
-.th-src-6  { background: #86EFAC; border-bottom: 2px solid #22C55E; color: #14532D; }
-.th-src-7  { background: #6EE7B7; border-bottom: 2px solid #10B981; color: #064E3B; }
-.th-src-8  { background: #5EEAD4; border-bottom: 2px solid #14B8A6; color: #134E4A; }
-.th-src-9  { background: #0EA5E9; border-bottom: 2px solid #0EA5E9; color: #0C4A6E; }
-.th-src-10 { background: #3B82F6; border-bottom: 2px solid #3B82F6; color: #1E3A8A; }
-.th-src-11 { background: #A5B4FC; border-bottom: 2px solid #6366F1; color: #312E81; }
-.th-src-12 { background: #C4B5FD; border-bottom: 2px solid #8B5CF6; color: #4C1D95; }
-.th-src-13 { background: #D8B4FE; border-bottom: 2px solid #A855F7; color: #581C87; }
-.th-src-14 { background: #F0ABFC; border-bottom: 2px solid #D946EF; color: #701A75; }
-.th-src-15 { background: #FDA4AF; border-bottom: 2px solid #F43F5E; color: #881337; }
+/* Tonos saturados (escala 500/600) + texto blanco.
+   El selector incluye .data-table para ganarle en especificidad a
+   `.data-table th { color: var(--text3) }` — sin esto el color no aplica. */
+.data-table th[class*="th-src-"] {
+  color: #FFFFFF;
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+}
+.data-table th[class*="th-src-"]:hover { color: #FFFFFF; }
+.data-table th[class*="th-src-"] .th-label,
+.data-table th[class*="th-src-"] .th-icon { color: inherit; }
 
-html[data-theme="dark"] [class^="th-src-"] { filter: brightness(0.82); }
+.data-table th.th-src-1  { background: #D97706; border-bottom: 2px solid #B45309; } /* ámbar     */
+.data-table th.th-src-2  { background: #DC2626; border-bottom: 2px solid #B91C1C; } /* rojo      */
+.data-table th.th-src-3  { background: #EA580C; border-bottom: 2px solid #C2410C; } /* naranja   */
+.data-table th.th-src-4  { background: #CA8A04; border-bottom: 2px solid #A16207; } /* amarillo  */
+.data-table th.th-src-5  { background: #65A30D; border-bottom: 2px solid #4D7C0F; } /* lima      */
+.data-table th.th-src-6  { background: #16A34A; border-bottom: 2px solid #15803D; } /* verde     */
+.data-table th.th-src-7  { background: #059669; border-bottom: 2px solid #047857; } /* esmeralda */
+.data-table th.th-src-8  { background: #0D9488; border-bottom: 2px solid #0F766E; } /* turquesa  */
+.data-table th.th-src-9  { background: #0284C7; border-bottom: 2px solid #0369A1; } /* celeste   */
+.data-table th.th-src-10 { background: #2563EB; border-bottom: 2px solid #1D4ED8; } /* azul      */
+.data-table th.th-src-11 { background: #4F46E5; border-bottom: 2px solid #4338CA; } /* índigo    */
+.data-table th.th-src-12 { background: #7C3AED; border-bottom: 2px solid #6D28D9; } /* violeta   */
+.data-table th.th-src-13 { background: #9333EA; border-bottom: 2px solid #7E22CE; } /* púrpura   */
+.data-table th.th-src-14 { background: #C026D3; border-bottom: 2px solid #A21CAF; } /* fucsia    */
+.data-table th.th-src-15 { background: #E11D48; border-bottom: 2px solid #BE123C; } /* rosa      */
+
+html[data-theme="dark"] [class*="th-src-"] { filter: brightness(0.88); }
 
 /* ── VALIDACIÓN SELECT ───────────────────────────────────────────────────── */
 .td-validation { padding: 6px 10px; white-space: nowrap; min-width: 150px; }
