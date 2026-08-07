@@ -8,17 +8,17 @@
 import type { ColumnDef } from "./types";
 
 const roles: ColumnDef[] = [
-  { key: "Matricula",             header: "Matrícula",              group: "" },
-  { key: "Nombre Completo",       header: "Nombre Completo",        group: "" },
-  { key: "Tipo de Personal",      header: "Tipo de Personal",        group: "" },
-  { key: "Cod Función",           header: "Cód. Función",           group: "" },
-  { key: "Función",               header: "Función",                group: "" },
-  { key: "Cod U. Organizativa",   header: "Cód. U. Organizativa",   group: "" },
-  { key: "U. Organizatia",        header: "U. Organizativa",        group: "" }, // typo real del backend (sin "v")
-  { key: "Rol GDH",               header: "Rol GDH",                 group: "" },
-  { key: "Rol AD",                header: "Rol AD",                  group: "" },
-  { key: "Existe en MR",          header: "Existe en MR",            group: "" },
-  { key: "Validación Rol",        header: "Validación Rol",          group: "" },
+  { key: "Matricula",             header: "Matrícula",               group: "C1" },
+  { key: "Nombre Completo",       header: "Nombre Completo",         group: "C1" },
+  { key: "Tipo de Personal",      header: "Tipo de Personal",        group: "C1" },
+  { key: "Cod Función",           header: "Cód. Función",            group: "C1" },
+  { key: "Función",               header: "Función",                 group: "C1" },
+  { key: "Cod U. Organizativa",   header: "Cód. U. Organizativa",    group: "C1" },
+  { key: "U. Organizatia",        header: "U. Organizativa",         group: "C1" }, // typo real del backend (sin "v")
+  { key: "Rol GDH",               header: "Rol GDH",                 group: "C1" },
+  { key: "Rol AD",                header: "Rol AD",                  group: "C1" },
+  { key: "Existe en MR",          header: "Existe en MR",            group: "C1" },
+  { key: "Validación Rol",        header: "Validación Rol",          group: "VALIDACION" },
 ];
 
 // Nombre de hoja = key exacta del dict que devuelve generar_reporte_validacion_roles().

@@ -9,20 +9,20 @@
 import type { ColumnDef } from "./types";
 
 const sysAdmin: ColumnDef[] = [
-  { key: "Name DB",          header: "DB Name",          group: "" },
-  { key: "loginName",        header: "Login Name",        group: "" },
-  { key: "Usuario",          header: "Usuario",           group: "" },
-  { key: "ServerRole",       header: "Server Role",       group: "" },
-  { key: "Estado",           header: "Estado",             group: "" },
-  { key: "Fech Creación",    header: "Fecha Creación",    group: "" }, // typo real del backend (sin "a")
-  { key: "Tipo Cuenta",      header: "Tipo de Cuenta",    group: "" },
-  { key: "Matricula",        header: "Matrícula",         group: "" },
-  { key: "Nombre",           header: "Nombre",            group: "" },
-  { key: "Activo GDH",       header: "Activo en GDH",     group: "" },
-  { key: "Cesado GDH",       header: "Cesado en GDH",     group: "" },
-  { key: "Cesado Activo",    header: "Cesado Activo",     group: "" },
-  { key: "No Identificado",  header: "No Identificado",   group: "" },
-  { key: "Comentario",       header: "Comentario",        group: "" },
+  { key: "Name DB",          header: "DB Name",           group: "C1" },
+  { key: "loginName",        header: "Login Name",        group: "C1" },
+  { key: "Usuario",          header: "Usuario",           group: "C1" },
+  { key: "ServerRole",       header: "Server Role",       group: "C1" },
+  { key: "Estado",           header: "Estado",            group: "C1" },
+  { key: "Fech Creación",    header: "Fecha Creación",    group: "C1" }, // typo real del backend (sin "a")
+  { key: "Tipo Cuenta",      header: "Tipo de Cuenta",    group: "C1" },
+  { key: "Matricula",        header: "Matrícula",         group: "C1" },
+  { key: "Nombre",           header: "Nombre",            group: "C1" },
+  { key: "Activo GDH",       header: "Activo en GDH",     group: "C1" },
+  { key: "Cesado GDH",       header: "Cesado en GDH",     group: "C1" },
+  { key: "Cesado Activo",    header: "Cesado Activo",     group: "VALIDACION" },
+  { key: "No Identificado",  header: "No Identificado",   group: "VALIDACION" },
+  { key: "Comentario",       header: "Comentario",        group: "VALIDACION" },
 ];
 
 // Nombre de hoja = key exacta del dict que devuelve generar_hallazgos_sysadmin().

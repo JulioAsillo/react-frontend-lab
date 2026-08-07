@@ -4,5 +4,6 @@
  * decides los grupos/colores. Ver ese archivo para el formato esperado.
  */
 export const GROUP_COLORS: Record<string, string> = {
-  // completar
+  VALIDACION: "th-src-2", // ROJO
+  C1: "th-src-10" // AZUL DEFECTO
 };
