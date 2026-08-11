@@ -10,7 +10,8 @@ const preliminares: ColumnDef[] = [
   { key: "Matricula",                 header: "Matrícula",                 group: "" },
   { key: "Nombre",                    header: "Nombre",                    group: "" },
   { key: "UPN",                       header: "UPN",                       group: "" },
-  { key: "Unidad organizativa",       header: "Unidad Organizativa",      group: "" },
+  { key: "Email",                     header: "Email",                     group: "" },
+  { key: "Unidad organizativa",       header: "Unidad Organizativa",       group: "" },
   { key: "Fecha de Cese",             header: "Fecha de Cese",             group: "GDH" },
 
   { key: "AD",                        header: "AD",                        group: "AD" },
