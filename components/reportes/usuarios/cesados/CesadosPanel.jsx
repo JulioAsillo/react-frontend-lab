@@ -6,7 +6,7 @@ import DataTableCesados, { exportAllCesados } from '@/components/shared/DataTabl
 const HOJA_CFG = {
   "Preliminares": {
     columnas: [
-      "Matricula", "Nombre", "Unidad organizativa", "Fecha de Cese",
+      "Matricula", "Nombre", "UPN", "Email", "Unidad organizativa", "Fecha de Cese",
       "AD", "Ultimo Login AD", "PostCese AD",
       "Entra ID", "Entra ID Ultimo Login", "PostCese Entra ID",
       "Usr Exactus", "Usr Exactus Ultimo Login", "PostCese Exactus App",
