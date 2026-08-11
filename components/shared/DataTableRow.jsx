@@ -135,9 +135,9 @@ export default function DataTableRow({
         // "usuarios" usa el patrón nuevo (pintado por valor, ver badgeValueMap.js).
         // Perfiles/Privilegiados mantienen el patrón legacy (Set BADGE_COLS) sin cambios.
         const isUsuarios = accionModule === "usuarios";
-        // DD-MM-YYYY sin horas, solo Perfiles/Privilegiados (pedido explícito).
-        const needsFechaFormat = accionModule === "perfiles" || accionModule === "privilegiados";
-        const cellVal = needsFechaFormat ? formatFechaDDMMYYYY(row[col]) : row[col];
+        // DD-MM-YYYY sin horas en todos los módulos de hallazgos.
+        // formatFechaDDMMYYYY devuelve el valor original si no es fecha ISO.
+        const cellVal = formatFechaDDMMYYYY(row[col]);
 
         return (
           <td key={col} style={{ width: colWidths[col] ?? 130 }}>

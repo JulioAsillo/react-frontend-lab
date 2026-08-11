@@ -27,6 +27,7 @@ import { usePersistedState } from "@/lib/hooks/usePersistedState";
 import { exportSheetPlano } from "@/lib/utils/excel";
 import Badge from "./Badge";
 import { ThCell } from "./DataTableHeader";
+import { formatFechaDDMMYYYY } from "@/lib/utils/formatFecha";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
 const DEFAULT_SIZE = 50;
@@ -189,8 +190,8 @@ export default function DataTablePlano({ rows, persistKey = "table" }) {
                     {cols.map(col => (
                       <td key={col} style={{ width: colWidths[col] ?? 130 }}>
                         {BADGE_COLS.has(col)
-                          ? <Badge value={row[col]} />
-                          : <span className="cell-text">{row[col] ?? "—"}</span>}
+                          ? <Badge value={formatFechaDDMMYYYY(row[col])} />
+                          : <span className="cell-text">{formatFechaDDMMYYYY(row[col]) ?? "—"}</span>}
                       </td>
                     ))}
                   </tr>

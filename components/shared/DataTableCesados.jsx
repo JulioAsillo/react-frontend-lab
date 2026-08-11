@@ -28,6 +28,7 @@ import Badge from "./Badge";
 import { getHeaderColorClass, getColumnLabel } from "@/lib/constants/hallazgos-usuarios";
 import * as XLSX from "xlsx";
 import { toSheetSlug } from "@/lib/utils/sheets";
+import { formatFechaDDMMYYYY } from "@/lib/utils/formatFecha";
 
 const PAGE_SIZES   = [5, 15, 25, 50, 100, "TODOS"];
 const DEFAULT_SIZE = 50;
@@ -264,7 +265,7 @@ function HojaSheet({ rows, hojaKey, columnas, persistKey }) {
                     maxWidth: colWidths[col] ?? 130,
                     overflow: "hidden", textOverflow: "ellipsis",
                   }}>
-                    <Badge value={row[col]} moduleKey="usuarios" />
+                    <Badge value={formatFechaDDMMYYYY(row[col])} moduleKey="usuarios" />
                   </td>
                 ))}
               </tr>
