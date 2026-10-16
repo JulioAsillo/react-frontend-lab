@@ -121,7 +121,6 @@ function ZonaCarga({ zona, estado, onPick }) {
         <div className="upload-val-error">
           {validation.faltan.length > 0 && (
             <div>Faltan columnas: <strong>{validation.faltan.join(", ")}</strong></div>
-          )}</strong></div>
           )}
         </div>
       )}
