@@ -22,14 +22,39 @@ import { validarColumnas, normalizeColName } from "@/lib/constants/uploadSources
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-// Lee la primera fila (cabeceras) de un .xlsx/.xls en el navegador.
-async function leerCabeceras(file) {
+// Formatos aceptados (Excel y texto delimitado)
+const EXT_OK = /\.(xlsx|xlsm|xlsb|xls|csv|txt|tsv|ods)$/i;
+const ACCEPT = ".xlsx,.xlsm,.xlsb,.xls,.csv,.txt,.tsv,.ods";
+
+// Decodifica texto: UTF-8 y, si trae caracteres inválidos, Windows-1252
+// (los CSV exportados por Excel en español suelen venir en ANSI).
+function decodeText(buf) {
+  const utf8 = new TextDecoder("utf-8").decode(buf);
+  return utf8.includes("\uFFFD") ? new TextDecoder("windows-1252").decode(buf) : utf8;
+}
+
+// Lee el archivo y devuelve la fila de cabeceras.
+// No asume que las cabeceras estén en la fila 1: revisa las primeras 20 filas
+// de cada hoja y elige la que contiene más columnas requeridas.
+async function leerCabeceras(file, reqCols) {
   const buf = await file.arrayBuffer();
-  const wb = XLSX.read(buf, { type: "array" });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", blankrows: false });
-  const header = (aoa[0] || []).map(c => String(c).trim()).filter(Boolean);
-  return header;
+  const esTexto = /\.(csv|txt|tsv)$/i.test(file.name);
+  const wb = esTexto
+    ? XLSX.read(decodeText(buf), { type: "string", raw: true })
+    : XLSX.read(buf, { type: "array" });
+
+  const req = new Set(reqCols.map(normalizeColName));
+  let best = [], bestScore = -1;
+  for (const name of wb.SheetNames) {
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: "", blankrows: false });
+    for (const row of aoa.slice(0, 20)) {
+      const cells = row.map(c => String(c).trim()).filter(Boolean);
+      const score = cells.filter(c => req.has(normalizeColName(c))).length;
+      if (score > bestScore) { best = cells; bestScore = score; }
+      if (score === req.size) return best;
+    }
+  }
+  return best;
 }
 
 function ZonaCarga({ zona, estado, onPick }) {
@@ -38,9 +63,9 @@ function ZonaCarga({ zona, estado, onPick }) {
   const { file, validation, error } = estado;
   const ok = validation?.ok;
 
-  // Solo acepta .xlsx / .xls al soltar
+  // Acepta Excel y CSV al soltar
   function esExcel(f) {
-    return /\.(xlsx|xls)$/i.test(f?.name || "");
+    return EXT_OK.test(f?.name || "");
   }
 
   function handleDrop(e) {
@@ -66,12 +91,12 @@ function ZonaCarga({ zona, estado, onPick }) {
         onDragLeave={e => { e.preventDefault(); setDragging(false); }}
         onDrop={handleDrop}
       >
-        <input ref={inputRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }}
+        <input ref={inputRef} type="file" accept={ACCEPT} style={{ display: "none" }}
           onChange={e => { const f = e.target.files?.[0]; if (f) onPick(f); e.target.value = ""; }} />
         {file
           ? <span className="upload-filename">📄 {file.name}</span>
           : <span className="upload-hint">
-              {dragging ? "Suelta el archivo aquí" : "Arrastra un archivo .xlsx / .xls o haz clic para seleccionarlo"}
+              {dragging ? "Suelta el archivo aquí" : "Arrastra un archivo .xlsx / .xls / .csv o haz clic para seleccionarlo"}
             </span>}
       </div>
 
@@ -96,12 +121,7 @@ function ZonaCarga({ zona, estado, onPick }) {
         <div className="upload-val-error">
           {validation.faltan.length > 0 && (
             <div>Faltan columnas: <strong>{validation.faltan.join(", ")}</strong></div>
-          )}
-          {validation.sobran?.length > 0 && (
-            <div>Columnas no esperadas en el archivo: <strong>{validation.sobran.join(", ")}</strong></div>
-          )}
-          {validation.duplicadas?.length > 0 && (
-            <div>Columnas duplicadas: <strong>{validation.duplicadas.join(", ")}</strong></div>
+          )}</strong></div>
           )}
         </div>
       )}
@@ -123,14 +143,14 @@ export default function FuenteUploadPanel({ config, onUploaded }) {
     next[idx] = { file, validation: null, error: "" };
     setZonas(next);
     try {
-      const header = await leerCabeceras(file);
+      const header = await leerCabeceras(file, config.zonas[idx].cols);
       const validation = validarColumnas(header, config.zonas[idx].cols);
       const upd = [...next];
       upd[idx] = { file, validation, error: "" };
       setZonas(upd);
     } catch {
       const upd = [...next];
-      upd[idx] = { file, validation: null, error: "No se pudo leer el archivo. ¿Es un .xlsx/.xls válido?" };
+      upd[idx] = { file, validation: null, error: "No se pudo leer el archivo. ¿Es un .xlsx / .xls / .csv válido?" };
       setZonas(upd);
     }
   }
@@ -173,7 +193,7 @@ export default function FuenteUploadPanel({ config, onUploaded }) {
         <h3 className="upload-panel-title">Subir información — {config.titulo}</h3>
         <p className="upload-panel-sub">
           Aún no hay datos cargados para esta fuente. Sube {config.zonas.length > 1 ? "los archivos" : "el archivo"} en
-          formato <strong>.xlsx / .xls</strong> e indica la fecha de corte.
+          formato <strong>.xlsx / .xls / .csv</strong> e indica la fecha de corte.
         </p>
       </div>
 
