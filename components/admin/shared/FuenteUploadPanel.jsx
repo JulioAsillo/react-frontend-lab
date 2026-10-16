@@ -97,6 +97,12 @@ function ZonaCarga({ zona, estado, onPick }) {
           {validation.faltan.length > 0 && (
             <div>Faltan columnas: <strong>{validation.faltan.join(", ")}</strong></div>
           )}
+          {validation.sobran?.length > 0 && (
+            <div>Columnas no esperadas en el archivo: <strong>{validation.sobran.join(", ")}</strong></div>
+          )}
+          {validation.duplicadas?.length > 0 && (
+            <div>Columnas duplicadas: <strong>{validation.duplicadas.join(", ")}</strong></div>
+          )}
         </div>
       )}
       {error && <div className="upload-val-error">{error}</div>}
